@@ -19,6 +19,8 @@ public class InputController : MonoBehaviour {
 			if (hit.collider.tag == "Floor") {
 				targetBubble.transform.position = hit.point;
 				targetBubble.SetActive (true);
+				print ("HItting");
+
 			} else {
 				targetBubble.SetActive (false);
 
