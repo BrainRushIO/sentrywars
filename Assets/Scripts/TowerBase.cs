@@ -18,7 +18,15 @@ public class TowerBase : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+
+	public virtual void Die(){
+		//do death things here
+	} 
+
 	void Update () {
-	
+
+		if (curHealth == 0) {
+			Die ();
+		}
 	}
 }
