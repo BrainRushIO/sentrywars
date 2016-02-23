@@ -10,6 +10,7 @@ public class TowerBase : MonoBehaviour {
 	public bool isOccupied;
 	public GameObject parentTower;
 	public int owner;
+	public float cost;
 
 
 	// Use this for initialization
@@ -18,7 +19,15 @@ public class TowerBase : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+
+	public virtual void Die(){
+		//do death things here
+	} 
+
 	void Update () {
-	
+
+		if (curHealth <= 0) {
+			Die ();
+		}
 	}
 }
