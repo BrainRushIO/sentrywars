@@ -26,7 +26,7 @@ public class TowerBase : MonoBehaviour {
 
 	void Update () {
 
-		if (curHealth == 0) {
+		if (curHealth <= 0) {
 			Die ();
 		}
 	}
