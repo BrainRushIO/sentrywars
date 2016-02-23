@@ -10,6 +10,7 @@ public class TowerBase : MonoBehaviour {
 	public bool isOccupied;
 	public GameObject parentTower;
 	public int owner;
+	public float cost;
 
 
 	// Use this for initialization
