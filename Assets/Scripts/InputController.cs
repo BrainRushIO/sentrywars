@@ -2,7 +2,7 @@
 using System.Collections;
 
 /*
-
+Sets up events for different 
 
 
 
@@ -32,17 +32,29 @@ public class InputController : MonoBehaviour {
 		Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 		RaycastHit hit;
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
-			if (hit.collider.tag == "Floor") {
-				targetBubble.transform.position = hit.point;
-			} else {
-
-			}
+			
 
 		}
 
 	}
 
+
+	public delegate void RightTriggerFingerDownAction();
+	public static event RightTriggerFingerDownAction OnRightTriggerFingerDown;
+	public delegate void RightTriggerFingerReleaseAction();
+	public static event RightTriggerFingerReleaseAction OnRightTriggerFingerRelease;
+	public delegate void CycleUpAction();
+	public static event CycleUpAction OnCycleUp;
+	public delegate void CycleDownAction();
+	public static event CycleDownAction OnCycleDown;
+
+	public delegate void SendPointerInfoAction(RaycastHit thisHit);
+	public static event SendPointerInfoAction OnSendPointerInfo;
+
+
 	void SwitchInputMode() {
 
 	}
+
+
 }

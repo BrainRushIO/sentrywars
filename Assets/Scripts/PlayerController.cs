@@ -4,6 +4,7 @@ using System.Collections;
 
 /*
 Handle player movement through towers
+Handles creation of towers
 
 
 
