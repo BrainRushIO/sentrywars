@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
-
+public enum TargetTypes {Building, GUIButton, Floor, EnergyPool, None};
 /*
 Handle player movement through towers
 
@@ -11,7 +12,8 @@ public class PlayerController : MonoBehaviour {
 
 
 	[SerializeField] GameObject currentBuilding;
-	GameObject currentTargetedBuilding;
+	GameObject currentTarget;
+	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
 
 	private int owner;
@@ -44,33 +46,39 @@ public class PlayerController : MonoBehaviour {
 
 
 	void HandleRightHandTargeting(RaycastHit thisHit) {
-
-		print (thisHit.transform.tag);
+		currentTarget = thisHit.collider.gameObject;
 		switch(thisHit.transform.tag){
-
 		case "Building":
 			isTargetingBuilding = true;
-			currentTargetedBuilding = thisHit.collider.gameObject;
+			currentTargetType = TargetTypes.Building;
 			break;
 		case "GUIButton":
+			currentTarget.GetComponent<Button> ().Select ();
+			currentTargetType = TargetTypes.GUIButton;
+			PressGUIButton ();
+			break;
+		case "Floor":
+			currentTargetType = TargetTypes.Floor;
 			break;
 		default :
 			isTargetingBuilding = false;
-			currentTargetedBuilding = null;
+			currentTargetType = TargetTypes.None;
 			break;
-		
 		}
-
-
-
-
+			
 
 	}
 		
 	void HandleRightTriggerDown() {
-		if (isTargetingBuilding) {
+		switch (currentTargetType) {
+		case TargetTypes.Building:
 			PerformActionOnTargetedBuilding ();
+			break;
+		case TargetTypes.GUIButton:
+			PressGUIButton ();
+			break;
 		}
+
 	}
 
 	void HandleRightTriggerUp() {
@@ -78,17 +86,22 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTargetedBuilding.GetComponent<BuildingBase> ().ReturnOwner () == owner) {
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == owner) {
 			TeleportToBuilding ();
 		}
 	}
 
+	void PressGUIButton() {
+		currentTarget.GetComponent<Button> ().onClick.Invoke();
+
+	}
+
 	void TeleportToBuilding () {
 		
-		currentBuilding = currentTargetedBuilding;
+		currentBuilding = currentTarget;
 		currentBuilding.GetComponent<BuildingBase> ().isOccupied = false;
-		currentTargetedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
-		transform.position = currentTargetedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
+		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
+		transform.position = currentTarget.GetComponent<BuildingBase> ().playerCockpit.position;
 	}
 
 
