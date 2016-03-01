@@ -3,25 +3,26 @@ using System.Collections;
 using UnityEngine.UI;
 
 public enum TargetTypes {Building, GUIButton, Floor, EnergyPool, None};
+
 /*
 Handle player movement through towers
-
 */
 
 public class PlayerController : MonoBehaviour {
 
 
-	[SerializeField] GameObject currentBuilding;
+	[SerializeField] GameObject currentInhabitedBuilding;
 	GameObject currentTarget;
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
 
+	private BuildingType currentSelectedBuilding;
 	private int owner;
 	public int ReturnOwner(){return owner;}
 
 	// Use this for initialization
 	void Start () {
-		currentBuilding.GetComponent<BuildingBase> ().isOccupied = true;
+		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
 	}
 
 	void OnEnable() {
@@ -53,7 +54,7 @@ public class PlayerController : MonoBehaviour {
 			currentTargetType = TargetTypes.Building;
 			break;
 		case "GUIButton":
-			currentTarget.GetComponent<Button> ().Select ();
+//			currentTarget.GetComponent<Button> ().Select ();
 			currentTargetType = TargetTypes.GUIButton;
 			PressGUIButton ();
 			break;
@@ -92,18 +93,21 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PressGUIButton() {
-		currentTarget.GetComponent<Button> ().onClick.Invoke();
+//		print ("PRESS BUTTON");
+//		currentTarget.GetComponent<Button> ().onClick.Invoke();
 
 	}
 
 	void TeleportToBuilding () {
 		
-		currentBuilding = currentTarget;
-		currentBuilding.GetComponent<BuildingBase> ().isOccupied = false;
+		currentInhabitedBuilding = currentTarget;
+		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
 		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
 		transform.position = currentTarget.GetComponent<BuildingBase> ().playerCockpit.position;
 	}
 
-
+	public void SelectBuilding(BuildingType thisBuildingType) {
+		currentSelectedBuilding = thisBuildingType;
+	}
 
 }
