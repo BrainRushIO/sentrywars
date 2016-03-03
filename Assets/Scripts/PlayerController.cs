@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
+		MovePlayerToBuildingCockpit ();
 	}
 
 	void OnEnable() {
@@ -101,9 +102,13 @@ public class PlayerController : MonoBehaviour {
 	void TeleportToBuilding () {
 		
 		currentInhabitedBuilding = currentTarget;
-		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
+		MovePlayerToBuildingCockpit ();
+ 		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
 		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
-		transform.position = currentTarget.GetComponent<BuildingBase> ().playerCockpit.position;
+	}
+
+	void MovePlayerToBuildingCockpit() {
+		transform.position = currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
 	}
 
 	public void SelectBuilding(BuildingType thisBuildingType) {
