@@ -12,6 +12,7 @@ public class TempGUICanvas : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		
 		transform.position = followThisTransform.position + new Vector3 (0, 0, 25f);
 	}
 }

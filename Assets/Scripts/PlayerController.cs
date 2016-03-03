@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
-		MovePlayerToBuildingCockpit ();
+//		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
+//		MovePlayerToBuildingCockpit ();
 	}
 
 	void OnEnable() {

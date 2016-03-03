@@ -33,11 +33,11 @@ public class InputController : MonoBehaviour {
 	}
 
 	void CastRayFromDebugReticle () {
-		Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit, raycastDistance)) {
-			OnSendPointerInfo (hit);
-		}
+//		Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+//		RaycastHit hit;
+//		if (Physics.Raycast (ray, out hit, raycastDistance)) {
+//			OnSendPointerInfo (hit);
+//		}
 
 	}
 

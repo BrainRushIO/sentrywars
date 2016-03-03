@@ -19,7 +19,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Use this for initialization
         private void Start()
         {
-            m_Camera = Camera.main;
+			m_Camera = transform.GetChild (0).GetComponent<Camera> ();
 
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
