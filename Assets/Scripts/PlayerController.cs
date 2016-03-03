@@ -55,7 +55,6 @@ public class PlayerController : MonoBehaviour {
 			currentTargetType = TargetTypes.Building;
 			break;
 		case "GUIButton":
-//			currentTarget.GetComponent<Button> ().Select ();
 			currentTargetType = TargetTypes.GUIButton;
 			PressGUIButton ();
 			break;
@@ -94,9 +93,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PressGUIButton() {
-//		print ("PRESS BUTTON");
-//		currentTarget.GetComponent<Button> ().onClick.Invoke();
-
+		
 	}
 
 	void TeleportToBuilding () {
