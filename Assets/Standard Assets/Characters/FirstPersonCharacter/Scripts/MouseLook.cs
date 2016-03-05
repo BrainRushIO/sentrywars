@@ -27,41 +27,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         public void Init(Transform character, Transform camera)
         {
-//			ClearPointerMess ();
 
             m_CharacterTargetRot = character.localRotation;
             m_CameraTargetRot = camera.localRotation;
         }
-			
-
-
-		public void ClearPointerMess() {
-
-			PointerEventData pointer = new PointerEventData(EventSystem.current);
-			pointer.position = Input.mousePosition;
-
-			List<RaycastResult> raycastResults = new List<RaycastResult>();
-			EventSystem.current.RaycastAll(pointer, raycastResults);
-
-			if (raycastResults.Count > 0) {
-
-				foreach (RaycastResult raycastResult in raycastResults) {
-					Debug.Log(raycastResult.gameObject.name);
-					GameObject hoveredObj = raycastResult.gameObject;
-
-					if (hoveredObj.GetComponent<Button>()) {
-						hoveredObj.GetComponent<Button>().OnPointerExit(pointer);
-					} else {//sometimes in my setup the child image is interactable
-						hoveredObj = hoveredObj.transform.parent.gameObject;
-						if (hoveredObj.GetComponent<Button>()) {
-							hoveredObj.GetComponent<Button>().OnPointerExit(pointer);
-						}
-					}
-				}
-
-			}
-
-		}
 
         public void LookRotation(Transform character, Transform camera)
         {

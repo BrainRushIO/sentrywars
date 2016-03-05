@@ -26,6 +26,12 @@ public class InputController : MonoBehaviour {
 		if (Input.GetKeyUp (KeyCode.S)) {
 			OnRightTriggerFingerUp ();
 		}
+		if (Input.GetKeyDown (KeyCode.F)) {
+			OnLeftTriggerFingerDown ();
+		}
+		if (Input.GetKeyUp (KeyCode.F)) {
+			OnLeftTriggerFingerUp ();
+		}
 	}
 
 	void FixedUpdate() {

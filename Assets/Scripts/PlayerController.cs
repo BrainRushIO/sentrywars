@@ -17,14 +17,12 @@ public class PlayerController : MonoBehaviour {
 	bool isTargetingBuilding;
 
 	private BuildingType currentSelectedBuilding;
-	private int owner;
-	public int ReturnOwner(){return owner;}
 
 	// Use this for initialization
 	void Start () {
-//		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = true;
-//		MovePlayerToBuildingCockpit ();
 	}
+
+
 
 	void OnEnable() {
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
@@ -87,7 +85,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == owner) {
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == transform.name) {
 			TeleportToBuilding ();
 		}
 	}
@@ -110,6 +108,23 @@ public class PlayerController : MonoBehaviour {
 
 	public void SelectBuilding(BuildingType thisBuildingType) {
 		currentSelectedBuilding = thisBuildingType;
+	}
+
+	public void InitializePlayer(string playerID) {
+		AssignPlayerToBuilding ();
+		transform.name = playerID;
+		currentInhabitedBuilding.GetComponent<BuildingBase>().SetOwner (playerID);
+	}
+
+	void AssignPlayerToBuilding () {
+		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
+		foreach (BuildingBase x in allBuildings) {
+			//assign current
+			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
+				print ("FOUND MATCH");
+				currentInhabitedBuilding = x.gameObject;
+			}
+		}
 	}
 
 }
