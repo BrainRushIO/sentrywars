@@ -27,14 +27,14 @@ public class PlayerController : MonoBehaviour {
 
 	void OnEnable() {
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
-		InputController.OnRightTriggerFingerUp += HandleRightTriggerDown;
+//		InputController.OnRightTriggerFingerUp += HandleRightTriggerDown;
 
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
 	}
 
 	void OnDisable () {
 		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
-		InputController.OnRightTriggerFingerUp -= HandleRightTriggerDown;
+//		InputController.OnRightTriggerFingerUp -= HandleRightTriggerDown;
 
 		InputController.OnSendPointerInfo -= HandleRightHandTargeting;
 	}
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour {
 	public void InitializePlayer(string playerID) {
 		AssignPlayerToBuilding ();
 		transform.name = playerID;
-		currentInhabitedBuilding.GetComponent<BuildingBase>().SetOwner (playerID);
+		currentInhabitedBuilding.GetComponent<BuildingBase>().InitializeBuilding (playerID);
 	}
 
 	void AssignPlayerToBuilding () {

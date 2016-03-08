@@ -16,15 +16,14 @@ public class BuildingBase : NetworkBehaviour {
 	public float cost;
 	public float buildTime;
 	public Transform playerCockpit;
+	[SerializeField] Collider[] allColliders;
 
 	[SerializeField]
 	string owner;
 	public string ReturnOwner(){return owner;} 
-	public void SetOwner(string thisOwner){owner = thisOwner;}
 
 	// Use this for initialization
 	void Start () {
-
 	}
 
 	// Update is called once per frame
@@ -40,8 +39,21 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	public virtual void InitializeConstruction() {
+	public virtual void InitializeBuilding(string thisOwner) {
+		owner = thisOwner;
+		EnableAllColliders ();
+	}
 
+	public void DisableAllColliders() {
+		foreach (Collider x in allColliders) {
+			x.enabled = false;
+		}
+	}
+
+	public void EnableAllColliders () {
+		foreach (Collider x in allColliders) {
+			x.enabled = true;
+		}
 	}
 
 }

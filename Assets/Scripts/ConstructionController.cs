@@ -34,7 +34,7 @@ public class ConstructionController : MonoBehaviour {
 		case ConstructionState.PlacingBuilding:
 			if (!isBuildingInstantiated) {
 				currentBuildingToBuild = (GameObject)Instantiate (buildingPrefabs [0]) as GameObject;
-				currentBuildingToBuild.GetComponentInChildren<Collider> ().enabled = false;
+				currentBuildingToBuild.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 				isBuildingInstantiated = true;
 			}
 			if (switchToInactive) {
@@ -50,9 +50,9 @@ public class ConstructionController : MonoBehaviour {
 
 		case ConstructionState.BuildBuilding:
 			isBuildingInstantiated = false;
-			currentBuildingToBuild.GetComponentInChildren<Collider> ().enabled = true;
-
 			currConstructionState = ConstructionState.Inactive;
+			currentBuildingToBuild.GetComponentInChildren<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
+
 			break;
 		}
 	}
