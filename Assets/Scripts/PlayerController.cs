@@ -58,6 +58,8 @@ public class PlayerController : MonoBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
+			print ("HITTING FLOOR");
+			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 			currentTargetType = TargetTypes.Floor;
 			break;
 		default :
@@ -65,7 +67,9 @@ public class PlayerController : MonoBehaviour {
 			currentTargetType = TargetTypes.None;
 			break;
 		}
-			
+
+		if (thisHit.transform.tag != "Floor") GetComponent<ConstructionController> ().SwitchToInactive ();
+
 
 	}
 		

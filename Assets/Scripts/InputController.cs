@@ -9,13 +9,13 @@ Sets up events for different
 public class InputController : MonoBehaviour {
 
 	public bool isMouseKeyboardDebug;
-
+	Camera playerCamera;
 	float raycastDistance = 1000;
 	[SerializeField] GameObject targetBubble;
 
 	// Use this for initialization
 	void Start () {
-		
+		playerCamera = GetComponentInChildren<Camera> ();
 	}
 	
 	// Update is called once per frame
@@ -39,10 +39,11 @@ public class InputController : MonoBehaviour {
 	}
 
 	void CastRayFromDebugReticle () {
-		Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+		Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 		RaycastHit hit;
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
 			OnSendPointerInfo (hit);
+			print ("CASTING RAY");
 		}
 
 	}

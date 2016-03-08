@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
-	private const string PLAYER_ID_PREFIX = "Player ";
+	private const string PLAYER_ID_PREFIX = "Player";
 	private static Dictionary<string, PlayerController> players = new Dictionary<string, PlayerController>();
 
 	public static void RegisterPlayer(string _netID, PlayerController _player) {
