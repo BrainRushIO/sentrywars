@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour {
 
 	private BuildingType currentSelectedBuilding;
 
+
 	// Use this for initialization
 	void Start () {
 	}
@@ -121,7 +122,7 @@ public class PlayerController : MonoBehaviour {
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
-				print ("FOUND MATCH");
+				print ("FOUND INIT BUILDING");
 				currentInhabitedBuilding = x.gameObject;
 			}
 		}

@@ -4,6 +4,7 @@ using System.Collections;
 public class ConstructionController : MonoBehaviour {
 
 	public enum ConstructionOptions {Nexus, Canon, Shield, Defense, Energy, MissileLauncher};
+	[SerializeField] GameObject[] buildingPrefabs;
 
 	
 	// Update is called once per frame
