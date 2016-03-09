@@ -43,7 +43,6 @@ public class InputController : MonoBehaviour {
 		RaycastHit hit;
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
 			OnSendPointerInfo (hit);
-			print ("CASTING RAY");
 		}
 
 	}

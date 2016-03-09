@@ -8,7 +8,7 @@ public class BuildingBase : NetworkBehaviour {
 
 	public float maxHealth;
 
-	[SyncVar] public float currentHealth;
+	[SyncVar] private float currentHealth;
 
 	public float actionCooldown;
 	public bool isOccupied;
@@ -32,11 +32,9 @@ public class BuildingBase : NetworkBehaviour {
 
 	} 
 
-	void Update () {
+	[ClientRpc]
+	public void RpcTakeDamage (float amount) {
 
-		if (currentHealth <= 0) {
-			Die ();
-		}
 	}
 
 	public virtual void InitializeBuilding(string thisOwner) {

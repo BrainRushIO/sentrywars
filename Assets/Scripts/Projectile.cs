@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Projectile : MonoBehaviour {
+public class Projectile : NetworkBehaviour {
 
+	[SerializeField] float damage = 5;
 	// Use this for initialization
 	void Start () {
 	
@@ -13,9 +15,10 @@ public class Projectile : MonoBehaviour {
 	
 	}
 
+
 	void OnTriggerEnter (Collider other) {
 		if (other.tag == "Building") {
-
+			other.GetComponent<BuildingBase> ().RpcTakeDamage (damage);
 		}
 	}
 

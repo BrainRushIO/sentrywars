@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 		string _playerID = PLAYER_ID_PREFIX + _netID;
 		players.Add (_playerID, _player);
 		_player.InitializePlayer(_playerID);
+		Debug.Log ("Player" + _netID + " has joined the game.");
 	}
 
 	public static void UnRegisterPlayer(string _playerID) {

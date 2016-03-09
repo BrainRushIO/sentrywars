@@ -19,12 +19,6 @@ public class PlayerController : MonoBehaviour {
 	private BuildingType currentSelectedBuilding;
 
 
-	// Use this for initialization
-	void Start () {
-	}
-
-
-
 	void OnEnable() {
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
 //		InputController.OnRightTriggerFingerUp += HandleRightTriggerDown;
@@ -38,12 +32,6 @@ public class PlayerController : MonoBehaviour {
 
 		InputController.OnSendPointerInfo -= HandleRightHandTargeting;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
 
 
 	void HandleRightHandTargeting(RaycastHit thisHit) {
@@ -58,7 +46,6 @@ public class PlayerController : MonoBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			print ("HITTING FLOOR");
 			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 			currentTargetType = TargetTypes.Floor;
 			break;

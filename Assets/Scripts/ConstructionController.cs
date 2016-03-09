@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class ConstructionController : MonoBehaviour {
+public class ConstructionController : NetworkBehaviour {
 	enum ConstructionState {Inactive, PlacingBuilding, BuildBuilding};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	public enum ConstructionOptions {Nexus, Canon, Shield, Defense, Energy, MissileLauncher};
@@ -49,10 +50,10 @@ public class ConstructionController : MonoBehaviour {
 			break;
 
 		case ConstructionState.BuildBuilding:
-			isBuildingInstantiated = false;
+			CmdSpawnBuilding ();
 			currConstructionState = ConstructionState.Inactive;
 			currentBuildingToBuild.GetComponentInChildren<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-
+			isBuildingInstantiated = false;
 			break;
 		}
 	}
@@ -72,6 +73,12 @@ public class ConstructionController : MonoBehaviour {
 		if (currentBuildingToBuild != null) {
 			currentBuildingToBuild.transform.position = hit.point;
 		}
+	}
+
+	[Command]
+	void CmdSpawnBuilding() {
+		NetworkServer.Spawn (currentBuildingToBuild);
+
 	}
 
 	void SwitchToBuildBuilding() {

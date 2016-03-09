@@ -38,7 +38,7 @@ public class PlayerSetup : NetworkBehaviour {
 	}
 
 	void AssignRemotePlayer () {
-		gameObject.layer = LayerMask.NameToLayer (remoteLayerName);
+		gameObject.layer = 9;
 	}
 
 	void OnDisable() {
