@@ -12,7 +12,7 @@ public class ConstructionController : NetworkBehaviour {
 	bool isBuildingInstantiated;
 
 
-	//Switches
+	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToBuildBuilding;
 	public void SwitchToPlacingBuilding() {
 		switchToPlacingBuilding = true;
