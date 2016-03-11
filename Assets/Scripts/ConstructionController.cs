@@ -12,6 +12,7 @@ public class ConstructionController : NetworkBehaviour {
 	GameObject currentBuildingToConstruct;
 	bool isBuildingInstantiated;
 
+	Vector3 buildingPlacementPosition;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToBuildBuilding;
@@ -114,6 +115,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void PlaceBuilding (RaycastHit hit) {
+		buildingPlacementPosition = hit.transform.position;
 		if (currentBuildingToConstruct != null) {
 			currentBuildingToConstruct.transform.position = hit.point;
 		}
@@ -141,7 +143,7 @@ public class ConstructionController : NetworkBehaviour {
 			
 			Destroy (currentBuildingToConstruct);
 		}
-		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType]) as GameObject;
+		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity) as GameObject;
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 	}
 }

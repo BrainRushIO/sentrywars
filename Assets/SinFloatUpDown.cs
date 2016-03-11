@@ -4,7 +4,7 @@ using System.Collections;
 public class SinFloatUpDown : MonoBehaviour {
 
 	Vector3 initPos;
-	public float speedScalar = .1f, translationScalar =1f;
+	float speedScalar = 1f, translationScalar = .1f;
 	float val;
 	// Use this for initialization
 	void Start () {
