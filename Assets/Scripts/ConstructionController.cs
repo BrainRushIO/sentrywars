@@ -130,8 +130,10 @@ public class ConstructionController : NetworkBehaviour {
 
 	void SwitchToSpawnBuilding() {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
-			GetComponent<PlayerStats> ().TryToSpendEnergy (buildingCosts [currentBuildingToConstructType])){ 
+		    GetComponent<PlayerStats> ().TryToSpendEnergy (buildingCosts [currentBuildingToConstructType])) { 
 			switchToSpawnBuilding = true;
+		} else {
+			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
 	}
 
