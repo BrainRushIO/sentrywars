@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour {
 
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		currentTarget = thisHit.collider.gameObject;
+		print (thisHit.transform.tag + " TAG");
 		switch(thisHit.transform.tag){
 		case "Building":
 			isTargetingBuilding = true;

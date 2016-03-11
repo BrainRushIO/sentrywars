@@ -34,9 +34,10 @@ public class PlayerStats : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
-		energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
-
+		if (currentEnergyText != null && energyUptakeText!= null) {
+			currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
+			energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
+		}
 		HandleTimer ();
 	}
 

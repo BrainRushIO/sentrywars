@@ -20,10 +20,10 @@ public class InputController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.S)) {
+		if (Input.GetKeyDown (KeyCode.Space)) {
 			OnRightTriggerFingerDown ();
 		}
-		if (Input.GetKeyUp (KeyCode.S)) {
+		if (Input.GetKeyUp (KeyCode.Space)) {
 //			OnRightTriggerFingerUp ();
 		}
 		if (Input.GetKeyDown (KeyCode.F)) {

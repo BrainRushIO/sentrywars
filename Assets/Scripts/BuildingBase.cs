@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
-public enum BuildingType {Nexus, Cannon, Shield, Energy, MissileLauncher, MissileDefense};
+public enum BuildingType {Constructor, Canon, Shield, Defense, Energy, MissileLauncher};
 
 public class BuildingBase : NetworkBehaviour {
 
@@ -10,6 +11,7 @@ public class BuildingBase : NetworkBehaviour {
 
 	[SyncVar] private float currentHealth;
 
+	BuildingType currentBuildingType = BuildingType.Constructor;
 	public float actionCooldown;
 	public bool isOccupied;
 	public GameObject parentNexus;
@@ -22,9 +24,6 @@ public class BuildingBase : NetworkBehaviour {
 	string owner;
 	public string ReturnOwner(){return owner;} 
 
-	// Use this for initialization
-	void Start () {
-	}
 
 	// Update is called once per frame
 
