@@ -36,7 +36,6 @@ public class PlayerController : MonoBehaviour {
 
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		currentTarget = thisHit.collider.gameObject;
-		print (thisHit.transform.tag + " TAG");
 		switch(thisHit.transform.tag){
 		case "Building":
 			isTargetingBuilding = true;
@@ -57,8 +56,6 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if (thisHit.transform.tag != "Floor") GetComponent<ConstructionController> ().SwitchToInactive ();
-
-
 	}
 		
 	void HandleRightTriggerDown() {

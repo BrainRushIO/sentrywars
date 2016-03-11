@@ -37,7 +37,7 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Defense, 15);
 		buildingCosts.Add (BuildingType.Shield, 50);
 		buildingCosts.Add (BuildingType.Energy, 20);
-		buildingCosts.Add (BuildingType.MissileLauncher, 80);
+		buildingCosts.Add (BuildingType.Tactical, 80);
 
 	}
 
@@ -61,14 +61,14 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Shield);
 		}
 		if (Input.GetKeyDown(KeyCode.Y)) {
-			SelectConstructBuildingType(BuildingType.MissileLauncher);
+			SelectConstructBuildingType(BuildingType.Tactical);
 		}
 
 			
 
 		//temp UI
-		constructBuildingCost.text = buildingCosts[currentBuildingToConstructType].ToString();
-		constructBuildingType.text = currentBuildingToConstructType.ToString ();
+		constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
+		constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 		switch (currConstructionState) {
 		case ConstructionState.Inactive:
@@ -79,8 +79,7 @@ public class ConstructionController : NetworkBehaviour {
 			break;
 		case ConstructionState.PlacingBuilding:
 			if (!isBuildingInstantiated) {
-				currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [0]) as GameObject;
-				currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
+				InstantiateBuildingTemplate ();
 				isBuildingInstantiated = true;
 			}
 			if (switchToInactive) {
@@ -134,6 +133,15 @@ public class ConstructionController : NetworkBehaviour {
 
 	void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		currentBuildingToConstructType = thisBuildingType;
+		InstantiateBuildingTemplate ();
 	}
 
+	void InstantiateBuildingTemplate () {
+		if (currentBuildingToConstruct != null) {
+			
+			Destroy (currentBuildingToConstruct);
+		}
+		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType]) as GameObject;
+		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
+	}
 }

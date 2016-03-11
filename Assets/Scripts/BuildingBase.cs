@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
-public enum BuildingType {Constructor, Canon, Shield, Defense, Energy, MissileLauncher};
+public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical};
 
 public class BuildingBase : NetworkBehaviour {
 
