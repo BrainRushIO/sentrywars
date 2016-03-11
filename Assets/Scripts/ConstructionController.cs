@@ -5,17 +5,17 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class ConstructionController : NetworkBehaviour {
-	enum ConstructionState {Inactive, PlacingBuilding, BuildBuilding};
+	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	[SerializeField] GameObject[] buildingPrefabs;
 	BuildingType currentBuildingToConstructType;
 	GameObject currentBuildingToConstruct;
-	bool isBuildingInstantiated;
+	bool isBuildingTemplateInstantiated;
 
 	Vector3 buildingPlacementPosition;
 
 	//State Machine Switches
-	bool switchToInactive, switchToPlacingBuilding, switchToBuildBuilding;
+	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
 	public void SwitchToPlacingBuilding() {
 		switchToPlacingBuilding = true;
 	}
@@ -79,24 +79,25 @@ public class ConstructionController : NetworkBehaviour {
 			}
 			break;
 		case ConstructionState.PlacingBuilding:
-			if (!isBuildingInstantiated) {
+			//have only one building template at a time
+			if (!isBuildingTemplateInstantiated) {
 				InstantiateBuildingTemplate ();
-				isBuildingInstantiated = true;
+				isBuildingTemplateInstantiated = true;
 			}
 			if (switchToInactive) {
 				Destroy (currentBuildingToConstruct);
 				switchToInactive = false;
 				currConstructionState = ConstructionState.Inactive;
-				isBuildingInstantiated = false;
-			} else if (switchToBuildBuilding) {
-				switchToBuildBuilding = false;
-				currConstructionState = ConstructionState.BuildBuilding;
+				isBuildingTemplateInstantiated = false;
+			} else if (switchToSpawnBuilding) {
+				switchToSpawnBuilding = false;
+				currConstructionState = ConstructionState.SpawnBuilding;
 			}
 			break;
 
-		case ConstructionState.BuildBuilding:
+		case ConstructionState.SpawnBuilding:
 			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-			isBuildingInstantiated = false;
+			isBuildingTemplateInstantiated = false;
 			CmdSpawnBuilding ();
 			currConstructionState = ConstructionState.Inactive;
 			break;
@@ -105,16 +106,16 @@ public class ConstructionController : NetworkBehaviour {
 
 	void OnEnable() {
 
-		InputController.OnRightTriggerFingerDown += SwitchToConstructBuilding;
-		InputController.OnSendPointerInfo += PlaceBuilding;
+		InputController.OnRightTriggerFingerDown += SwitchToSpawnBuilding;
+		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
 	}
 
 	void OnDisable () {
-		InputController.OnRightTriggerFingerDown -= SwitchToConstructBuilding;
-		InputController.OnSendPointerInfo -= PlaceBuilding;
+		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
+		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
 	}
 
-	void PlaceBuilding (RaycastHit hit) {
+	void PlaceBuildingTemplate (RaycastHit hit) {
 		buildingPlacementPosition = hit.transform.position;
 		if (currentBuildingToConstruct != null) {
 			currentBuildingToConstruct.transform.position = hit.point;
@@ -127,9 +128,10 @@ public class ConstructionController : NetworkBehaviour {
 
 	}
 
-	void SwitchToConstructBuilding() {
-		if (currConstructionState == ConstructionState.PlacingBuilding) {
-			switchToBuildBuilding = true;
+	void SwitchToSpawnBuilding() {
+		if (currConstructionState == ConstructionState.PlacingBuilding &&
+			GetComponent<PlayerStats> ().TryToSpendEnergy (buildingCosts [currentBuildingToConstructType])){ 
+			switchToSpawnBuilding = true;
 		}
 	}
 
