@@ -95,10 +95,10 @@ public class ConstructionController : NetworkBehaviour {
 			break;
 
 		case ConstructionState.BuildBuilding:
+			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
+			isBuildingInstantiated = false;
 			CmdSpawnBuilding ();
 			currConstructionState = ConstructionState.Inactive;
-			currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-			isBuildingInstantiated = false;
 			break;
 		}
 	}
@@ -135,15 +135,19 @@ public class ConstructionController : NetworkBehaviour {
 
 	void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		currentBuildingToConstructType = thisBuildingType;
-		InstantiateBuildingTemplate ();
+		SwitchBuildingTemplate ();
 	}
 
 	void InstantiateBuildingTemplate () {
-		if (currentBuildingToConstruct != null) {
-			
-			Destroy (currentBuildingToConstruct);
-		}
+		
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity) as GameObject;
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
+	}
+
+	void SwitchBuildingTemplate() {
+		if (currentBuildingToConstruct != null) {
+			Destroy (currentBuildingToConstruct);
+		}
+		InstantiateBuildingTemplate ();
 	}
 }
