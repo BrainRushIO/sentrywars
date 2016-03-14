@@ -7,10 +7,12 @@ public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical}
 
 public class BuildingBase : NetworkBehaviour {
 
-	public float maxHealth;
+	public float maxHealth = 50;
 
 	[SyncVar] private float currentHealth;
-
+	public float ReturnCurrentHealth(){return currentHealth;}
+	[SyncVar] private float cooldown;
+	public float ReturnCurrentCooldown() {return cooldown;}
 	BuildingType currentBuildingType = BuildingType.Constructor;
 	public float actionCooldown;
 	public bool isOccupied;
@@ -39,6 +41,7 @@ public class BuildingBase : NetworkBehaviour {
 	public virtual void InitializeBuilding(string thisOwner) {
 		owner = thisOwner;
 		EnableAllColliders ();
+		currentHealth = maxHealth;
 	}
 
 	public void DisableAllColliders() {

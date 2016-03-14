@@ -18,6 +18,14 @@ public class PlayerController : MonoBehaviour {
 
 	private BuildingType currentSelectedBuilding;
 
+	[SerializeField] Text thisBuildingHP, thisBuildingCooldown;
+
+	void Update() {
+		if (currentInhabitedBuilding != null) {
+			thisBuildingHP.text = "This Tower's HP: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+			thisBuildingCooldown.text = "This Tower's Cooldown: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
+		}
+	}
 
 	void OnEnable() {
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;

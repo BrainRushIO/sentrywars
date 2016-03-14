@@ -14,7 +14,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	Vector3 buildingPlacementPosition;
 
-	private const float GRID_SPACING = 10f;
+	private const float GRID_SPACING = 20f;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -24,7 +24,6 @@ public class ConstructionController : NetworkBehaviour {
 	public void SwitchToInactive() {
 		switchToInactive = true;
 	}
-
 
 	[SerializeField] Text constructBuildingType, constructBuildingCost;
 
