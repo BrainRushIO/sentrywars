@@ -14,7 +14,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	Vector3 buildingPlacementPosition;
 
-	private const float GRID_SPACING = 20f;
+	private const float GRID_SPACING = 10f;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -154,6 +154,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding() {
+		RenderCurrentBuildingAsBuilt ();
 		NetworkServer.Spawn (currentBuildingToConstruct);
 
 	}
@@ -173,9 +174,29 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void InstantiateBuildingTemplate () {
-		
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity) as GameObject;
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
+		RenderCurrentBuildingAsTemplate ();
+
+	}
+	void RenderCurrentBuildingAsBuilt() {
+		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
+		foreach (MeshRenderer x in allMaterialsOnBuilding) {
+			x.material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 0);
+		}
+		if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
+			currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 1);
+		}
+	}
+
+	void RenderCurrentBuildingAsTemplate() {
+		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
+		foreach (MeshRenderer x in allMaterialsOnBuilding) {
+			x.material = GetComponent<PlayerColorManager> ().templateColor;
+		}
+		if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
+			currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().templateColor;
+		}
 	}
 
 	void SwitchBuildingTemplate() {

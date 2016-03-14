@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public enum TargetTypes {Building, GUIButton, Floor, EnergyPool, None};
+public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 
 /*
 Handle player movement through towers
@@ -11,10 +11,11 @@ Handle player movement through towers
 public class PlayerController : MonoBehaviour {
 
 
-	[SerializeField] GameObject currentInhabitedBuilding;
+	[SerializeField] GameObject currentInhabitedBuilding, otherBuildingSelectedIndicatorPrefab;
 	GameObject currentTarget;
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
+	GameObject otherBuildingSelectedIndicator;
 
 	private BuildingType currentSelectedBuilding;
 
@@ -25,6 +26,12 @@ public class PlayerController : MonoBehaviour {
 			thisBuildingHP.text = "This Tower's HP: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
 			thisBuildingCooldown.text = "This Tower's Cooldown: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
 		}
+		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null) {
+			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
+		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
+			Destroy (otherBuildingSelectedIndicator);
+		}
+
 	}
 
 	void OnEnable() {
