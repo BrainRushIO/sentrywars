@@ -25,8 +25,13 @@ public class PlayerSetup : NetworkBehaviour {
 
 	public override void OnStartClient() {
 		base.OnStartClient ();
-
-		string _netID = GetComponent<NetworkIdentity> ().netId.ToString();
+		int tempID = (int)GetComponent<NetworkIdentity> ().netId.Value;
+		if (tempID > 2 && tempID % 2 == 0) {
+			tempID = 2;
+		} else {
+			tempID = 1;
+		}
+		string _netID = tempID.ToString ();
 		PlayerController _player = GetComponent<PlayerController> ();
 		GameManager.RegisterPlayer (_netID, _player);
 	}

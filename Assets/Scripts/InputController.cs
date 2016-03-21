@@ -61,13 +61,4 @@ public class InputController : MonoBehaviour {
 	public delegate void SendPointerInfoAction(RaycastHit thisHit);
 	public static event SendPointerInfoAction OnSendPointerInfo;
 
-
-
-
-
-
-
-
-
-
 }

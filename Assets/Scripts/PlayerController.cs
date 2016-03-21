@@ -9,8 +9,7 @@ Handle player movement through towers
 */
 
 public class PlayerController : MonoBehaviour {
-
-
+	
 	[SerializeField] GameObject currentInhabitedBuilding, otherBuildingSelectedIndicatorPrefab;
 	GameObject currentTarget;
 	TargetTypes currentTargetType;
@@ -64,6 +63,10 @@ public class PlayerController : MonoBehaviour {
 			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 			currentTargetType = TargetTypes.Floor;
 			break;
+		case "Energy":
+
+			break;
+
 		default :
 			isTargetingBuilding = false;
 			currentTargetType = TargetTypes.None;

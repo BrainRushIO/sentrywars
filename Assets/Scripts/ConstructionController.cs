@@ -15,6 +15,7 @@ public class ConstructionController : NetworkBehaviour {
 	Vector3 buildingPlacementPosition;
 
 	private const float GRID_SPACING = 10f;
+	public bool isTargetingEnergy;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -24,7 +25,7 @@ public class ConstructionController : NetworkBehaviour {
 	public void SwitchToInactive() {
 		switchToInactive = true;
 	}
-
+	
 	[SerializeField] Text constructBuildingType, constructBuildingCost;
 
 	[SerializeField]
@@ -97,6 +98,7 @@ public class ConstructionController : NetworkBehaviour {
 			break;
 
 		case ConstructionState.SpawnBuilding:
+			
 			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
 			isBuildingTemplateInstantiated = false;
 			CmdSpawnBuilding ();
@@ -155,7 +157,7 @@ public class ConstructionController : NetworkBehaviour {
 	[Command]
 	void CmdSpawnBuilding() {
 		RenderCurrentBuildingAsBuilt ();
-		NetworkServer.Spawn (currentBuildingToConstruct);
+		NetworkServer.SpawnWithClientAuthority (currentBuildingToConstruct, gameObject);
 
 	}
 
@@ -180,9 +182,14 @@ public class ConstructionController : NetworkBehaviour {
 
 	}
 	void RenderCurrentBuildingAsBuilt() {
+		print ("render current building as built");
+		if (currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> () == null) {
+			Debug.LogError ("MeshRenderers not Registering");
+		}
 		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
 		foreach (MeshRenderer x in allMaterialsOnBuilding) {
 			x.material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 0);
+			print ("set mesh renderers");
 		}
 		if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
 			currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 1);
