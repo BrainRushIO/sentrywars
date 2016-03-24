@@ -31,8 +31,6 @@ public class ConstructionController : NetworkBehaviour {
 	[SerializeField]
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
 
-
-
 	// Use this for initialization
 	void Start () {
 		buildingCosts.Add (BuildingType.Constructor, 20);
@@ -41,7 +39,6 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Shield, 50);
 		buildingCosts.Add (BuildingType.Energy, 20);
 		buildingCosts.Add (BuildingType.Tactical, 80);
-
 	}
 
 
@@ -66,9 +63,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (Input.GetKeyDown(KeyCode.Y)) {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
-
 			
-
 		//temp UI
 		constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
@@ -157,7 +152,7 @@ public class ConstructionController : NetworkBehaviour {
 	[Command]
 	void CmdSpawnBuilding() {
 		RenderCurrentBuildingAsBuilt ();
-		NetworkServer.SpawnWithClientAuthority (currentBuildingToConstruct, gameObject);
+		NetworkServer.Spawn (currentBuildingToConstruct);
 
 	}
 

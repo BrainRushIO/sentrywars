@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 /*
 Sets up events for different 
@@ -46,7 +47,6 @@ public class InputController : MonoBehaviour {
 		}
 
 	}
-
 
 	public delegate void RightTriggerFingerDownAction();
 	public static event RightTriggerFingerDownAction OnRightTriggerFingerDown;
