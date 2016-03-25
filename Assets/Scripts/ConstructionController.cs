@@ -68,7 +68,7 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
 		if (Input.GetKeyDown(KeyCode.F)) {
-			SwitchToSpawnBuilding ();
+			CmdSpawnBuilding ();
 		}
 			
 		//temp UI
@@ -152,10 +152,11 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding() {
-		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-		RenderCurrentBuildingAsBuilt ();
-		isBuildingTemplateInstantiated = false;
-		NetworkServer.Spawn (currentBuildingToConstruct);
+//		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
+//		RenderCurrentBuildingAsBuilt ();
+//		isBuildingTemplateInstantiated = false;
+		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
+		NetworkServer.Spawn (temp);
 
 	}
 
