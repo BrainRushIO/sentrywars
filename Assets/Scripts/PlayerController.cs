@@ -10,7 +10,8 @@ Handle player movement through towers
 
 public class PlayerController : MonoBehaviour {
 	
-	public GameObject currentInhabitedBuilding, otherBuildingSelectedIndicatorPrefab;
+	GameObject currentInhabitedBuilding;
+	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab;
 	GameObject currentTarget;
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
@@ -43,8 +44,7 @@ public class PlayerController : MonoBehaviour {
 	void FixedUpdate () {
 		CastRayFromDebugReticle ();
 	}
-
-
+		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		currentTarget = thisHit.collider.gameObject;
 		switch(thisHit.transform.tag){
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour {
 	public void InitializePlayer(string playerID) {
 		AssignPlayerToBuilding ();
 		transform.name = playerID;
-		currentInhabitedBuilding.GetComponent<BuildingBase>().InitializeBuilding (playerID);
+		if (currentInhabitedBuilding!=null) currentInhabitedBuilding.GetComponent<BuildingBase>().InitializeBuilding (playerID);
 	}
 
 	void AssignPlayerToBuilding () {

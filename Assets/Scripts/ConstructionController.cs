@@ -7,12 +7,13 @@ using System.Collections.Generic;
 public class ConstructionController : NetworkBehaviour {
 	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
-	[SerializeField] GameObject[] buildingPrefabs;
+	public GameObject[] buildingPrefabs;
 	BuildingType currentBuildingToConstructType;
-	GameObject currentBuildingToConstruct;
+	public GameObject currentBuildingToConstruct;
 	bool isBuildingTemplateInstantiated;
 	Camera playerCamera;
 	float raycastDistance = 1000;
+	[SyncVar]
 	Vector3 buildingPlacementPosition;
 
 	private const float GRID_SPACING = 10f;
@@ -42,12 +43,14 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Energy, 20);
 		buildingCosts.Add (BuildingType.Tactical, 80);
 	}
-
 	void FixedUpdate() {
 		CastRayFromDebugReticle ();
 	}
 	// Update is called once per frame
 	void Update () {
+		if (!isLocalPlayer) {
+			return;
+		}
 		//temp construction selection
 		if (Input.GetKeyDown(KeyCode.Q)) {
 			SelectConstructBuildingType(BuildingType.Constructor);
@@ -67,7 +70,8 @@ public class ConstructionController : NetworkBehaviour {
 		if (Input.GetKeyDown(KeyCode.Y)) {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
-		if (Input.GetKeyDown(KeyCode.F)) {
+		if (Input.GetKeyDown(KeyCode.G)) {
+			print (gameObject.name + " pressed G");
 			CmdSpawnBuilding ();
 		}
 			
@@ -104,7 +108,6 @@ public class ConstructionController : NetworkBehaviour {
 			break;
 		}
 	}
-
 	void PlaceBuildingTemplate (RaycastHit hit) {
 		buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
 		if (currentBuildingToConstruct != null) {
@@ -155,7 +158,9 @@ public class ConstructionController : NetworkBehaviour {
 //		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
 //		RenderCurrentBuildingAsBuilt ();
 //		isBuildingTemplateInstantiated = false;
+
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
+		print("SPAWNED AT: " + temp.transform.position);
 		NetworkServer.Spawn (temp);
 
 	}
@@ -175,6 +180,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void InstantiateBuildingTemplate () {
+		print ("instantiate buinding templatae");
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 		RenderCurrentBuildingAsTemplate ();
