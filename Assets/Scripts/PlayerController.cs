@@ -15,8 +15,13 @@ public class PlayerController : MonoBehaviour {
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
 	GameObject otherBuildingSelectedIndicator;
-
+	Camera playerCamera;
 	private BuildingType currentSelectedBuilding;
+	public static float TOWER_RANGE = 1000f;
+
+	void Start () {
+		playerCamera = GetComponentInChildren<Camera> ();
+	}
 
 	[SerializeField] Text thisBuildingHP, thisBuildingCooldown;
 
@@ -30,21 +35,13 @@ public class PlayerController : MonoBehaviour {
 		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
 			Destroy (otherBuildingSelectedIndicator);
 		}
-
+		if (Input.GetKeyDown(KeyCode.F)) {
+			HandleRightTriggerDown ();
+		}
 	}
 
-	void OnEnable() {
-		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
-//		InputController.OnRightTriggerFingerUp += HandleRightTriggerDown;
-
-		InputController.OnSendPointerInfo += HandleRightHandTargeting;
-	}
-
-	void OnDisable () {
-		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
-//		InputController.OnRightTriggerFingerUp -= HandleRightTriggerDown;
-
-		InputController.OnSendPointerInfo -= HandleRightHandTargeting;
+	void FixedUpdate () {
+		CastRayFromDebugReticle ();
 	}
 
 
@@ -133,6 +130,15 @@ public class PlayerController : MonoBehaviour {
 				currentInhabitedBuilding = x.gameObject;
 			}
 		}
+	}
+
+	void CastRayFromDebugReticle () {
+		Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+		RaycastHit hit;
+		if (Physics.Raycast (ray, out hit, TOWER_RANGE)) {
+			HandleRightHandTargeting (hit);
+		}
+
 	}
 
 }

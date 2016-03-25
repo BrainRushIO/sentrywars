@@ -11,7 +11,8 @@ public class ConstructionController : NetworkBehaviour {
 	BuildingType currentBuildingToConstructType;
 	GameObject currentBuildingToConstruct;
 	bool isBuildingTemplateInstantiated;
-
+	Camera playerCamera;
+	float raycastDistance = 1000;
 	Vector3 buildingPlacementPosition;
 
 	private const float GRID_SPACING = 10f;
@@ -33,6 +34,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		playerCamera = GetComponentInChildren<Camera> ();
 		buildingCosts.Add (BuildingType.Constructor, 20);
 		buildingCosts.Add (BuildingType.Canon, 10);
 		buildingCosts.Add (BuildingType.Defense, 15);
@@ -41,7 +43,9 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Tactical, 80);
 	}
 
-
+	void FixedUpdate() {
+		CastRayFromDebugReticle ();
+	}
 	// Update is called once per frame
 	void Update () {
 		//temp construction selection
@@ -64,57 +68,41 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
 		if (Input.GetKeyDown(KeyCode.F)) {
-			CmdSpawnBuilding ();
+			SwitchToSpawnBuilding ();
 		}
 			
 		//temp UI
 		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		if(constructBuildingType!=null)constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
-//		switch (currConstructionState) {
-//		case ConstructionState.Inactive:
-//			if (switchToPlacingBuilding) {
-//				switchToPlacingBuilding = false;
-//				currConstructionState = ConstructionState.PlacingBuilding;
-//			}
-//			break;
-//		case ConstructionState.PlacingBuilding:
-//			//have only one building template at a time
-//			if (!isBuildingTemplateInstantiated) {
-//				InstantiateBuildingTemplate ();
-//				isBuildingTemplateInstantiated = true;
-//			}
-//			if (switchToInactive) {
-//				Destroy (currentBuildingToConstruct);
-//				switchToInactive = false;
-//				currConstructionState = ConstructionState.Inactive;
-//				isBuildingTemplateInstantiated = false;
-//			} else if (switchToSpawnBuilding) {
-//				switchToSpawnBuilding = false;
-//				currConstructionState = ConstructionState.SpawnBuilding;
-//			}
-//			break;
-//
-//		case ConstructionState.SpawnBuilding:
-//			print ("INIT BUILDING");
-//			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-//			RenderCurrentBuildingAsBuilt ();
-//			isBuildingTemplateInstantiated = false;
-////			CmdSpawnBuilding ();
-//			currConstructionState = ConstructionState.Inactive;
-//			break;
-//		}
-	}
-
-	void OnEnable() {
-
-		InputController.OnRightTriggerFingerDown += SwitchToSpawnBuilding;
-		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
-	}
-
-	void OnDisable () {
-		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
-		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
+		switch (currConstructionState) {
+		case ConstructionState.Inactive:
+			if (switchToPlacingBuilding) {
+				switchToPlacingBuilding = false;
+				currConstructionState = ConstructionState.PlacingBuilding;
+			}
+			break;
+		case ConstructionState.PlacingBuilding:
+			//have only one building template at a time
+			if (!isBuildingTemplateInstantiated) {
+				InstantiateBuildingTemplate ();
+				isBuildingTemplateInstantiated = true;
+			}
+			if (switchToInactive) {
+				Destroy (currentBuildingToConstruct);
+				switchToInactive = false;
+				currConstructionState = ConstructionState.Inactive;
+				isBuildingTemplateInstantiated = false;
+			} else if (switchToSpawnBuilding) {
+				switchToSpawnBuilding = false;
+				currConstructionState = ConstructionState.SpawnBuilding;
+			}
+			break;
+		case ConstructionState.SpawnBuilding:
+			CmdSpawnBuilding ();
+			currConstructionState = ConstructionState.Inactive;
+			break;
+		}
 	}
 
 	void PlaceBuildingTemplate (RaycastHit hit) {
@@ -122,6 +110,15 @@ public class ConstructionController : NetworkBehaviour {
 		if (currentBuildingToConstruct != null) {
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
+	}
+
+	void CastRayFromDebugReticle () {
+		Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+		RaycastHit hit;
+		if (Physics.Raycast (ray, out hit, raycastDistance)) {
+			PlaceBuildingTemplate (hit);
+		}
+
 	}
 
 	Vector3 ConvertVector3ToGridPoint(Vector3 thisPoint) {
@@ -155,9 +152,10 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding() {
-		print ("command called");
-		GameObject newBuilding = (GameObject)Instantiate (currentBuildingToConstruct, currentBuildingToConstruct.transform.position, Quaternion.identity);
-		NetworkServer.Spawn (newBuilding);
+		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
+		RenderCurrentBuildingAsBuilt ();
+		isBuildingTemplateInstantiated = false;
+		NetworkServer.Spawn (currentBuildingToConstruct);
 
 	}
 
