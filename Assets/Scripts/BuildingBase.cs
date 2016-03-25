@@ -39,6 +39,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public virtual void InitializeBuilding(string thisOwner) {
+		print ("init building");
 		owner = thisOwner;
 		EnableAllColliders ();
 		currentHealth = maxHealth;

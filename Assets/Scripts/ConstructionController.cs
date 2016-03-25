@@ -63,43 +63,47 @@ public class ConstructionController : NetworkBehaviour {
 		if (Input.GetKeyDown(KeyCode.Y)) {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
+		if (Input.GetKeyDown(KeyCode.F)) {
+			CmdSpawnBuilding ();
+		}
 			
 		//temp UI
-		constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
-		constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
+		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
+		if(constructBuildingType!=null)constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
-		switch (currConstructionState) {
-		case ConstructionState.Inactive:
-			if (switchToPlacingBuilding) {
-				switchToPlacingBuilding = false;
-				currConstructionState = ConstructionState.PlacingBuilding;
-			}
-			break;
-		case ConstructionState.PlacingBuilding:
-			//have only one building template at a time
-			if (!isBuildingTemplateInstantiated) {
-				InstantiateBuildingTemplate ();
-				isBuildingTemplateInstantiated = true;
-			}
-			if (switchToInactive) {
-				Destroy (currentBuildingToConstruct);
-				switchToInactive = false;
-				currConstructionState = ConstructionState.Inactive;
-				isBuildingTemplateInstantiated = false;
-			} else if (switchToSpawnBuilding) {
-				switchToSpawnBuilding = false;
-				currConstructionState = ConstructionState.SpawnBuilding;
-			}
-			break;
-
-		case ConstructionState.SpawnBuilding:
-			
-			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-			isBuildingTemplateInstantiated = false;
-			CmdSpawnBuilding ();
-			currConstructionState = ConstructionState.Inactive;
-			break;
-		}
+//		switch (currConstructionState) {
+//		case ConstructionState.Inactive:
+//			if (switchToPlacingBuilding) {
+//				switchToPlacingBuilding = false;
+//				currConstructionState = ConstructionState.PlacingBuilding;
+//			}
+//			break;
+//		case ConstructionState.PlacingBuilding:
+//			//have only one building template at a time
+//			if (!isBuildingTemplateInstantiated) {
+//				InstantiateBuildingTemplate ();
+//				isBuildingTemplateInstantiated = true;
+//			}
+//			if (switchToInactive) {
+//				Destroy (currentBuildingToConstruct);
+//				switchToInactive = false;
+//				currConstructionState = ConstructionState.Inactive;
+//				isBuildingTemplateInstantiated = false;
+//			} else if (switchToSpawnBuilding) {
+//				switchToSpawnBuilding = false;
+//				currConstructionState = ConstructionState.SpawnBuilding;
+//			}
+//			break;
+//
+//		case ConstructionState.SpawnBuilding:
+//			print ("INIT BUILDING");
+//			currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
+//			RenderCurrentBuildingAsBuilt ();
+//			isBuildingTemplateInstantiated = false;
+////			CmdSpawnBuilding ();
+//			currConstructionState = ConstructionState.Inactive;
+//			break;
+//		}
 	}
 
 	void OnEnable() {
@@ -151,8 +155,9 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding() {
-		RenderCurrentBuildingAsBuilt ();
-		NetworkServer.Spawn (currentBuildingToConstruct);
+		print ("command called");
+		GameObject newBuilding = (GameObject)Instantiate (currentBuildingToConstruct, currentBuildingToConstruct.transform.position, Quaternion.identity);
+		NetworkServer.Spawn (newBuilding);
 
 	}
 
@@ -171,7 +176,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void InstantiateBuildingTemplate () {
-		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity) as GameObject;
+		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 		RenderCurrentBuildingAsTemplate ();
 

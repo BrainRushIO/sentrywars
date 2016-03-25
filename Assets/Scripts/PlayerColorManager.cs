@@ -8,12 +8,12 @@ public class PlayerColorManager : MonoBehaviour {
 	public Material templateColor;
 
 	public Material ReturnPlayerColorMaterial(string pID, int shade) {
-		if (pID == "Player2") {
-			return (player2 [shade]);
-		} else if (pID == "Player1") {
+//		if (pID == "Player2") {
+//			return (player2 [shade]);
+//		} else if (pID == "Player1") {
 			return (player1 [shade]);
-		} else {
-			return null;
-		}
+//		} else {
+//			return null;
+//		}
 	}
 }

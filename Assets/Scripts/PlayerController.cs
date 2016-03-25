@@ -10,7 +10,7 @@ Handle player movement through towers
 
 public class PlayerController : MonoBehaviour {
 	
-	[SerializeField] GameObject currentInhabitedBuilding, otherBuildingSelectedIndicatorPrefab;
+	public GameObject currentInhabitedBuilding, otherBuildingSelectedIndicatorPrefab;
 	GameObject currentTarget;
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Update() {
 		if (currentInhabitedBuilding != null) {
-			thisBuildingHP.text = "This Tower's HP: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-			thisBuildingCooldown.text = "This Tower's Cooldown: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
+			if (thisBuildingHP!=null)thisBuildingHP.text = "This Tower's HP: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+			if (thisBuildingCooldown!=null)thisBuildingCooldown.text = "This Tower's Cooldown: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
 		}
 		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;

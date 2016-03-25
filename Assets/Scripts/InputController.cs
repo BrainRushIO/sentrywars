@@ -7,7 +7,7 @@ Sets up events for different
 */
 
 
-public class InputController : MonoBehaviour {
+public class InputController : NetworkBehaviour {
 
 	public bool isMouseKeyboardDebug;
 	Camera playerCamera;
@@ -27,10 +27,10 @@ public class InputController : MonoBehaviour {
 		if (Input.GetKeyUp (KeyCode.Space)) {
 //			OnRightTriggerFingerUp ();
 		}
-		if (Input.GetKeyDown (KeyCode.F)) {
+		if (Input.GetKeyDown (KeyCode.X)) {
 			OnLeftTriggerFingerDown ();
 		}
-		if (Input.GetKeyUp (KeyCode.F)) {
+		if (Input.GetKeyUp (KeyCode.X)) {
 			OnLeftTriggerFingerUp ();
 		}
 	}
