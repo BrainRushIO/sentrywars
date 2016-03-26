@@ -22,7 +22,7 @@ public class BuildingBase : NetworkBehaviour {
 	public Transform playerCockpit;
 	[SerializeField] Collider[] allColliders;
 
-	[SerializeField]
+	[SyncVar]
 	string owner;
 	public string ReturnOwner(){return owner;} 
 
@@ -39,7 +39,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public virtual void InitializeBuilding(string thisOwner) {
-		print ("init building");
+		print ("init building " + thisOwner);
 		owner = thisOwner;
 		EnableAllColliders ();
 		currentHealth = maxHealth;

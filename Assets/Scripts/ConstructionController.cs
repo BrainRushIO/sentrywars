@@ -107,7 +107,7 @@ public class ConstructionController : NetworkBehaviour {
 			}
 			break;
 		case ConstructionState.SpawnBuilding:
-			CmdSpawnBuilding (buildingPlacementPosition);
+			CmdSpawnBuilding (buildingPlacementPosition, gameObject.name);
 			currConstructionState = ConstructionState.Inactive;
 			break;
 		}
@@ -149,10 +149,11 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	[Command]
-	void CmdSpawnBuilding(Vector3 placementPos) {
+	void CmdSpawnBuilding(Vector3 placementPos, string thisPlayerID) {
+		print ("SPAWN " + thisPlayerID);
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], placementPos, Quaternion.identity);
-		temp.GetComponent<BuildingBase> ().InitializeBuilding (gameObject.name);
+		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		NetworkServer.Spawn (temp);
 
 	}

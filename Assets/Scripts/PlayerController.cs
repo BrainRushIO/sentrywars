@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour {
 	}
 		
 	void HandleRightTriggerDown() {
+		print ("RIGHT TRIGGER DOWN" + currentTargetType);
 		switch (currentTargetType) {
 		case TargetTypes.Building:
 			PerformActionOnTargetedBuilding ();
@@ -95,8 +96,11 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == transform.name) {
+		
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == gameObject.name) {
 			TeleportToBuilding ();
+		} else {
+			Debug.LogError (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () + " " + gameObject.name);
 		}
 	}
 
@@ -127,7 +131,6 @@ public class PlayerController : MonoBehaviour {
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.gameObject;
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerID);
-
 			}
 		}
 	}
