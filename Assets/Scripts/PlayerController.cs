@@ -18,31 +18,28 @@ public class PlayerController : MonoBehaviour {
 	GameObject otherBuildingSelectedIndicator;
 	Camera playerCamera;
 	private BuildingType currentSelectedBuilding;
-	public static float TOWER_RANGE = 1000f;
 
-	void Start () {
-		playerCamera = GetComponentInChildren<Camera> ();
+	void OnEnable() {
+		InputController.OnSendPointerInfo += HandleRightHandTargeting;
+		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
 	}
 
+	void OnDisable() {
+		InputController.OnSendPointerInfo -= HandleRightHandTargeting;
+		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
+
+	}
+		
 	[SerializeField] Text thisBuildingHP, thisBuildingCooldown;
 
 	void Update() {
 		if (currentInhabitedBuilding != null) {
-			if (thisBuildingHP!=null)thisBuildingHP.text = "This Tower's HP: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-			if (thisBuildingCooldown!=null)thisBuildingCooldown.text = "This Tower's Cooldown: "+currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
+			if (thisBuildingHP != null)
+				thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+			if (thisBuildingCooldown != null)
+				thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
 		}
-		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null) {
-			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
-		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
-			Destroy (otherBuildingSelectedIndicator);
-		}
-		if (Input.GetKeyDown(KeyCode.F)) {
-			HandleRightTriggerDown ();
-		}
-	}
-
-	void FixedUpdate () {
-		CastRayFromDebugReticle ();
+		HandleSelectBuildingVFX ();
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
@@ -72,6 +69,14 @@ public class PlayerController : MonoBehaviour {
 
 		if (thisHit.transform.tag != "Floor") GetComponent<ConstructionController> ().SwitchToInactive ();
 	}
+
+	void HandleSelectBuildingVFX () {
+		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null) {
+			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
+		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
+			Destroy (otherBuildingSelectedIndicator);
+		}
+	}
 		
 	void HandleRightTriggerDown() {
 		switch (currentTargetType) {
@@ -100,7 +105,6 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void TeleportToBuilding () {
-		
 		currentInhabitedBuilding = currentTarget;
 		MovePlayerToBuildingCockpit ();
  		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
@@ -116,29 +120,16 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void InitializePlayer(string playerID) {
-		AssignPlayerToBuilding ();
 		transform.name = playerID;
-		if (currentInhabitedBuilding!=null) currentInhabitedBuilding.GetComponent<BuildingBase>().InitializeBuilding (playerID);
-	}
-
-	void AssignPlayerToBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
-				print ("FOUND INIT BUILDING");
 				currentInhabitedBuilding = x.gameObject;
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerID);
+
 			}
 		}
-	}
-
-	void CastRayFromDebugReticle () {
-		Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit, TOWER_RANGE)) {
-			HandleRightHandTargeting (hit);
-		}
-
 	}
 
 }

@@ -12,8 +12,6 @@ public class ConstructionController : NetworkBehaviour {
 	public GameObject currentBuildingToConstruct;
 	bool isBuildingTemplateInstantiated;
 	Camera playerCamera;
-	float raycastDistance = 1000;
-	[SyncVar]
 	Vector3 buildingPlacementPosition;
 
 	private const float GRID_SPACING = 10f;
@@ -33,6 +31,17 @@ public class ConstructionController : NetworkBehaviour {
 	[SerializeField]
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
 
+	void OnEnable() {
+		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
+		InputController.OnRightTriggerFingerDown += SwitchToSpawnBuilding;
+	}
+
+	void OnDisable() {
+		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
+		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
+
+	}
+
 	// Use this for initialization
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
@@ -43,9 +52,7 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Energy, 20);
 		buildingCosts.Add (BuildingType.Tactical, 80);
 	}
-	void FixedUpdate() {
-		CastRayFromDebugReticle ();
-	}
+
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer) {
@@ -70,10 +77,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (Input.GetKeyDown(KeyCode.Y)) {
 			SelectConstructBuildingType(BuildingType.Tactical);
 		}
-		if (Input.GetKeyDown(KeyCode.G)) {
-			print (gameObject.name + " pressed G");
-			CmdSpawnBuilding (buildingPlacementPosition);
-		}
+
 			
 		//temp UI
 		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
@@ -103,7 +107,7 @@ public class ConstructionController : NetworkBehaviour {
 			}
 			break;
 		case ConstructionState.SpawnBuilding:
-//			CmdSpawnBuilding ();
+			CmdSpawnBuilding (buildingPlacementPosition);
 			currConstructionState = ConstructionState.Inactive;
 			break;
 		}
@@ -113,15 +117,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (currentBuildingToConstruct != null) {
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
-	}
-
-	void CastRayFromDebugReticle () {
-		Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit, raycastDistance)) {
-			PlaceBuildingTemplate (hit);
-		}
-
 	}
 
 	Vector3 ConvertVector3ToGridPoint(Vector3 thisPoint) {
@@ -155,12 +150,9 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding(Vector3 placementPos) {
-//		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
-//		RenderCurrentBuildingAsBuilt ();
-//		isBuildingTemplateInstantiated = false;
-
+		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], placementPos, Quaternion.identity);
-		print("SPAWNED AT: " + temp.transform.position);
+		temp.GetComponent<BuildingBase> ().InitializeBuilding (gameObject.name);
 		NetworkServer.Spawn (temp);
 
 	}
@@ -169,6 +161,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().TryToSpendEnergy (buildingCosts [currentBuildingToConstructType])) { 
 			switchToSpawnBuilding = true;
+			Destroy (currentBuildingToConstruct);
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
@@ -180,14 +173,12 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void InstantiateBuildingTemplate () {
-		print ("instantiate buinding templatae");
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 		RenderCurrentBuildingAsTemplate ();
 
 	}
 	void RenderCurrentBuildingAsBuilt() {
-		print ("render current building as built");
 		if (currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> () == null) {
 			Debug.LogError ("MeshRenderers not Registering");
 		}
