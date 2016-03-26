@@ -72,7 +72,7 @@ public class ConstructionController : NetworkBehaviour {
 		}
 		if (Input.GetKeyDown(KeyCode.G)) {
 			print (gameObject.name + " pressed G");
-			CmdSpawnBuilding ();
+			CmdSpawnBuilding (buildingPlacementPosition);
 		}
 			
 		//temp UI
@@ -103,7 +103,7 @@ public class ConstructionController : NetworkBehaviour {
 			}
 			break;
 		case ConstructionState.SpawnBuilding:
-			CmdSpawnBuilding ();
+//			CmdSpawnBuilding ();
 			currConstructionState = ConstructionState.Inactive;
 			break;
 		}
@@ -154,12 +154,12 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	[Command]
-	void CmdSpawnBuilding() {
+	void CmdSpawnBuilding(Vector3 placementPos) {
 //		currentBuildingToConstruct.GetComponent<BuildingBase> ().InitializeBuilding (transform.gameObject.name);
 //		RenderCurrentBuildingAsBuilt ();
 //		isBuildingTemplateInstantiated = false;
 
-		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
+		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], placementPos, Quaternion.identity);
 		print("SPAWNED AT: " + temp.transform.position);
 		NetworkServer.Spawn (temp);
 
