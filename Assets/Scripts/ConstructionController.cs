@@ -7,15 +7,18 @@ using System.Collections.Generic;
 public class ConstructionController : NetworkBehaviour {
 	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
-	public GameObject[] buildingPrefabs;
 	BuildingType currentBuildingToConstructType;
+
+	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
-	bool isBuildingTemplateInstantiated;
 	Camera playerCamera;
 	Vector3 buildingPlacementPosition;
 
-	private const float GRID_SPACING = 10f;
-	public bool isTargetingEnergy;
+	public bool isInConstructor = true, isTargetingEnergyField;
+	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
+
+	const float GRID_SPACING = 10f;
+	const float CONSTRUCTION_RANGE = 100f;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -39,7 +42,6 @@ public class ConstructionController : NetworkBehaviour {
 	void OnDisable() {
 		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
 		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
-
 	}
 
 	// Use this for initialization
@@ -83,33 +85,41 @@ public class ConstructionController : NetworkBehaviour {
 		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		if(constructBuildingType!=null)constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
-		switch (currConstructionState) {
-		case ConstructionState.Inactive:
-			if (switchToPlacingBuilding) {
-				switchToPlacingBuilding = false;
-				currConstructionState = ConstructionState.PlacingBuilding;
-			}
-			break;
-		case ConstructionState.PlacingBuilding:
-			//have only one building template at a time
-			if (!isBuildingTemplateInstantiated) {
-				InstantiateBuildingTemplate ();
-				isBuildingTemplateInstantiated = true;
-			}
-			if (switchToInactive) {
-				Destroy (currentBuildingToConstruct);
-				switchToInactive = false;
+
+		if (isInConstructor) {
+			switch (currConstructionState) {
+			case ConstructionState.Inactive:
+				if (switchToPlacingBuilding) {
+					switchToPlacingBuilding = false;
+					currConstructionState = ConstructionState.PlacingBuilding;
+				}
+				break;
+			case ConstructionState.PlacingBuilding:
+				//have only one building template at a time
+				if (!isBuildingTemplateInstantiated) {
+					InstantiateBuildingTemplate ();
+					CheckIfCanBuild ();
+					isBuildingTemplateInstantiated = true;
+				}
+				else CheckIfCanBuild ();
+
+				if (switchToInactive) {
+					Destroy (currentBuildingToConstruct);
+					switchToInactive = false;
+					currConstructionState = ConstructionState.Inactive;
+					isBuildingTemplateInstantiated = false;
+					isBuildingTemplateGreen = false;
+
+				} else if (switchToSpawnBuilding) {
+					switchToSpawnBuilding = false;
+					currConstructionState = ConstructionState.SpawnBuilding;
+				}
+				break;
+				case ConstructionState.SpawnBuilding:
+				CmdSpawnBuilding (buildingPlacementPosition, gameObject.name, currentBuildingToConstructType);
 				currConstructionState = ConstructionState.Inactive;
-				isBuildingTemplateInstantiated = false;
-			} else if (switchToSpawnBuilding) {
-				switchToSpawnBuilding = false;
-				currConstructionState = ConstructionState.SpawnBuilding;
+				break;
 			}
-			break;
-		case ConstructionState.SpawnBuilding:
-			CmdSpawnBuilding (buildingPlacementPosition, gameObject.name, currentBuildingToConstructType);
-			currConstructionState = ConstructionState.Inactive;
-			break;
 		}
 	}
 	void PlaceBuildingTemplate (RaycastHit hit) {
@@ -133,7 +143,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (remainder >= GRID_SPACING / 2) {
 			//ie 57 -> r = 7 add GS-r or  (10-7) to round up
 			//ie -57 -> r = -7 subtract (GS+r) or (10-7) to round down
-
 			if (val >= 0) {
 				val += (GRID_SPACING - remainder);
 			} else {
@@ -159,10 +168,13 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void SwitchToSpawnBuilding() {
+		print ("CANBUILD " + canBuild);
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
-		    GetComponent<PlayerStats> ().TryToSpendEnergy (buildingCosts [currentBuildingToConstructType])) { 
+		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
+			canBuild) { 
 			switchToSpawnBuilding = true;
 			Destroy (currentBuildingToConstruct);
+			GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
@@ -176,30 +188,38 @@ public class ConstructionController : NetworkBehaviour {
 	void InstantiateBuildingTemplate () {
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
-		RenderCurrentBuildingAsTemplate ();
 
 	}
-	void RenderCurrentBuildingAsBuilt() {
-		if (currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> () == null) {
-			Debug.LogError ("MeshRenderers not Registering");
-		}
-		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
-		foreach (MeshRenderer x in allMaterialsOnBuilding) {
-			x.material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 0);
-			print ("set mesh renderers");
-		}
-		if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
-			currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().ReturnPlayerColorMaterial (gameObject.name, 1);
+
+	void RenderCurrentBuildingAsTemplate(bool isBuildable) {
+		if (isBuildable && !isBuildingTemplateGreen) {
+			isBuildingTemplateGreen = true;
+			RenderMeshGreenRed (true);
+
+		} else if (!isBuildable && isBuildingTemplateGreen) {
+			isBuildingTemplateGreen = false;
+			RenderMeshGreenRed (false);
+		} else if (!isBuildingTemplateGreen){
+			RenderMeshGreenRed (false);
 		}
 	}
 
-	void RenderCurrentBuildingAsTemplate() {
+	void RenderMeshGreenRed(bool green) {
 		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
-		foreach (MeshRenderer x in allMaterialsOnBuilding) {
-			x.material = GetComponent<PlayerColorManager> ().templateColor;
-		}
-		if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
-			currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().templateColor;
+		if (green) {
+			foreach (MeshRenderer x in allMaterialsOnBuilding) {
+				x.material = GetComponent<PlayerColorManager> ().templateColorGreen;
+			}
+			if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
+				currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().templateColorGreen;
+			}
+		} else {
+			foreach (MeshRenderer x in allMaterialsOnBuilding) {
+				x.material = GetComponent<PlayerColorManager> ().templateColorRed;
+			}
+			if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
+				currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().templateColorRed;
+			}
 		}
 	}
 
@@ -208,5 +228,20 @@ public class ConstructionController : NetworkBehaviour {
 			Destroy (currentBuildingToConstruct);
 		}
 		InstantiateBuildingTemplate ();
+	}
+
+	void CheckIfCanBuild () {
+		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE) {
+			canBuild = true;
+			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
+				RenderCurrentBuildingAsTemplate (false);
+				canBuild = false;
+			} else {
+				RenderCurrentBuildingAsTemplate (true);
+			}
+		} else {
+			RenderCurrentBuildingAsTemplate (false);
+			canBuild = false;
+		}
 	}
 }

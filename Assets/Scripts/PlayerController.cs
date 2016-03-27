@@ -56,9 +56,11 @@ public class PlayerController : MonoBehaviour {
 		case "Floor":
 			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 			currentTargetType = TargetTypes.Floor;
+			GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			break;
 		case "Energy":
-
+			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+			GetComponent<ConstructionController> ().isTargetingEnergyField = true;
 			break;
 
 		default :
@@ -113,6 +115,11 @@ public class PlayerController : MonoBehaviour {
 		MovePlayerToBuildingCockpit ();
  		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
 		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
+		if (currentTarget.GetComponent<BuildingBase> ().thisBuildingType != BuildingType.Constructor) {
+			GetComponent<ConstructionController> ().isInConstructor = false;
+		} else {
+			GetComponent<ConstructionController> ().isInConstructor = true;
+		}
 	}
 
 	void MovePlayerToBuildingCockpit() {

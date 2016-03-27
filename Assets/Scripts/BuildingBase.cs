@@ -21,6 +21,7 @@ public class BuildingBase : NetworkBehaviour {
 	public float buildTime;
 	public Transform playerCockpit;
 	[SerializeField] Collider[] allColliders;
+	public BuildingType thisBuildingType;
 
 	[SyncVar]
 	string owner;

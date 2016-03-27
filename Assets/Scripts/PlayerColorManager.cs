@@ -5,7 +5,7 @@ public class PlayerColorManager : MonoBehaviour {
 
 	public Material[] player1, player2;
 		
-	public Material templateColor;
+	public Material templateColorRed, templateColorGreen;
 
 	public Material ReturnPlayerColorMaterial(string pID, int shade) {
 //		if (pID == "Player2") {

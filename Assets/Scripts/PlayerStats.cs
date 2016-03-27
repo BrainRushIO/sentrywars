@@ -16,9 +16,12 @@ public class PlayerStats : NetworkBehaviour {
 		return currentEnergy;
 	}
 
-	public bool TryToSpendEnergy (float howMuchEnergy) {
+	public void SpendEnergy (float howMuchEnergy) {
+		currentEnergy -= howMuchEnergy;
+	}
+
+	public bool IsThereEnoughEnergy (float howMuchEnergy) {
 		if (howMuchEnergy <= currentEnergy) {
-			currentEnergy -= howMuchEnergy;
 			return true;
 		} else {
 			return false;
