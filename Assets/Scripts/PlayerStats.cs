@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class PlayerStats : NetworkBehaviour {
 	[SyncVar]
-	float currentEnergy = 50f;
+	float currentEnergy = 100f;
 	[SyncVar]
 	float energyUptake = 1f;
 	[SyncVar]
@@ -47,5 +47,9 @@ public class PlayerStats : NetworkBehaviour {
 			energyTimer = 0;
 		} 
 		currentEnergy += Time.deltaTime;
+	}
+
+	void BuildEnergyAssimilator () {
+
 	}
 }
