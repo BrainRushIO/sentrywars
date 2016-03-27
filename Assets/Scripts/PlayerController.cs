@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour {
 			break;
 		case "Energy":
 			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+			currentTargetType = TargetTypes.Floor;
 			GetComponent<ConstructionController> ().isTargetingEnergyField = true;
 			break;
 
@@ -69,7 +70,7 @@ public class PlayerController : MonoBehaviour {
 			break;
 		}
 
-		if (thisHit.transform.tag != "Floor") GetComponent<ConstructionController> ().SwitchToInactive ();
+		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
 	}
 
 	void HandleSelectBuildingVFX () {

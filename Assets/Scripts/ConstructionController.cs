@@ -101,6 +101,7 @@ public class ConstructionController : NetworkBehaviour {
 					CheckIfCanBuild ();
 					isBuildingTemplateInstantiated = true;
 				}
+
 				else CheckIfCanBuild ();
 
 				if (switchToInactive) {
@@ -115,7 +116,7 @@ public class ConstructionController : NetworkBehaviour {
 					currConstructionState = ConstructionState.SpawnBuilding;
 				}
 				break;
-				case ConstructionState.SpawnBuilding:
+			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, gameObject.name, currentBuildingToConstructType);
 				currConstructionState = ConstructionState.Inactive;
 				break;
@@ -168,13 +169,14 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void SwitchToSpawnBuilding() {
-		print ("CANBUILD " + canBuild);
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 			canBuild) { 
+
 			switchToSpawnBuilding = true;
 			Destroy (currentBuildingToConstruct);
 			GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
+
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
@@ -234,6 +236,12 @@ public class ConstructionController : NetworkBehaviour {
 		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE) {
 			canBuild = true;
 			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
+				RenderCurrentBuildingAsTemplate (false);
+				canBuild = false;
+			} else if (currentBuildingToConstructType == BuildingType.Energy && isTargetingEnergyField) {
+				RenderCurrentBuildingAsTemplate (true);
+				print ("IS TARGETING ENERGY AND ENERGY SELECTED");
+			} else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else {
