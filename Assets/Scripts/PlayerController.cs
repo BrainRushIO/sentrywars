@@ -117,6 +117,8 @@ public class PlayerController : MonoBehaviour {
 
 	void TeleportToBuilding () {
 		currentInhabitedBuilding = currentTarget;
+		GameObject tempTeleportVFX = (GameObject)Instantiate (otherBuildingSelectedIndicatorPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3(0,-2.5f,0), Quaternion.identity);
+		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
  		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
 		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
@@ -130,7 +132,6 @@ public class PlayerController : MonoBehaviour {
 	void MovePlayerToBuildingCockpit() {
 		transform.position = currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
 		Destroy (otherBuildingSelectedIndicator);
-
 	}
 
 	public void SelectBuilding(BuildingType thisBuildingType) {
