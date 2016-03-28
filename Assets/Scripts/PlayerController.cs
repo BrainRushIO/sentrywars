@@ -13,6 +13,9 @@ public class PlayerController : MonoBehaviour {
 	GameObject currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab;
 	GameObject currentTarget;
+	public GameObject ReturnCurrentTarget() {
+		return currentTarget;
+	}
 	TargetTypes currentTargetType;
 	bool isTargetingBuilding;
 	GameObject otherBuildingSelectedIndicator;
@@ -39,7 +42,6 @@ public class PlayerController : MonoBehaviour {
 			if (thisBuildingCooldown != null)
 				thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
 		}
-		HandleSelectBuildingVFX ();
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
@@ -59,9 +61,11 @@ public class PlayerController : MonoBehaviour {
 			GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			break;
 		case "Energy":
-			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
-			currentTargetType = TargetTypes.Floor;
-			GetComponent<ConstructionController> ().isTargetingEnergyField = true;
+			if (currentTarget.GetComponent<EnergyField> ().isOccupied != true) {
+				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+				currentTargetType = TargetTypes.Floor;
+				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
+			} 
 			break;
 
 		default :
@@ -69,12 +73,13 @@ public class PlayerController : MonoBehaviour {
 			currentTargetType = TargetTypes.None;
 			break;
 		}
-
+		HandleSelectBuildingVFX ();
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
 	}
 
 	void HandleSelectBuildingVFX () {
-		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
+		print ("HANDLEVFX " + currentTarget.GetComponent<BuildingBase> ()!=null + " " + (currentTarget != currentInhabitedBuilding));
+		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
 		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
 			Destroy (otherBuildingSelectedIndicator);
@@ -82,7 +87,6 @@ public class PlayerController : MonoBehaviour {
 	}
 		
 	void HandleRightTriggerDown() {
-		print ("RIGHT TRIGGER DOWN" + currentTargetType);
 		switch (currentTargetType) {
 		case TargetTypes.Building:
 			PerformActionOnTargetedBuilding ();
@@ -125,6 +129,8 @@ public class PlayerController : MonoBehaviour {
 
 	void MovePlayerToBuildingCockpit() {
 		transform.position = currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
+		Destroy (otherBuildingSelectedIndicator);
+
 	}
 
 	public void SelectBuilding(BuildingType thisBuildingType) {

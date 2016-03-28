@@ -3,6 +3,11 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
+
+/// <summary>
+/// DEV MUST ASSIGN COLLIDERS IN INSPECTOR SO THEY CAN BE DEACTIVATED DURING PLACEMENT PROCESS
+/// </summary>
+
 public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical};
 
 public class BuildingBase : NetworkBehaviour {
@@ -20,15 +25,16 @@ public class BuildingBase : NetworkBehaviour {
 	public float cost;
 	public float buildTime;
 	public Transform playerCockpit;
-	[SerializeField] Collider[] allColliders;
+	Collider[] allColliders;
 	public BuildingType thisBuildingType;
 
 	[SyncVar]
 	string owner;
 	public string ReturnOwner(){return owner;} 
 
-
-	// Update is called once per frame
+	void Awake () {
+		allColliders = GetComponents<Collider> ();
+	}
 
 	public virtual void Die(){
 
@@ -40,7 +46,6 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public virtual void InitializeBuilding(string thisOwner) {
-		print ("init building " + thisOwner);
 		owner = thisOwner;
 		EnableAllColliders ();
 		currentHealth = maxHealth;

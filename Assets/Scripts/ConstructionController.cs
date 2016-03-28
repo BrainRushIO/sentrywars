@@ -171,10 +171,13 @@ public class ConstructionController : NetworkBehaviour {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 			canBuild) { 
-
 			switchToSpawnBuilding = true;
 			Destroy (currentBuildingToConstruct);
 			GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
+			if (currentBuildingToConstructType == BuildingType.Energy) {
+				GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
+				GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().isOccupied = true;
+			}
 
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
