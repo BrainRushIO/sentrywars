@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void HandleSelectBuildingVFX () {
-		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null) {
+		if (currentTargetType == TargetTypes.Building && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
 		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
 			Destroy (otherBuildingSelectedIndicator);

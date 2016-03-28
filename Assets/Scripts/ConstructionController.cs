@@ -160,7 +160,6 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnBuilding(Vector3 placementPos, string thisPlayerID, BuildingType thisType) {
-		print ("SPAWN " + thisPlayerID);
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
 		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
@@ -201,8 +200,10 @@ public class ConstructionController : NetworkBehaviour {
 		} else if (!isBuildable && isBuildingTemplateGreen) {
 			isBuildingTemplateGreen = false;
 			RenderMeshGreenRed (false);
-		} else if (!isBuildingTemplateGreen){
+		} else if (!isBuildingTemplateGreen) {
 			RenderMeshGreenRed (false);
+		} else {
+			RenderMeshGreenRed (true);
 		}
 	}
 
@@ -233,21 +234,20 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void CheckIfCanBuild () {
-		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE) {
+		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE && currentBuildingToConstruct!=null) {
 			canBuild = true;
 			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else if (currentBuildingToConstructType == BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (true);
-				print ("IS TARGETING ENERGY AND ENERGY SELECTED");
 			} else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else {
 				RenderCurrentBuildingAsTemplate (true);
 			}
-		} else {
+		} else if (currentBuildingToConstruct!=null){
 			RenderCurrentBuildingAsTemplate (false);
 			canBuild = false;
 		}
