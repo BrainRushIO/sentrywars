@@ -78,7 +78,6 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void HandleSelectBuildingVFX () {
-		print ("HANDLEVFX " + currentTarget.GetComponent<BuildingBase> ()!=null + " " + (currentTarget != currentInhabitedBuilding));
 		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
 		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
@@ -107,7 +106,7 @@ public class PlayerController : MonoBehaviour {
 		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == gameObject.name) {
 			TeleportToBuilding ();
 		} else {
-			Debug.LogError (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () + " " + gameObject.name);
+			Debug.Log(currentTarget.GetComponent<BuildingBase> ().ReturnOwner () + " " + gameObject.name);
 		}
 	}
 

@@ -34,15 +34,15 @@ public class BuildingBase : NetworkBehaviour {
 
 	void Awake () {
 		allColliders = GetComponents<Collider> ();
+		currentHealth = maxHealth;
 	}
-
-	public virtual void Die(){
-
-	} 
 
 	[ClientRpc]
 	public void RpcTakeDamage (float amount) {
-
+		currentHealth -= amount;
+		if (currentHealth < 0) {
+			DestroyBuilding ();
+		}
 	}
 
 	public virtual void InitializeBuilding(string thisOwner) {
@@ -61,6 +61,10 @@ public class BuildingBase : NetworkBehaviour {
 		foreach (Collider x in allColliders) {
 			x.enabled = true;
 		}
+	}
+
+	void DestroyBuilding () {
+		Destroy (gameObject);
 	}
 
 }
