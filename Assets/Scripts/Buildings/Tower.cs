@@ -32,7 +32,7 @@ public class Tower : NetworkBehaviour {
 				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -15f, 0), currentTarget.transform.position + new Vector3 (0, 15f, 0), GetComponent<BuildingBase>().ReturnOwner());
 			}
 			radarSweepTimer += Time.deltaTime;
-			if (radarSweepTimer > radarSweepTime) {
+			if (radarSweepTimer > radarSweepTime && currentTarget==null) {
 				radarSweepTimer = 0;
 				DetectEnemies ();
 			}
@@ -50,8 +50,10 @@ public class Tower : NetworkBehaviour {
 		NetworkServer.Spawn (tempBullet);
 	}
 
-	public void ManualSelectTarget(GameObject thisTarget) {
-		currentTarget = thisTarget;
+	[Command]
+	public void CmdSetCurrentTarget(GameObject newTarget) {
+		currentTarget = newTarget;
+		print ("NEW TARGET" + newTarget.name);
 	}
 
 	void DetectEnemies () {

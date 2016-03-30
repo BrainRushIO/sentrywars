@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Canon:
-				GetComponent<Tower> ().currentTarget = currentTarget;
+				currentInhabitedBuilding.GetComponent<Tower> ().CmdSetCurrentTarget(currentTarget);
 				break;
 			}
 		}
