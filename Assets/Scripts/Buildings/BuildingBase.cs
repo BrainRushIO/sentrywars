@@ -12,7 +12,7 @@ public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical}
 
 public class BuildingBase : NetworkBehaviour {
 
-	public float maxHealth = 50;
+	float maxHealth = 50;
 
 	[SyncVar] private float currentHealth;
 	public float ReturnCurrentHealth(){return currentHealth;}
