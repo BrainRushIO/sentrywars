@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 	bool isTargetingBuilding;
 	GameObject otherBuildingSelectedIndicator;
 	Camera playerCamera;
-	private BuildingType currentSelectedBuilding;
+	BuildingType currentInhabitedBuildingType;
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
@@ -102,12 +102,16 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		
 		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == gameObject.name) {
 			TeleportToBuilding ();
 		} else {
-			Debug.Log(currentTarget.GetComponent<BuildingBase> ().ReturnOwner () + " " + gameObject.name);
+			switch (currentInhabitedBuildingType) {
+			case BuildingType.Canon:
+				GetComponent<Tower> ().currentTarget = currentTarget;
+				break;
+			}
 		}
+
 	}
 
 	void PressGUIButton() {
@@ -121,7 +125,8 @@ public class PlayerController : MonoBehaviour {
 		MovePlayerToBuildingCockpit ();
  		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
 		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
-		if (currentTarget.GetComponent<BuildingBase> ().thisBuildingType != BuildingType.Constructor) {
+		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
+		if (currentInhabitedBuildingType != BuildingType.Constructor) {
 			GetComponent<ConstructionController> ().isInConstructor = false;
 		} else {
 			GetComponent<ConstructionController> ().isInConstructor = true;
@@ -132,11 +137,7 @@ public class PlayerController : MonoBehaviour {
 		transform.position = currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
 		Destroy (otherBuildingSelectedIndicator);
 	}
-
-	public void SelectBuilding(BuildingType thisBuildingType) {
-		currentSelectedBuilding = thisBuildingType;
-	}
-
+		
 	public void InitializePlayer(string playerID) {
 		transform.name = playerID;
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();

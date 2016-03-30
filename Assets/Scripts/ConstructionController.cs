@@ -9,6 +9,7 @@ public class ConstructionController : NetworkBehaviour {
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	BuildingType currentBuildingToConstructType;
 
+
 	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
 	Camera playerCamera;
@@ -100,9 +101,8 @@ public class ConstructionController : NetworkBehaviour {
 					InstantiateBuildingTemplate ();
 					CheckIfCanBuild ();
 					isBuildingTemplateInstantiated = true;
-				}
-
-				else CheckIfCanBuild ();
+				} else
+					CheckIfCanBuild ();
 
 				if (switchToInactive) {
 					Destroy (currentBuildingToConstruct);
@@ -121,7 +121,7 @@ public class ConstructionController : NetworkBehaviour {
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
-		}
+		} 
 	}
 	void PlaceBuildingTemplate (RaycastHit hit) {
 		buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);

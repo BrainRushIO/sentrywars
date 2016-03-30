@@ -51,7 +51,7 @@ public class Tower : NetworkBehaviour {
 	}
 
 	public void ManualSelectTarget(GameObject thisTarget) {
-
+		currentTarget = thisTarget;
 	}
 
 	void DetectEnemies () {

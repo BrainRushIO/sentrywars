@@ -19,11 +19,10 @@ public class Bullet : MonoBehaviour {
 	public void InitializeBullet (string thisOwner) {
 		owner = thisOwner;
 		initialized = true;
+		Destroy (gameObject, 5f);
 	}
 
 	void OnTriggerEnter(Collider other) {
-		print (other.name + owner +other.GetComponent<BuildingBase>().ReturnOwner() );
-
 		if (other.tag == "Building" && other.GetComponent<BuildingBase>().ReturnOwner()!=owner && initialized) {
 			other.GetComponent<BuildingBase> ().RpcTakeDamage (bulletDamage);
 			Destroy (gameObject);
