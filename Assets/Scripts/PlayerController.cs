@@ -11,7 +11,7 @@ Handle player movement through towers
 public class PlayerController : MonoBehaviour {
 	
 	GameObject currentInhabitedBuilding;
-	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab;
+	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
 	GameObject currentTarget;
 	public GameObject ReturnCurrentTarget() {
 		return currentTarget;
@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour {
 
 	void TeleportToBuilding () {
 		currentInhabitedBuilding = currentTarget;
-		GameObject tempTeleportVFX = (GameObject)Instantiate (otherBuildingSelectedIndicatorPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3(0,-2.5f,0), Quaternion.identity);
+		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
  		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
