@@ -64,6 +64,11 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
+		switch (currentBuildingType) {
+		case BuildingType.Energy:
+			GameObject.Find (owner).GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
+			break;
+		}
 		Destroy (gameObject);
 	}
 

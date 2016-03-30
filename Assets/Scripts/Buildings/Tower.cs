@@ -7,7 +7,7 @@ public class Tower : NetworkBehaviour {
 	public GameObject currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;
-	float towerFireRadius = 1000f;
+	float towerFireRadius = 10000;
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer, radarSweepTime = 1f;
@@ -29,7 +29,7 @@ public class Tower : NetworkBehaviour {
 			if (cooldownTimer > 0) {
 				cooldownTimer -= Time.deltaTime;
 			} else if (cooldownTimer <= 0 && currentTarget != null) {
-				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -5f, 0), currentTarget.transform.position + new Vector3 (0, 15f, 0), GetComponent<BuildingBase>().ReturnOwner());
+				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -15f, 0), currentTarget.transform.position + new Vector3 (0, 15f, 0), GetComponent<BuildingBase>().ReturnOwner());
 			}
 			radarSweepTimer += Time.deltaTime;
 			if (radarSweepTimer > radarSweepTime) {

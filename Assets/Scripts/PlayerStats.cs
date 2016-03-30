@@ -23,6 +23,9 @@ public class PlayerStats : NetworkBehaviour {
 	public void IncreaseEnergyUptake (float amount = 1f) {
 		energyUptake += amount;
 	}
+	public void DecreaseEnergyUptake (float amount = 1f) {
+		energyUptake -= amount;
+	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {
 		if (howMuchEnergy <= currentEnergy) {
