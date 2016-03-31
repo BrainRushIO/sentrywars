@@ -24,15 +24,15 @@ public class InputController : NetworkBehaviour {
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			OnRightTriggerFingerDown ();
 		}
-		if (Input.GetKeyUp (KeyCode.Space)) {
+//		if (Input.GetKeyUp (KeyCode.Space)) {
 //			OnRightTriggerFingerUp ();
-		}
-		if (Input.GetKeyDown (KeyCode.X)) {
-			OnLeftTriggerFingerDown ();
-		}
-		if (Input.GetKeyUp (KeyCode.X)) {
-			OnLeftTriggerFingerUp ();
-		}
+//		}
+//		if (Input.GetKeyDown (KeyCode.X)) {
+//			OnLeftTriggerFingerDown ();
+//		}
+//		if (Input.GetKeyUp (KeyCode.X)) {
+//			OnLeftTriggerFingerUp ();
+//		}
 	}
 
 	void FixedUpdate() {

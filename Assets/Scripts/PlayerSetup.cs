@@ -7,9 +7,6 @@ public class PlayerSetup : NetworkBehaviour {
 	Behaviour[] componentsToDisable;
 	Camera sceneCamera;
 
-	[SerializeField]
-	string remoteLayerName = "RemoteLayer";
-
 	void Start () {
 		if (!isLocalPlayer) {
 			DisableComponents ();

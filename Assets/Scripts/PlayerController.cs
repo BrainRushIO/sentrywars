@@ -11,14 +11,14 @@ Handle player movement through towers
 
 public class PlayerController : NetworkBehaviour {
 	
-	GameObject currentInhabitedBuilding;
+	public GameObject currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
 	GameObject currentTarget;
+	NetworkInstanceId currentBuildingID;
 	public GameObject ReturnCurrentTarget() {
 		return currentTarget;
 	}
 	TargetTypes currentTargetType;
-	bool isTargetingBuilding;
 	GameObject otherBuildingSelectedIndicator;
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
@@ -47,10 +47,15 @@ public class PlayerController : NetworkBehaviour {
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		currentTarget = thisHit.collider.gameObject;
+		if (currentTarget == currentInhabitedBuilding) {
+			GetComponent<ConstructionController> ().SwitchToInactive ();
+			return;
+		}
 		switch(thisHit.transform.tag){
 		case "Building":
-			isTargetingBuilding = true;
 			currentTargetType = TargetTypes.Building;
+			currentBuildingID = currentTarget.GetComponent<NetworkIdentity> ().netId;
+			Debug.Log (currentBuildingID + " netID");
 			break;
 		case "GUIButton":
 			currentTargetType = TargetTypes.GUIButton;
@@ -70,7 +75,6 @@ public class PlayerController : NetworkBehaviour {
 			break;
 
 		default :
-			isTargetingBuilding = false;
 			currentTargetType = TargetTypes.None;
 			break;
 		}
@@ -108,16 +112,17 @@ public class PlayerController : NetworkBehaviour {
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Canon:
-				CmdChangeTarget ();
+				ChangeTarget (currentBuildingID);
 				break;
 			}
 		}
 
 	}
 
-	[Command]
-	void CmdChangeTarget() {
-		currentInhabitedBuilding.GetComponent<Tower>().ChangeTarget(currentTarget.GetComponent<NetworkIdentity>().netId);
+	void ChangeTarget(NetworkInstanceId thisID) {
+		if (isLocalPlayer) {
+			currentInhabitedBuilding.GetComponent<Tower> ().CmdTargetNewBuilding (thisID);
+		}
 	}
 
 	void PressGUIButton() {

@@ -99,7 +99,6 @@ public class ConstructionController : NetworkBehaviour {
 				//have only one building template at a time
 				if (!isBuildingTemplateInstantiated) {
 					InstantiateBuildingTemplate ();
-					CheckIfCanBuild ();
 					isBuildingTemplateInstantiated = true;
 				} else
 					CheckIfCanBuild ();
@@ -186,13 +185,16 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void SelectConstructBuildingType(BuildingType thisBuildingType) {
-		currentBuildingToConstructType = thisBuildingType;
-		SwitchBuildingTemplate ();
+		if (currConstructionState == ConstructionState.PlacingBuilding) {
+			currentBuildingToConstructType = thisBuildingType;
+			SwitchBuildingTemplate ();
+		}
 	}
 
 	void InstantiateBuildingTemplate () {
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
+		CheckIfCanBuild ();
 
 	}
 
@@ -234,7 +236,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (currentBuildingToConstruct != null) {
 			Destroy (currentBuildingToConstruct);
 		}
-		InstantiateBuildingTemplate ();
+		isBuildingTemplateInstantiated = false;
 	}
 
 	void CheckIfCanBuild () {

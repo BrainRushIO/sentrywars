@@ -3,11 +3,6 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
-
-/// <summary>
-/// DEV MUST ASSIGN COLLIDERS IN INSPECTOR SO THEY CAN BE DEACTIVATED DURING PLACEMENT PROCESS
-/// </summary>
-
 public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical};
 
 public class BuildingBase : NetworkBehaviour {
