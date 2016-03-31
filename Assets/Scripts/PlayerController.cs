@@ -117,7 +117,7 @@ public class PlayerController : NetworkBehaviour {
 
 	[Command]
 	void CmdChangeTarget() {
-		currentInhabitedBuilding.GetComponent<Tower>().RpcChangeTarget(currentTarget.GetComponent<NetworkIdentity>().netId);
+		currentInhabitedBuilding.GetComponent<Tower>().ChangeTarget(currentTarget.GetComponent<NetworkIdentity>().netId);
 	}
 
 	void PressGUIButton() {

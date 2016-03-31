@@ -14,6 +14,8 @@ public class Tower : NetworkBehaviour {
 
 	int buildingLayerMask;
 
+	[SyncVar] Vector3 currentTargetPosition;
+
 	public void EnableTowerAbilities() {
 		abilitiesActive = true;	
 	}
@@ -51,10 +53,13 @@ public class Tower : NetworkBehaviour {
 		NetworkServer.Spawn (tempBullet);
 	}
 
-	[ClientRpc]
-	public void RpcChangeTarget(NetworkInstanceId thisID) {
-		print (NetworkServer.FindLocalObject (thisID) + " GO by ID");
-		currentTarget = NetworkServer.FindLocalObject (thisID);
+	public void ChangeTarget(NetworkInstanceId thisID) {
+		if (Network.isServer) {
+			currentTarget = NetworkServer.FindLocalObject (thisID);
+		} else {
+			currentTarget = ClientScene.FindLocalObject (thisID);
+
+		}
 	}
 		
 	void DetectEnemies () {
