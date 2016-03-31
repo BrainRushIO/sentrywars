@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 
@@ -8,7 +9,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 Handle player movement through towers
 */
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : NetworkBehaviour {
 	
 	GameObject currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
@@ -107,11 +108,16 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Canon:
-				currentInhabitedBuilding.GetComponent<Tower> ().CmdSetCurrentTarget(currentTarget);
+				CmdChangeTarget ();
 				break;
 			}
 		}
 
+	}
+
+	[Command]
+	void CmdChangeTarget() {
+		currentInhabitedBuilding.GetComponent<Tower>().RpcChangeTarget(currentTarget.GetComponent<NetworkIdentity>().netId);
 	}
 
 	void PressGUIButton() {

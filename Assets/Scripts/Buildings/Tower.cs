@@ -20,8 +20,7 @@ public class Tower : NetworkBehaviour {
 
 	void Start () {
 		buildingLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
-//		buildingLayerMask = ~buildingLayerMask;
-	}
+  	}
 
 	// Update is called once per frame
 	void Update () {
@@ -29,7 +28,9 @@ public class Tower : NetworkBehaviour {
 			if (cooldownTimer > 0) {
 				cooldownTimer -= Time.deltaTime;
 			} else if (cooldownTimer <= 0 && currentTarget != null) {
-				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -15f, 0), currentTarget.transform.position + new Vector3 (0, 15f, 0), GetComponent<BuildingBase>().ReturnOwner());
+				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -15f, 0),
+					currentTarget.transform.position + new Vector3 (0, 15f, 0),
+					GetComponent<BuildingBase>().ReturnOwner());
 			}
 			radarSweepTimer += Time.deltaTime;
 			if (radarSweepTimer > radarSweepTime && currentTarget==null) {
@@ -50,12 +51,12 @@ public class Tower : NetworkBehaviour {
 		NetworkServer.Spawn (tempBullet);
 	}
 
-	[Command]
-	public void CmdSetCurrentTarget(GameObject newTarget) {
-		currentTarget = newTarget;
-		print ("NEW TARGET" + newTarget.name);
+	[ClientRpc]
+	public void RpcChangeTarget(NetworkInstanceId thisID) {
+		print (NetworkServer.FindLocalObject (thisID) + " GO by ID");
+		currentTarget = NetworkServer.FindLocalObject (thisID);
 	}
-
+		
 	void DetectEnemies () {
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerFireRadius, buildingLayerMask);
 		foreach (Collider x in collidersInRange) {
