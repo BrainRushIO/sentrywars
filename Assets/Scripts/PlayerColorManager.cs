@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerColorManager : MonoBehaviour {
 
 	public Material[] player1, player2;
+	public Color color2;
 		
 	public Material templateColorRed, templateColorGreen;
 
