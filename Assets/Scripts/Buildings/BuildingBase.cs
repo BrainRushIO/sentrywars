@@ -22,6 +22,10 @@ public class BuildingBase : NetworkBehaviour {
 	public Transform playerCockpit;
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
+	/// <summary>
+	/// The colored mesh that switches from player to player.
+	/// </summary>
+	public MeshRenderer[] coloredMesh;
 
 	[SyncVar]
 	string owner;
@@ -65,6 +69,13 @@ public class BuildingBase : NetworkBehaviour {
 			break;
 		}
 		Destroy (gameObject);
+	}
+
+	public void TempSwitchColor () {
+		foreach (MeshRenderer x in coloredMesh) {
+			print (coloredMesh.Length);
+			x.material = GameObject.Find (owner).GetComponent<PlayerColorManager> ().player2;
+		}
 	}
 
 }

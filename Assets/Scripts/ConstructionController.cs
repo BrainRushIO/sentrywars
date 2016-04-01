@@ -162,6 +162,11 @@ public class ConstructionController : NetworkBehaviour {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
 		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
+		if (NetworkManager.singleton.matchHost == thisPlayerID) {
+			return;
+		} else {
+			temp.GetComponent<BuildingBase> ().TempSwitchColor ();
+		}
 		temp.SendMessage ("EnableTowerAbilities", SendMessageOptions.DontRequireReceiver);
 		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
 

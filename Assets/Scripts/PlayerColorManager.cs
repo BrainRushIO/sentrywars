@@ -3,15 +3,15 @@ using System.Collections;
 
 public class PlayerColorManager : MonoBehaviour {
 
-	public Material[] player1, player2;
+	public Material player2;
 		
 	public Material templateColorRed, templateColorGreen;
 
-	public Material ReturnPlayerColorMaterial(string pID, int shade) {
+	public Material ReturnPlayerColorMaterial() {
 //		if (pID == "Player2") {
 //			return (player2 [shade]);
 //		} else if (pID == "Player1") {
-			return (player1 [shade]);
+			return (player2);
 //		} else {
 //			return null;
 //		}
