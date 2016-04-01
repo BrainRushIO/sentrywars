@@ -164,7 +164,6 @@ public class ConstructionController : NetworkBehaviour {
 		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		temp.SendMessage ("EnableTowerAbilities", SendMessageOptions.DontRequireReceiver);
 		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
-
 	}
 
 	void SwitchToSpawnBuilding() {

@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 		
-	[SerializeField] Text thisBuildingHP, thisBuildingCooldown;
+	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
 		if (currentInhabitedBuilding != null) {
@@ -55,7 +55,6 @@ public class PlayerController : NetworkBehaviour {
 		case "Building":
 			currentTargetType = TargetTypes.Building;
 			currentBuildingID = currentTarget.GetComponent<NetworkIdentity> ().netId;
-			Debug.Log (currentBuildingID + " netID");
 			break;
 		case "GUIButton":
 			currentTargetType = TargetTypes.GUIButton;

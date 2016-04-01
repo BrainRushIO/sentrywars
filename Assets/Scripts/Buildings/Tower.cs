@@ -7,7 +7,7 @@ public class Tower : NetworkBehaviour {
 	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;
-	float towerFireRadius = 10000;
+	float towerFireRadius = 100;
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer, radarSweepTime = 1f;
