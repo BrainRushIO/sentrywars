@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 
 public class PlayerStats : NetworkBehaviour {
+
 	[SyncVar]
 	float currentEnergy = 100f;
 	[SyncVar]
@@ -23,8 +24,20 @@ public class PlayerStats : NetworkBehaviour {
 	public void IncreaseEnergyUptake (float amount = 1f) {
 		energyUptake += amount;
 	}
+
+	[ClientRpc]
+	void RpcAlterEnergyUptake(float amount) {
+		energyUptake += amount;
+	}
+
+	[ClientRpc]
+	void RpcGatherEnergy() {
+		Debug.Log ("GAAAH");
+		currentEnergy += energyUptake;
+	}
+
 	public void DecreaseEnergyUptake (float amount = 1f) {
-		energyUptake -= amount;
+		RpcAlterEnergyUptake(-amount);
 	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {
@@ -52,14 +65,14 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	void HandleTimer() {
+		Debug.Log (energyUptake + "E U");
+
 		if (energyTimer >= 1f) {
-			currentEnergy += energyUptake;
+			RpcGatherEnergy ();
 			energyTimer = 0;
 		} 
-		currentEnergy += Time.deltaTime;
+		energyTimer += Time.deltaTime;
 	}
 
-	void BuildEnergyAssimilator () {
 
-	}
 }
