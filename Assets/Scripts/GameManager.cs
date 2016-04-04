@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour {
 	public static void RegisterPlayer(PlayerController _player) {
 		players.Add (_player.playerID);
 		_player.InitializePlayer();
-		Debug.Log ("Player" + _player.playerID + " has joined the game.");
+		Debug.Log (_player.playerID + " has joined the game.");
 	}
 
 	public static void UnRegisterPlayer(PlayerController _player) {

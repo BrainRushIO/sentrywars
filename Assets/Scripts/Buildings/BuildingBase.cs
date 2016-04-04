@@ -16,7 +16,7 @@ public class BuildingBase : NetworkBehaviour {
 	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
 	public bool isOccupied;
-	public bool abilitiesActive, haveColorsBeenSet;
+	public bool abilitiesActive = true, haveColorsBeenSet;
 	public GameObject parentNexus;
 	public float cost;
 	public float buildTime;
@@ -117,6 +117,7 @@ public class BuildingBase : NetworkBehaviour {
 		owner = thisOwner;
 		EnableAllColliders ();
 		currentHealth = maxHealth;
+		EnableTowerAbilities ();
 
 	}
 
