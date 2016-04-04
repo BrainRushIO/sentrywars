@@ -25,19 +25,16 @@ public class PlayerStats : NetworkBehaviour {
 		energyUptake += amount;
 	}
 
-	[ClientRpc]
-	void RpcAlterEnergyUptake(float amount) {
+	void AlterEnergyUptake(float amount) {
 		energyUptake += amount;
 	}
-
-	[ClientRpc]
-	void RpcGatherEnergy() {
-		Debug.Log ("GAAAH");
+		
+	void GatherEnergy() {
 		currentEnergy += energyUptake;
 	}
 
 	public void DecreaseEnergyUptake (float amount = 1f) {
-		RpcAlterEnergyUptake(-amount);
+		AlterEnergyUptake(-amount);
 	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {
@@ -65,10 +62,8 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	void HandleTimer() {
-		Debug.Log (energyUptake + "E U");
-
 		if (energyTimer >= 1f) {
-			RpcGatherEnergy ();
+			GatherEnergy ();
 			energyTimer = 0;
 		} 
 		energyTimer += Time.deltaTime;

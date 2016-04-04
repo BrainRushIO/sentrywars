@@ -10,7 +10,8 @@ Handle player movement through towers
 */
 
 public class PlayerController : NetworkBehaviour {
-	
+
+	public string playerID;
 	public GameObject currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
 	GameObject currentTarget;
@@ -61,9 +62,11 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
-			currentTargetType = TargetTypes.Floor;
-			GetComponent<ConstructionController> ().isTargetingEnergyField = false;
+			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().abilitiesActive) {
+				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+				currentTargetType = TargetTypes.Floor;
+				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
+			}
 			break;
 		case "Energy":
 			if (currentTarget.GetComponent<EnergyField> ().isOccupied != true) {
@@ -148,7 +151,7 @@ public class PlayerController : NetworkBehaviour {
 		Destroy (otherBuildingSelectedIndicator);
 	}
 		
-	public void InitializePlayer(string playerID) {
+	public void InitializePlayer() {
 		transform.name = playerID;
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {

@@ -17,6 +17,9 @@ public class Tower : NetworkBehaviour {
 	public void EnableTowerAbilities() {
 		abilitiesActive = true;	
 	}
+	public void DisableTowerAbilities () {
+		abilitiesActive = false;	
+	}
 
 	void Start () {
 		Debug.Log ("TOWER START");

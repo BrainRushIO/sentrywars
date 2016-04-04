@@ -30,7 +30,8 @@ public class PlayerSetup : NetworkBehaviour {
 //		}
 		string _netID = tempID.ToString ();
 		PlayerController _player = GetComponent<PlayerController> ();
-		GameManager.RegisterPlayer (_netID, _player);
+		_player.playerID = "Player" + _netID;
+		GameManager.RegisterPlayer (_player);
 	}
 
 	void DisableComponents() {
@@ -47,6 +48,6 @@ public class PlayerSetup : NetworkBehaviour {
 		if (sceneCamera != null) {
 			sceneCamera.gameObject.SetActive (true);
 		}
-		GameManager.UnRegisterPlayer (transform.name);
+		GameManager.UnRegisterPlayer (GetComponent<PlayerController>());
 	}
 }
