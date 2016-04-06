@@ -52,7 +52,7 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	void HandleTimer() {
-		if (energyTimer >= 1f) {
+		if (energyTimer >= 1f/energyUptake) {
 			currentEnergy += energyUptake;
 			energyTimer = 0;
 		} 
