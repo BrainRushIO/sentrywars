@@ -3,20 +3,15 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	private const string PLAYER_ID_PREFIX = "Player";
-	public static Dictionary<string, PlayerController> players = new Dictionary<string, PlayerController>();
+	public static List< string> players = new List<string>();
 
-	public static void RegisterPlayer(string _netID, PlayerController _player) {
-		string _playerID = PLAYER_ID_PREFIX + _netID;
-		players.Add (_playerID, _player);
-		_player.InitializePlayer(_playerID);
-		Debug.Log ("Player" + _netID + " has joined the game.");
+	public static void RegisterPlayer(PlayerController _player) {
+		players.Add (_player.playerID);
+		_player.InitializePlayer();
+		Debug.Log (_player.playerID + " has joined the game.");
 	}
 
-	public static void UnRegisterPlayer(string _playerID) {
-		players.Remove (_playerID);
-	}
-
-	public static PlayerController GetPlayerManager(string _playerID) {
-		return players [_playerID];
+	public static void UnRegisterPlayer(PlayerController _player) {
+		players.Remove (_player.playerID);
 	}
 }

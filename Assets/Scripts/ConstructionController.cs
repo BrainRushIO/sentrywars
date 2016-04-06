@@ -19,7 +19,7 @@ public class ConstructionController : NetworkBehaviour {
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
 	const float GRID_SPACING = 10f;
-	const float CONSTRUCTION_RANGE = 100f;
+	public const float CONSTRUCTION_RANGE = 100f;
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -50,10 +50,7 @@ public class ConstructionController : NetworkBehaviour {
 		playerCamera = GetComponentInChildren<Camera> ();
 		buildingCosts.Add (BuildingType.Constructor, 20);
 		buildingCosts.Add (BuildingType.Canon, 10);
-		buildingCosts.Add (BuildingType.Defense, 15);
-		buildingCosts.Add (BuildingType.Shield, 50);
 		buildingCosts.Add (BuildingType.Energy, 20);
-		buildingCosts.Add (BuildingType.Tactical, 80);
 	}
 
 	// Update is called once per frame
@@ -71,16 +68,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (Input.GetKeyDown(KeyCode.E)) {
 			SelectConstructBuildingType(BuildingType.Energy);
 		}
-		if (Input.GetKeyDown(KeyCode.R)) {
-			SelectConstructBuildingType(BuildingType.Defense);
-		}
-		if (Input.GetKeyDown(KeyCode.T)) {
-			SelectConstructBuildingType(BuildingType.Shield);
-		}
-		if (Input.GetKeyDown(KeyCode.Y)) {
-			SelectConstructBuildingType(BuildingType.Tactical);
-		}
-
 			
 		//temp UI
 		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
@@ -111,6 +98,7 @@ public class ConstructionController : NetworkBehaviour {
 					isBuildingTemplateGreen = false;
 
 				} else if (switchToSpawnBuilding) {
+					Destroy (currentBuildingToConstruct);
 					switchToSpawnBuilding = false;
 					currConstructionState = ConstructionState.SpawnBuilding;
 				}
@@ -171,7 +159,6 @@ public class ConstructionController : NetworkBehaviour {
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 			canBuild) { 
 			switchToSpawnBuilding = true;
-			Destroy (currentBuildingToConstruct);
 			GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 			if (currentBuildingToConstructType == BuildingType.Energy) {
 				GetComponent<PlayerStats> ().IncreaseEnergyUptake ();

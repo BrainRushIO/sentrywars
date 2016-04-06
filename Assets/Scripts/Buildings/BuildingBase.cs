@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum BuildingType {Constructor, Canon, Defense, Shield, Energy, Tactical};
+public enum BuildingType {Constructor, Canon, Energy};
 
 public class BuildingBase : NetworkBehaviour {
 
@@ -16,7 +16,7 @@ public class BuildingBase : NetworkBehaviour {
 	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
 	public bool isOccupied;
-	bool abilitiesActive, haveColorsBeenSet;
+	public bool abilitiesActive = true, haveColorsBeenSet;
 	public GameObject parentNexus;
 	public float cost;
 	public float buildTime;
@@ -27,23 +27,72 @@ public class BuildingBase : NetworkBehaviour {
 	/// The colored mesh that switches from player to player.
 	/// </summary>
 	public MeshRenderer[] coloredMesh;
-	Material coloredMaterial;
-	[SyncVar] Color syncBuildingColor;
 
 
 	NetworkIdentity objNetId;
 
 	public void EnableTowerAbilities() {
-		Debug.Log ("BUILDIG BASE ENABLED");
-		abilitiesActive = true;	
+		abilitiesActive = true;
 	}
-	void Update () {
-		if (abilitiesActive&&!haveColorsBeenSet) {
-			if (owner == GameManager.players.Keys.ElementAt(0)) {
-				Debug.Log ("Changed Color " + thisBuildingType);
-				CmdSetColor (gameObject, Color.red);
+
+	public void DisableTowerAbilities () {
+		abilitiesActive = false;
+
+	}
+
+	Color GetBuildingColor (bool isPowered) {
+		Color temp = new Color();
+		if (isPowered) {
+			switch (GameManager.players.IndexOf(owner)) {
+			case 0:
+				temp = Color.red;
+
+				break;
+			case 1:
+				temp = Color.blue;
+
+				break;
+			
 			}
+		} else {
+			switch (GameManager.players.IndexOf(owner)) {
+			case 0:
+				temp = new Color(0.5f,0f,0f);
+				break;
+			case 1:
+				temp = new Color(0f,0f,.5f);
+				break;
+			
+			}
+		}
+		return temp;
+	}
+
+	void CheckIfIsEnabled() {
+		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
+		int totalConstructors = 0;
+		foreach (Collider x in nearbyBuildings) {
+			if (x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Constructor) {
+				totalConstructors++;
+			}
+		}
+		if (totalConstructors > 0) {
+			SendMessage ("EnableTowerAbilities");
+		} else {
+			SendMessage ("DisableTowerAbilities");
+		}
+
+
+
+	}
+
+	void Update () {
+		if (abilitiesActive && !haveColorsBeenSet) {
+			CmdSetColor (gameObject, GetBuildingColor (true));
 			haveColorsBeenSet = true;
+		} else if (!abilitiesActive && haveColorsBeenSet) {
+			CmdSetColor (gameObject, GetBuildingColor(false));
+			haveColorsBeenSet = false;
 		}
 	}
 
@@ -68,6 +117,7 @@ public class BuildingBase : NetworkBehaviour {
 		owner = thisOwner;
 		EnableAllColliders ();
 		currentHealth = maxHealth;
+		EnableTowerAbilities ();
 
 	}
 
@@ -102,7 +152,6 @@ public class BuildingBase : NetworkBehaviour {
 		
 		foreach (MeshRenderer x in thisGO.GetComponent<BuildingBase>().coloredMesh) {
 			x.material.SetColor ("_Color", col);
-			print ("changed color");
 			 
 		}
 	}
