@@ -11,12 +11,15 @@ public class BuildingBase : NetworkBehaviour {
 	float maxHealth = 50;
 
 	[SyncVar] private float currentHealth;
-	public float ReturnCurrentHealth(){return currentHealth;}
+	public float ReturnCurrentHealth() {return currentHealth;}
 	[SyncVar] private float cooldown;
 	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
 	public bool isOccupied;
-	public bool abilitiesActive = true, haveColorsBeenSet;
+	bool abilitiesActive = false, haveColorsBeenSet;
+	public bool ReturnHaveColorsBeenSet () {
+		return abilitiesActive;
+	}
 	public GameObject parentNexus;
 	public float cost;
 	public float buildTime;
@@ -88,10 +91,12 @@ public class BuildingBase : NetworkBehaviour {
 
 	void Update () {
 		if (abilitiesActive && !haveColorsBeenSet) {
-			CmdSetColor (gameObject, GetBuildingColor (true));
+			Color temp = GetBuildingColor (true);
+			CmdSetColor (gameObject, temp);
 			haveColorsBeenSet = true;
 		} else if (!abilitiesActive && haveColorsBeenSet) {
-			CmdSetColor (gameObject, GetBuildingColor(false));
+			Color temp = GetBuildingColor (true);
+			CmdSetColor (gameObject, temp);
 			haveColorsBeenSet = false;
 		}
 	}
@@ -147,8 +152,8 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 
-	[ClientRpc]
-	public void RpcTempSwitchColor (GameObject thisGO, Color col) {
+	[Command]
+	public void CmdTempSwitchColor (GameObject thisGO, Color col) {
 		
 		foreach (MeshRenderer x in thisGO.GetComponent<BuildingBase>().coloredMesh) {
 			x.material.SetColor ("_Color", col);
@@ -160,7 +165,7 @@ public class BuildingBase : NetworkBehaviour {
 	void CmdSetColor(GameObject GOID, Color thisColor) {
 		objNetId = GOID.GetComponent<NetworkIdentity> (); 
 //		objNetId.AssignClientAuthority (connectionToClient);
-		RpcTempSwitchColor (GOID, thisColor);
+		CmdTempSwitchColor (GOID, thisColor);
 //		objNetId.RemoveClientAuthority (connectionToClient);
 	}
 

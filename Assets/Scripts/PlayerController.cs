@@ -62,7 +62,7 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().abilitiesActive) {
+			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnHaveColorsBeenSet()) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;

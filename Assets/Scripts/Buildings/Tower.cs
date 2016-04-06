@@ -22,7 +22,6 @@ public class Tower : NetworkBehaviour {
 	}
 
 	void Start () {
-		Debug.Log ("TOWER START");
 		buildingLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
   	}
 
@@ -63,7 +62,6 @@ public class Tower : NetworkBehaviour {
 	}
 		
 	void DetectEnemies () {
-		print ("DETECT ENEMIES ");
 
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerFireRadius, buildingLayerMask);
 		foreach (Collider x in collidersInRange) {
