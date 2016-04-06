@@ -146,7 +146,7 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	[Command]
-	void CmdSpawnBuilding(Vector3 placementPos, string thisPlayerID, BuildingType thisType) {
+	public void CmdSpawnBuilding(Vector3 placementPos, string thisPlayerID, BuildingType thisType) {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
 		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);

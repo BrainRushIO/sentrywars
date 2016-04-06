@@ -15,7 +15,7 @@ public class BuildingBase : NetworkBehaviour {
 	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
 	public bool isOccupied;
-	bool abilitiesActive = false, haveColorsBeenSet;
+	bool abilitiesActive = false, haveColorsBeenSet = false;
 	public bool ReturnHaveColorsBeenSet () {
 		return abilitiesActive;
 	}
@@ -90,13 +90,14 @@ public class BuildingBase : NetworkBehaviour {
 	void Update () {
 		if (abilitiesActive && !haveColorsBeenSet) {
 			GetBuildingColor (true);
-			CmdSetColor (towerNetID, thisBuildingsColor);
+			CmdSetColor (GetComponent<NetworkBehaviour> ().netId, thisBuildingsColor);
 			haveColorsBeenSet = true;
-		} else if (!abilitiesActive && haveColorsBeenSet) {
-			GetBuildingColor (true);
-			CmdSetColor (towerNetID, thisBuildingsColor);
-			haveColorsBeenSet = false;
 		}
+//		} else if (!abilitiesActive && haveColorsBeenSet) {
+//			GetBuildingColor (true);
+//			CmdSetColor (towerNetID, thisBuildingsColor);
+//			haveColorsBeenSet = false;
+//		}
 	}
 
 	[SyncVar]
@@ -104,7 +105,6 @@ public class BuildingBase : NetworkBehaviour {
 	public string ReturnOwner(){return owner;} 
 
 	void Awake () {
-		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
 		allColliders = GetComponents<Collider> ();
 		currentHealth = maxHealth;
 	}
@@ -119,6 +119,7 @@ public class BuildingBase : NetworkBehaviour {
 
 	public void InitializeBuilding(string thisOwner) {
 		owner = thisOwner;
+//		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
 		EnableAllColliders ();
 		currentHealth = maxHealth;
 		EnableTowerAbilities ();
@@ -153,7 +154,7 @@ public class BuildingBase : NetworkBehaviour {
 
 	[Command]
 	public void CmdTempSwitchColor (NetworkInstanceId thisGO, Color col) {
-		
+		Debug.Log (NetworkServer.FindLocalObject (thisGO));
 		foreach (MeshRenderer x in NetworkServer.FindLocalObject(thisGO).GetComponent<BuildingBase>().coloredMesh) {
 			x.material.SetColor ("_Color", col);
 			 
@@ -165,7 +166,7 @@ public class BuildingBase : NetworkBehaviour {
 		if (GetComponent<NetworkBehaviour> ().hasAuthority) {
 			CmdTempSwitchColor (GOID, thisColor);
 		} else {
-			Debug.Log ("ELSE CMD ASSIGN GAH");
+			Debug.Log ("ELSE CMD ASSIGN");
 			gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
 			CmdTempSwitchColor (GOID, thisColor);
 			gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);

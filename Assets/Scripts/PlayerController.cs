@@ -153,11 +153,13 @@ public class PlayerController : NetworkBehaviour {
 		
 	public void InitializePlayer() {
 		transform.name = playerID;
+		GetComponent<ConstructionController> ().CmdSpawnBuilding (new Vector3 (transform.position.x, 0, transform.position.z), playerID, BuildingType.Constructor);
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.gameObject;
+				Debug.Log ("Init building from player" + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerID);
 			}
 		}
