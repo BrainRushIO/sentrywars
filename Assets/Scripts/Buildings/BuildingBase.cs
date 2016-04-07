@@ -30,7 +30,7 @@ public class BuildingBase : NetworkBehaviour {
 	/// </summary>
 	public MeshRenderer[] coloredMesh;
 
-	[SyncVar] public Color thisBuildingsColor = new Color();
+	[SyncVar] public Color thisBuildingColor = new Color();
 
 	[SyncVar] NetworkInstanceId towerNetID;
 
@@ -47,11 +47,11 @@ public class BuildingBase : NetworkBehaviour {
 		if (isPowered) {
 			switch (GameManager.players.IndexOf(owner)) {
 			case 0:
-				thisBuildingsColor = Color.red;
+				thisBuildingColor = Color.red;
 
 				break;
 			case 1:
-				thisBuildingsColor = Color.blue;
+				thisBuildingColor = Color.blue;
 
 				break;
 			
@@ -60,10 +60,10 @@ public class BuildingBase : NetworkBehaviour {
 			
 			switch (GameManager.players.IndexOf(owner)) {
 			case 0:
-				thisBuildingsColor = new Color(0.5f,0f,0f);
+				thisBuildingColor = new Color(0.5f,0f,0f);
 				break;
 			case 1:
-				thisBuildingsColor = new Color(0f,0f,.5f);
+				thisBuildingColor = new Color(0f,0f,.5f);
 				break;
 			
 			}
@@ -92,6 +92,8 @@ public class BuildingBase : NetworkBehaviour {
 		if (abilitiesActive && !haveColorsBeenSet) {
 			GetBuildingColor (true);
 			haveColorsBeenSet = true;
+			towerNetID = GetComponent<NetworkIdentity> ().netId;
+			CmdSetColor (towerNetID, thisBuildingColor);
 		}
 //		} else if (!abilitiesActive && haveColorsBeenSet) {
 //			GetBuildingColor (true);
