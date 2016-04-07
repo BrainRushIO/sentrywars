@@ -47,6 +47,10 @@ public class PlayerController : NetworkBehaviour {
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
+		if (currentInhabitedBuilding == null) {
+			InhabitClosestBuilding ();
+			return;
+		}
 		currentTarget = thisHit.collider.gameObject;
 		if (currentTarget == currentInhabitedBuilding) {
 			GetComponent<ConstructionController> ().SwitchToInactive ();
@@ -153,13 +157,18 @@ public class PlayerController : NetworkBehaviour {
 		
 	public void InitializePlayer() {
 		transform.name = playerID;
-		GetComponent<ConstructionController> ().CmdSpawnBuilding (new Vector3 (transform.position.x, 0, transform.position.z), playerID, BuildingType.Constructor);
+		//TODO
+		GetComponent<ConstructionController> ().BuildInitialBuilding ();
+
+	}
+
+	void InhabitClosestBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.gameObject;
-				Debug.Log ("Init building from player" + playerID);
+				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerID);
 			}
 		}

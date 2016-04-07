@@ -53,6 +53,11 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Energy, 20);
 	}
 
+	public void BuildInitialBuilding() {
+		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
+		currConstructionState = ConstructionState.SpawnBuilding;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer) {
@@ -157,14 +162,17 @@ public class ConstructionController : NetworkBehaviour {
 	void SwitchToSpawnBuilding() {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
-			canBuild) { 
+		    canBuild) { 
 			switchToSpawnBuilding = true;
-			GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
-			if (currentBuildingToConstructType == BuildingType.Energy) {
-				GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
-				GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().isOccupied = true;
-			}
+			HandleSpendEnergy ();
+		}
+	}
 
+	void HandleSpendEnergy() {
+		GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
+		if (currentBuildingToConstructType == BuildingType.Energy) {
+			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
+			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().isOccupied = true;
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
 		}

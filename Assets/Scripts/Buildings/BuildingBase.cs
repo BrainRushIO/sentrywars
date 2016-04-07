@@ -30,7 +30,7 @@ public class BuildingBase : NetworkBehaviour {
 	/// </summary>
 	public MeshRenderer[] coloredMesh;
 
-	[SyncVar] Color thisBuildingsColor = new Color();
+	[SyncVar] public Color thisBuildingsColor = new Color();
 
 	[SyncVar] NetworkInstanceId towerNetID;
 
@@ -57,6 +57,7 @@ public class BuildingBase : NetworkBehaviour {
 			
 			}
 		} else {
+			
 			switch (GameManager.players.IndexOf(owner)) {
 			case 0:
 				thisBuildingsColor = new Color(0.5f,0f,0f);
@@ -90,7 +91,6 @@ public class BuildingBase : NetworkBehaviour {
 	void Update () {
 		if (abilitiesActive && !haveColorsBeenSet) {
 			GetBuildingColor (true);
-			CmdSetColor (GetComponent<NetworkBehaviour> ().netId, thisBuildingsColor);
 			haveColorsBeenSet = true;
 		}
 //		} else if (!abilitiesActive && haveColorsBeenSet) {
@@ -153,7 +153,7 @@ public class BuildingBase : NetworkBehaviour {
 
 
 	[Command]
-	public void CmdTempSwitchColor (NetworkInstanceId thisGO, Color col) {
+	void CmdSwitchColor (NetworkInstanceId thisGO, Color col) {
 		Debug.Log (NetworkServer.FindLocalObject (thisGO));
 		foreach (MeshRenderer x in NetworkServer.FindLocalObject(thisGO).GetComponent<BuildingBase>().coloredMesh) {
 			x.material.SetColor ("_Color", col);
@@ -163,15 +163,16 @@ public class BuildingBase : NetworkBehaviour {
 
 	[Command]
 	public void CmdSetColor(NetworkInstanceId GOID, Color thisColor) {
-		if (GetComponent<NetworkBehaviour> ().hasAuthority) {
-			CmdTempSwitchColor (GOID, thisColor);
-		} else {
-			Debug.Log ("ELSE CMD ASSIGN");
-			gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
-			CmdTempSwitchColor (GOID, thisColor);
-			gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
+//		if (GetComponent<NetworkBehaviour> ().hasAuthority) {
+//			CmdTempSwitchColor (GOID, thisColor);
+//			Debug.LogWarning (owner + " blah");
+//		} else {
+			Debug.Log ("ELSE CMD ASSIGN" + owner);
+			//gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
+			CmdSwitchColor (GOID, thisColor);
+			//gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
 
-		}
+		//}
 	}
 
 }
