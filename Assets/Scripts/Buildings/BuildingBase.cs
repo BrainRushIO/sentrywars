@@ -15,91 +15,34 @@ public class BuildingBase : NetworkBehaviour {
 	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
 	public bool isOccupied;
-	bool abilitiesActive = false, haveColorsBeenSet = false;
-	public bool ReturnHaveColorsBeenSet () {
-		return abilitiesActive;
-	}
+	bool haveColorsBeenSet = false;
 	public GameObject parentNexus;
 	public float cost;
 	public float buildTime;
 	public Transform playerCockpit;
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
-	/// <summary>
-	/// The colored mesh that switches from player to player.
-	/// </summary>
+
+	public bool ReturnHaveColorsBeenSet () {
+		return abilitiesActive;
+	}
+
 	public MeshRenderer[] coloredMesh;
-
-	[SyncVar] public Color thisBuildingColor = new Color();
-
+	[SyncVar] bool abilitiesActive = false;
+	[SyncVar] Color thisBuildingColor = new Color();
+	[SyncVar] bool colorHasChanged;
 	[SyncVar] NetworkInstanceId towerNetID;
 
-	public void EnableTowerAbilities() {
-		abilitiesActive = true;
-	}
-
-	public void DisableTowerAbilities () {
-		abilitiesActive = false;
-
-	}
-
-	void GetBuildingColor (bool isPowered) {
-		if (isPowered) {
-			switch (GameManager.players.IndexOf(owner)) {
-			case 0:
-				thisBuildingColor = Color.red;
-
-				break;
-			case 1:
-				thisBuildingColor = Color.blue;
-
-				break;
-			
-			}
-		} else {
-			
-			switch (GameManager.players.IndexOf(owner)) {
-			case 0:
-				thisBuildingColor = new Color(0.5f,0f,0f);
-				break;
-			case 1:
-				thisBuildingColor = new Color(0f,0f,.5f);
-				break;
-			
-			}
-		}
-	}
-
-	void CheckIfIsEnabled() {
-		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
-		int totalConstructors = 0;
-		foreach (Collider x in nearbyBuildings) {
-			if (x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Constructor) {
-				totalConstructors++;
-			}
-		}
-		if (totalConstructors > 0) {
-			SendMessage ("EnableTowerAbilities");
-		} else {
-			SendMessage ("DisableTowerAbilities");
-		}
-
-
-
-	}
 
 	void Update () {
+		Debug.Log (connectionToServer);
+		foreach (NetworkInstanceId x in connectionToClient.clientOwnedObjects) {
+			Debug.Log (x);
+		}
 		if (abilitiesActive && !haveColorsBeenSet) {
-			GetBuildingColor (true);
 			haveColorsBeenSet = true;
 			towerNetID = GetComponent<NetworkIdentity> ().netId;
-			CmdSetColor (towerNetID, thisBuildingColor);
 		}
-//		} else if (!abilitiesActive && haveColorsBeenSet) {
-//			GetBuildingColor (true);
-//			CmdSetColor (towerNetID, thisBuildingsColor);
-//			haveColorsBeenSet = false;
-//		}
 	}
 
 	[SyncVar]
@@ -121,19 +64,40 @@ public class BuildingBase : NetworkBehaviour {
 
 	public void InitializeBuilding(string thisOwner) {
 		owner = thisOwner;
-//		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
 		EnableAllColliders ();
 		currentHealth = maxHealth;
 		EnableTowerAbilities ();
+		CmdUpdateColor ();
 
 	}
 
+
+	void UpdateColor() {
+		if (colorHasChanged) {
+			CmdSwitchColor (true, owner);
+			foreach (MeshRenderer x in GetComponent<BuildingBase>().coloredMesh) {
+				x.material.SetColor ("_Color", thisBuildingColor); 
+			}
+			colorHasChanged = false;
+		}
+	}
+		
+	[Command]
+	void CmdSwitchColor (bool isPowered, string owner) {
+		thisBuildingColor = PlayerColorManager.GetBuildingColor(isPowered, owner);
+	}
+
+	[Command]
+	void CmdUpdateColor() {
+		colorHasChanged = true;
+	}
+		
 	public void DisableAllColliders() {
 		foreach (Collider x in allColliders) {
 			x.enabled = false;
 		}
 	}
-
+	
 	public void EnableAllColliders () {
 		foreach (Collider x in allColliders) {
 			x.enabled = true;
@@ -142,7 +106,6 @@ public class BuildingBase : NetworkBehaviour {
 
 	void DestroyBuilding () {
 		GameObject curOwner = GameObject.Find (owner);
-
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
@@ -153,28 +116,12 @@ public class BuildingBase : NetworkBehaviour {
 		Destroy (gameObject);
 	}
 
-
-	[Command]
-	void CmdSwitchColor (NetworkInstanceId thisGO, Color col) {
-		Debug.Log (NetworkServer.FindLocalObject (thisGO));
-		foreach (MeshRenderer x in NetworkServer.FindLocalObject(thisGO).GetComponent<BuildingBase>().coloredMesh) {
-			x.material.SetColor ("_Color", col);
-			 
-		}
+	public void EnableTowerAbilities() {
+		abilitiesActive = true;
 	}
 
-	[Command]
-	public void CmdSetColor(NetworkInstanceId GOID, Color thisColor) {
-//		if (GetComponent<NetworkBehaviour> ().hasAuthority) {
-//			CmdTempSwitchColor (GOID, thisColor);
-//			Debug.LogWarning (owner + " blah");
-//		} else {
-			Debug.Log ("ELSE CMD ASSIGN" + owner);
-			//gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
-			CmdSwitchColor (GOID, thisColor);
-			//gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority (GameObject.Find(owner).GetComponent<NetworkIdentity>().connectionToClient);
-
-		//}
+	public void DisableTowerAbilities () {
+		abilitiesActive = false;
 	}
-
+	
 }
