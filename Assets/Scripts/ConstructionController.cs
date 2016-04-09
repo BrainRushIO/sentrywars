@@ -49,7 +49,7 @@ public class ConstructionController : NetworkBehaviour {
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
 		buildingCosts.Add (BuildingType.Constructor, 20);
-		buildingCosts.Add (BuildingType.Canon, 10);
+		buildingCosts.Add (BuildingType.Cannon, 10);
 		buildingCosts.Add (BuildingType.Energy, 20);
 	}
 
@@ -68,7 +68,7 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Constructor);
 		}
 		if (Input.GetKeyDown(KeyCode.W)) {
-			SelectConstructBuildingType(BuildingType.Canon);
+			SelectConstructBuildingType(BuildingType.Cannon);
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
 			SelectConstructBuildingType(BuildingType.Energy);
@@ -155,8 +155,7 @@ public class ConstructionController : NetworkBehaviour {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
 		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
-		temp.SendMessage ("EnableTowerAbilities", SendMessageOptions.DontRequireReceiver);
-		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
+		NetworkServer.Spawn (temp);
 	}
 
 	void SwitchToSpawnBuilding() {

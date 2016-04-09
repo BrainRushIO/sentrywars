@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
-public class Tower : NetworkBehaviour {
+public class Cannon : NetworkBehaviour {
 	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;

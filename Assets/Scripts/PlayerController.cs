@@ -66,7 +66,7 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnHaveColorsBeenSet()) {
+			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
@@ -117,7 +117,7 @@ public class PlayerController : NetworkBehaviour {
 			TeleportToBuilding ();
 		} else {
 			switch (currentInhabitedBuildingType) {
-			case BuildingType.Canon:
+			case BuildingType.Cannon:
 				ChangeTarget (currentBuildingID);
 				break;
 			}
@@ -127,7 +127,7 @@ public class PlayerController : NetworkBehaviour {
 
 	void ChangeTarget(NetworkInstanceId thisID) {
 		if (isLocalPlayer) {
-			currentInhabitedBuilding.GetComponent<Tower> ().CmdTargetNewBuilding (thisID);
+			currentInhabitedBuilding.GetComponent<Cannon> ().CmdTargetNewBuilding (thisID);
 		}
 	}
 
