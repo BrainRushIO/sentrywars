@@ -13,6 +13,13 @@ public class BuildingStateController : NetworkBehaviour {
 		RpcSwitchColor (thisBuildingColor);
 	}
 
+	[ClientRpc]
+	void RpcSwitchColor (Color col) {
+		foreach (MeshRenderer x in coloredMesh) {
+			x.material.SetColor ("_Color", col);
+		}
+	}
+
 	void GetBuildingColor (bool isPowered) {
 		string owner = GetComponent<BuildingBase> ().ReturnOwner ();
 		if (isPowered) {
@@ -37,10 +44,4 @@ public class BuildingStateController : NetworkBehaviour {
 		}
 	}
 
-	[ClientRpc]
-	void RpcSwitchColor (Color col) {
-		foreach (MeshRenderer x in coloredMesh) {
-			x.material.SetColor ("_Color", col);
-		}
-	}
 }
