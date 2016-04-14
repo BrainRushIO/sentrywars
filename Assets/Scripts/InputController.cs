@@ -21,9 +21,10 @@ public class InputController : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			OnRightTriggerFingerDown ();
-		}
+		if (GameManager.gameHasStarted) {
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				OnRightTriggerFingerDown ();
+			}
 //		if (Input.GetKeyUp (KeyCode.Space)) {
 //			OnRightTriggerFingerUp ();
 //		}
@@ -33,10 +34,13 @@ public class InputController : NetworkBehaviour {
 //		if (Input.GetKeyUp (KeyCode.X)) {
 //			OnLeftTriggerFingerUp ();
 //		}
+		}
 	}
 
 	void FixedUpdate() {
-		CastRayFromDebugReticle ();
+		if (GameManager.gameHasStarted) {
+			CastRayFromDebugReticle ();
+		}
 	}
 
 	void CastRayFromDebugReticle () {

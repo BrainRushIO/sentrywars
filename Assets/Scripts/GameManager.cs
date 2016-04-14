@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
+	public static bool gameHasStarted = false;
 	private const string PLAYER_ID_PREFIX = "Player";
 	public static List< PlayerController> players = new List<PlayerController>();
 	static int playersInMatch = 2;
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour {
 		if (players.Count == playersInMatch) {
 			for (int i = 0; i < playersInMatch; i++) {
 				players[i].InitializePlayer (i);
+				gameHasStarted = true;
 			}
 		}
 	}

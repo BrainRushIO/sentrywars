@@ -58,7 +58,7 @@ public class PlayerStats : NetworkBehaviour {
 			currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
 			energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
 		}
-		if (GetComponent<PlayerController> ().canPlay) {
+		if (GameManager.gameHasStarted) {
 			HandleTimer ();
 		}
 	}

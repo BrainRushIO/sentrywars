@@ -24,8 +24,6 @@ public class PlayerController : NetworkBehaviour {
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
 
-	public bool canPlay = false;
-
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
@@ -42,6 +40,7 @@ public class PlayerController : NetworkBehaviour {
 	void Update() {
 		if (Input.GetKeyDown (KeyCode.P)) {
 			InitializePlayer (0);
+			GameManager.gameHasStarted = true;
 		}
 		if (currentInhabitedBuilding != null) {
 			if (thisBuildingHP != null)
@@ -163,7 +162,6 @@ public class PlayerController : NetworkBehaviour {
 	public void InitializePlayer(int thisPlayerInt) {
 		playerInt = thisPlayerInt;
 		transform.name = playerID;
-		canPlay = true;
 		//TODO
 		GetComponent<ConstructionController> ().BuildInitialBuilding ();
 
