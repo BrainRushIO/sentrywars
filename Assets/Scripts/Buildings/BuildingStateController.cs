@@ -21,7 +21,7 @@ public class BuildingStateController : NetworkBehaviour {
 	}
 
 	void GetBuildingColor (bool isPowered) {
-		string owner = GetComponent<BuildingBase> ().ReturnOwner ();
+		PlayerController owner = GetComponent<PlayerController> ();
 		if (isPowered) {
 			switch (GameManager.players.IndexOf(owner)) {
 			case 0:

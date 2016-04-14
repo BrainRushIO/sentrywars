@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 
 public class PlayerStats : NetworkBehaviour {
-
+	
 	[SyncVar]
 	float currentEnergy = 100f;
 	[SyncVar]
@@ -58,7 +58,9 @@ public class PlayerStats : NetworkBehaviour {
 			currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
 			energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
 		}
-		HandleTimer ();
+		if (GetComponent<PlayerController> ().canPlay) {
+			HandleTimer ();
+		}
 	}
 
 	void HandleTimer() {
