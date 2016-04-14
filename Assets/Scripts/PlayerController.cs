@@ -40,6 +40,9 @@ public class PlayerController : NetworkBehaviour {
 	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
+		if (Input.GetKeyDown (KeyCode.P)) {
+			InitializePlayer (0);
+		}
 		if (currentInhabitedBuilding != null) {
 			if (thisBuildingHP != null)
 				thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
