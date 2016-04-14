@@ -46,7 +46,7 @@ public class Cannon : NetworkBehaviour {
 	}
 
 	[Command]
-	void CmdFireAtTarget(Vector3 thisPosition, NetworkInstanceId targetID, string bulletOwner) {
+	void CmdFireAtTarget(Vector3 thisPosition, NetworkInstanceId targetID, int bulletOwner) {
 		GameObject tempBullet = (GameObject)Instantiate (bulletPrefab, 
 			thisPosition, Quaternion.identity);
 		GameObject target = NetworkServer.FindLocalObject (targetID);

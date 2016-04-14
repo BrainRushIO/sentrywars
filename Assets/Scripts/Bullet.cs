@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
-	string owner;
+	int owner;
 	float bulletSpeed = 10f;
 	float bulletDamage = 5f;
 	bool initialized;
@@ -18,7 +18,7 @@ public class Bullet : NetworkBehaviour {
 		transform.Translate (Vector3.forward * bulletSpeed);
 	}
 
-	public void InitializeBullet (string thisOwner) {
+	public void InitializeBullet (int thisOwner) {
 		owner = thisOwner;
 		initialized = true;
 		Destroy (gameObject, 5f);

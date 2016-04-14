@@ -68,8 +68,8 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	[SyncVar]
-	string owner;
-	public string ReturnOwner(){return owner;} 
+	int owner;
+	public int ReturnOwner(){return owner;} 
 
 	void Awake () {
 		allColliders = GetComponents<Collider> ();
@@ -84,7 +84,7 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	public void InitializeBuilding(string thisOwner) {
+	public void InitializeBuilding(int thisOwner) {
 		owner = thisOwner;
 //		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
 		EnableAllColliders ();
@@ -105,7 +105,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
-		GameObject curOwner = GameObject.Find (owner);
+		GameObject curOwner = GameObject.Find (owner.ToString());
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();

@@ -115,7 +115,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == gameObject.name) {
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
 			TeleportToBuilding ();
 		} else {
 			switch (currentInhabitedBuildingType) {
@@ -173,7 +173,7 @@ public class PlayerController : NetworkBehaviour {
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.gameObject;
 				Debug.Log ("Init building from player " + playerID);
-				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerID);
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
 			}
 		}
 	}
