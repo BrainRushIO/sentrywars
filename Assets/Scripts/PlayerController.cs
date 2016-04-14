@@ -10,7 +10,7 @@ Handle player movement through towers
 */
 
 public class PlayerController : NetworkBehaviour {
-
+	public int playerInt;
 	public string playerID;
 	public GameObject currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
@@ -157,7 +157,8 @@ public class PlayerController : NetworkBehaviour {
 		Destroy (otherBuildingSelectedIndicator);
 	}
 		
-	public void InitializePlayer() {
+	public void InitializePlayer(int thisPlayerInt) {
+		playerInt = thisPlayerInt;
 		transform.name = playerID;
 		canPlay = true;
 		//TODO

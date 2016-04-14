@@ -23,7 +23,7 @@ public class BuildingStateController : NetworkBehaviour {
 	void GetBuildingColor (bool isPowered) {
 		PlayerController owner = GetComponent<PlayerController> ();
 		if (isPowered) {
-			switch (GameManager.players.IndexOf(owner)) {
+			switch (owner.playerInt) {
 			case 0:
 				thisBuildingColor = Color.red;
 				break;
@@ -32,7 +32,7 @@ public class BuildingStateController : NetworkBehaviour {
 				break;
 			}
 		} else {
-			switch (GameManager.players.IndexOf(owner)) {
+			switch (owner.playerInt) {
 			case 0:
 				thisBuildingColor = new Color(0.5f,0f,0f);
 				break;
