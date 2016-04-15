@@ -101,7 +101,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
-		GameObject curOwner = GameObject.Find ("Player" + owner.ToString());
+		GameObject curOwner = GameObject.Find ("Player" + (owner+1).ToString());
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
