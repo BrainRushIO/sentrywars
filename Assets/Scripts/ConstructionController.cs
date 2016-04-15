@@ -116,8 +116,8 @@ public class ConstructionController : NetworkBehaviour {
 		} 
 	}
 	void PlaceBuildingTemplate (RaycastHit hit) {
-		buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
 		if (currentBuildingToConstruct != null) {
+			buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
 	}

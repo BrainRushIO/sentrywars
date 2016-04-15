@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 
 /*
-Handle player movement through towers
+	Handle player movement through towers
 */
 
 public class PlayerController : NetworkBehaviour {

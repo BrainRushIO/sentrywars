@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 
 /*
-Sets up events for different 
+	
 */
 
 
@@ -60,7 +60,6 @@ public class InputController : NetworkBehaviour {
 	public static event LeftTriggerFingerDownAction OnLeftTriggerFingerDown;
 	public delegate void LeftTriggerFingerUpAction();
 	public static event LeftTriggerFingerUpAction OnLeftTriggerFingerUp;
-
 
 	public delegate void SendPointerInfoAction(RaycastHit thisHit);
 	public static event SendPointerInfoAction OnSendPointerInfo;
