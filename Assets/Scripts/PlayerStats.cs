@@ -21,20 +21,20 @@ public class PlayerStats : NetworkBehaviour {
 		currentEnergy -= howMuchEnergy;
 	}
 
-	public void IncreaseEnergyUptake (float amount = 1f) {
-		energyUptake += amount;
+	public void IncreaseEnergyUptake () {
+		energyUptake += 1;
 	}
 
-	void AlterEnergyUptake(float amount) {
-		energyUptake += amount;
-	}
+//	void AlterEnergyUptake(float amount) {
+//		energyUptake += amount;
+//	}
 		
 	void GatherEnergy() {
 		currentEnergy += energyUptake;
 	}
 
-	public void DecreaseEnergyUptake (float amount = 1f) {
-		AlterEnergyUptake(-amount);
+	public void DecreaseEnergyUptake () {
+		energyUptake -= 1;
 	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {
