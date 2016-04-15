@@ -107,8 +107,8 @@ public class BuildingBase : NetworkBehaviour {
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 			break;
 		}
-		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
-		}
+//		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
+//		}
 		Destroy (gameObject);
 	}
 
