@@ -122,16 +122,16 @@ public class PlayerController : NetworkBehaviour {
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Cannon:
-				ChangeTarget (currentBuildingID);
+				CmdChangeTarget (currentBuildingID);
 				break;
 			}
 		}
 
 	}
-
-	void ChangeTarget(NetworkInstanceId thisID) {
-		if (isLocalPlayer) {
-			currentInhabitedBuilding.GetComponent<Cannon> ().CmdTargetNewBuilding (thisID);
+	[Command]
+	void CmdChangeTarget(NetworkInstanceId thisID) {
+		if (isServer) {
+			currentInhabitedBuilding.GetComponent<Cannon> ().RpcTargetNewBuilding (thisID);
 		}
 	}
 

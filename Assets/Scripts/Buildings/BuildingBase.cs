@@ -26,7 +26,7 @@ public class BuildingBase : NetworkBehaviour {
 
 
 	void Start() {
-		EnableTowerAbilities ();
+			CheckIfIsPowered ();
 	}
 
 	[SyncVar] bool abilitiesActive = false;
@@ -48,11 +48,11 @@ public class BuildingBase : NetworkBehaviour {
 
 	}
 
-	void CheckIfIsEnabled() {
+	void CheckIfIsPowered() {
 		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
 		int totalConstructors = 0;
 		foreach (Collider x in nearbyBuildings) {
-			if (x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Constructor) {
+			if (x.GetComponent<BuildingBase> ()!=null && x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Constructor) {
 				totalConstructors++;
 			}
 		}
@@ -61,10 +61,6 @@ public class BuildingBase : NetworkBehaviour {
 		} else {
 			SendMessage ("DisableTowerAbilities");
 		}
-	}
-
-	void Update () {
-		
 	}
 
 	[SyncVar]
@@ -105,7 +101,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
-		GameObject curOwner = GameObject.Find (owner.ToString());
+		GameObject curOwner = GameObject.Find ("Player" + owner.ToString());
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();

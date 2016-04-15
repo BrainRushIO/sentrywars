@@ -56,13 +56,12 @@ public class Cannon : NetworkBehaviour {
 		NetworkServer.Spawn (tempBullet);
 	}
 
-	[Command]
-	public void CmdTargetNewBuilding(NetworkInstanceId thisID) {
-			currentTarget = thisID;
+	[ClientRpc]
+	public void RpcTargetNewBuilding(NetworkInstanceId thisID) {
+		currentTarget = thisID;
 	}
 		
 	void DetectEnemies () {
-
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerFireRadius, buildingLayerMask);
 		foreach (Collider x in collidersInRange) {
 			if (x.GetComponent<BuildingBase> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
