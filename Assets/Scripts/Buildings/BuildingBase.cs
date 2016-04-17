@@ -26,7 +26,7 @@ public class BuildingBase : NetworkBehaviour {
 
 
 	void Start() {
-			CheckIfIsPowered ();
+		CheckIfIsPowered ();
 	}
 
 	[SyncVar] bool abilitiesActive = false;
@@ -76,6 +76,7 @@ public class BuildingBase : NetworkBehaviour {
 	public void RpcTakeDamage (float amount) {
 		currentHealth -= amount;
 		if (currentHealth < 0) {
+			Debug.Log ("hit");
 			DestroyBuilding ();
 		}
 	}
@@ -101,15 +102,15 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
-		if (isServer) {
-			GameObject curOwner = GameObject.Find ("Player" + (owner + 1).ToString ());
+		if (isLocalPlayer) {
+			GameObject curOwner = GameManager.players [owner].gameObject;
 			switch (thisBuildingType) {
 			case BuildingType.Energy:
-				Collider[] energyPools = Physics.OverlapSphere (transform.position, 100, 11);
-				foreach (Collider x in energyPools) {
-					x.GetComponent<EnergyField> ().isOccupied = false;
-				}
-				curOwner.GetComponent<PlayerStats> ().RpcDecreaseEnergyUptake ();
+//				Collider[] energyPools = Physics.OverlapSphere (transform.position, 100, LayerMask.NameToLayer("Energy"));
+//				foreach (Collider x in energyPools) {
+//					x.GetComponent<EnergyField> ().isOccupied = false;
+//				}
+				curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 				break;
 			}
 		}
