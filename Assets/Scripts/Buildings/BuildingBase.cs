@@ -8,7 +8,7 @@ public enum BuildingType {Constructor, Cannon, Energy};
 
 public class BuildingBase : NetworkBehaviour {
 
-	float maxHealth = 50;
+	float maxHealth = 10;
 	[SyncVar] private float currentHealth;
 	public float ReturnCurrentHealth() {return currentHealth;}
 	[SyncVar] private float cooldown;
@@ -101,11 +101,17 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	void DestroyBuilding () {
-		GameObject curOwner = GameObject.Find ("Player" + (owner+1).ToString());
-		switch (thisBuildingType) {
-		case BuildingType.Energy:
-			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
-			break;
+		if (isServer) {
+			GameObject curOwner = GameObject.Find ("Player" + (owner + 1).ToString ());
+			switch (thisBuildingType) {
+			case BuildingType.Energy:
+				Collider[] energyPools = Physics.OverlapSphere (transform.position, 100, 11);
+				foreach (Collider x in energyPools) {
+					x.GetComponent<EnergyField> ().isOccupied = false;
+				}
+				curOwner.GetComponent<PlayerStats> ().RpcDecreaseEnergyUptake ();
+				break;
+			}
 		}
 //		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
 //		}

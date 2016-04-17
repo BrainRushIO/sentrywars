@@ -33,8 +33,12 @@ public class PlayerStats : NetworkBehaviour {
 		currentEnergy += energyUptake;
 	}
 
-	public void DecreaseEnergyUptake () {
-		energyUptake -= 1;
+	[ClientRpc]
+	public void RpcDecreaseEnergyUptake () {
+		if (isServer) {
+			energyUptake -= 1;
+			Debug.Log ("Decrease energy uptake " + energyUptake);
+		}
 	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {
