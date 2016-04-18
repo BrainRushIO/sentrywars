@@ -11,8 +11,8 @@ public class Cannon : NetworkBehaviour {
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer, radarSweepTime = 1f;
-	public bool switchingBuilding;
 	int buildingLayerMask;
+	bool changeTarget;
 
 	public void EnableTowerAbilities() {
 		abilitiesActive = true;	
@@ -42,8 +42,9 @@ public class Cannon : NetworkBehaviour {
 				DetectEnemies ();
 			}
 		}
-		if (switchingBuilding) {
-
+		if (changeTarget) {
+			ChangeTarget(GameManager.players [GetComponent<BuildingBase> ().ReturnOwner ()].ReturnCurrentTarget().GetComponent<NetworkIdentity>());
+			changeTarget = false;
 		}
 
 	}
@@ -59,9 +60,12 @@ public class Cannon : NetworkBehaviour {
 		NetworkServer.Spawn (tempBullet);
 	}
 
-	[ClientRpc]
-	public void RpcTargetNewBuilding(NetworkInstanceId thisID) {
-		currentTarget = thisID;
+	void ChangeTarget(NetworkIdentity thisId) {
+		Debug.Log ("stuck");
+		currentTarget = thisId.netId;
+	}
+	public void TargetNewBuilding() {
+		changeTarget = true;
 	}
 				
 	void DetectEnemies () {
