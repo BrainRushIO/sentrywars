@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour {
 	public static bool gameHasStarted = false;

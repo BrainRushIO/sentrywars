@@ -34,7 +34,9 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	public void DecreaseEnergyUptake () {
-		energyUptake -= 1;
+		if (isLocalPlayer) {
+			energyUptake -= 1;
+		}
 	}
 
 	public bool IsThereEnoughEnergy (float howMuchEnergy) {

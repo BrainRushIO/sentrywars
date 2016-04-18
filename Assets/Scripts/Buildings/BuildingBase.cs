@@ -20,6 +20,7 @@ public class BuildingBase : NetworkBehaviour {
 	public Transform playerCockpit;
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
+	[SyncVar] bool hasBeenDestroyed;
 	/// <summary>
 	/// The colored mesh that switches from player to player.
 	/// </summary>
@@ -72,12 +73,11 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth = maxHealth;
 	}
 
-	[ClientRpc]
-	public void RpcTakeDamage (float amount) {
+	public void TakeDamage (float amount) {
 		currentHealth -= amount;
-		if (currentHealth < 0) {
-			Debug.Log ("hit");
-			DestroyBuilding ();
+		if (currentHealth < 0 && !hasBeenDestroyed) {
+			hasBeenDestroyed = true;
+			RpcDestroyBuilding ();
 		}
 	}
 
@@ -101,8 +101,8 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	void DestroyBuilding () {
-		if (isLocalPlayer) {
+	[ClientRpc]
+	void RpcDestroyBuilding () {
 			GameObject curOwner = GameManager.players [owner].gameObject;
 			switch (thisBuildingType) {
 			case BuildingType.Energy:
@@ -113,7 +113,6 @@ public class BuildingBase : NetworkBehaviour {
 				curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 				break;
 			}
-		}
 //		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
 //		}
 		Destroy (gameObject);

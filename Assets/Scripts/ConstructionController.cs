@@ -163,11 +163,11 @@ public class ConstructionController : NetworkBehaviour {
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 		    canBuild) { 
 			switchToSpawnBuilding = true;
-			HandleSpendEnergy ();
+			HandleSpendEnergyOnBuilding ();
 		}
 	}
 
-	void HandleSpendEnergy() {
+	void HandleSpendEnergyOnBuilding() {
 		GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 		if (currentBuildingToConstructType == BuildingType.Energy) {
 			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
