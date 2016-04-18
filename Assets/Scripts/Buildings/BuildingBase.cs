@@ -65,7 +65,7 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	[SyncVar]
+	[SyncVar][SerializeField]
 	int owner;
 	public int ReturnOwner(){return owner;} 
 

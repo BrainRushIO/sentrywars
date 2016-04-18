@@ -11,7 +11,7 @@ public class Cannon : NetworkBehaviour {
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer, radarSweepTime = 1f;
-
+	public bool switchingBuilding;
 	int buildingLayerMask;
 
 	public void EnableTowerAbilities() {
@@ -42,6 +42,9 @@ public class Cannon : NetworkBehaviour {
 				DetectEnemies ();
 			}
 		}
+		if (switchingBuilding) {
+
+		}
 
 	}
 
@@ -60,7 +63,7 @@ public class Cannon : NetworkBehaviour {
 	public void RpcTargetNewBuilding(NetworkInstanceId thisID) {
 		currentTarget = thisID;
 	}
-		
+				
 	void DetectEnemies () {
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerFireRadius, buildingLayerMask);
 		foreach (Collider x in collidersInRange) {

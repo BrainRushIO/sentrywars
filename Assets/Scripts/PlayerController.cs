@@ -23,6 +23,7 @@ public class PlayerController : NetworkBehaviour {
 	GameObject otherBuildingSelectedIndicator;
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
+	bool isInitialized;
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
@@ -42,6 +43,9 @@ public class PlayerController : NetworkBehaviour {
 			InitializePlayer (0);
 			GameManager.gameHasStarted = true;
 		}
+		if (!isInitialized) {
+			InhabitClosestBuilding ();
+		}
 		if (currentInhabitedBuilding != null) {
 			if (thisBuildingHP != null)
 				thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
@@ -52,7 +56,6 @@ public class PlayerController : NetworkBehaviour {
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		if (currentInhabitedBuilding == null) {
-			InhabitClosestBuilding ();
 			return;
 		}
 		currentTarget = thisHit.collider.gameObject;
@@ -128,7 +131,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 
 	}
-	[Command]
+
 	void CmdChangeTarget(NetworkInstanceId thisID) {
 		if (isServer) {
 			currentInhabitedBuilding.GetComponent<Cannon> ().RpcTargetNewBuilding (thisID);
@@ -175,6 +178,7 @@ public class PlayerController : NetworkBehaviour {
 				currentInhabitedBuilding = x.gameObject;
 				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
+				isInitialized = true;
 			}
 		}
 	}
