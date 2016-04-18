@@ -21,6 +21,7 @@ public class BuildingBase : NetworkBehaviour {
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
 	[SyncVar] bool hasBeenDestroyed;
+	NetworkIdentity linkedEnergyField;
 	/// <summary>
 	/// The colored mesh that switches from player to player.
 	/// </summary>
@@ -81,9 +82,12 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	public void InitializeBuilding(int thisOwner) {
+	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null) {
 		owner = thisOwner;
 //		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
+		if (thisLinkedEnergyField != null) {
+			linkedEnergyField = thisLinkedEnergyField;
+		}
 		EnableAllColliders ();
 		currentHealth = maxHealth;
 	}
@@ -103,16 +107,13 @@ public class BuildingBase : NetworkBehaviour {
 
 	[ClientRpc]
 	void RpcDestroyBuilding () {
-			GameObject curOwner = GameManager.players [owner].gameObject;
-			switch (thisBuildingType) {
-			case BuildingType.Energy:
-//				Collider[] energyPools = Physics.OverlapSphere (transform.position, 100, LayerMask.NameToLayer("Energy"));
-//				foreach (Collider x in energyPools) {
-//					x.GetComponent<EnergyField> ().isOccupied = false;
-//				}
-				curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
-				break;
-			}
+		GameObject curOwner = GameManager.players [owner].gameObject;
+		switch (thisBuildingType) {
+		case BuildingType.Energy:
+			linkedEnergyField.GetComponent<EnergyField> ().RpcSetIsOccupied( false );
+			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
+			break;
+		}
 //		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
 //		}
 		Destroy (gameObject);

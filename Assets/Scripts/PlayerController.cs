@@ -77,7 +77,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 			break;
 		case "Energy":
-			if (currentTarget.GetComponent<EnergyField> ().isOccupied != true) {
+			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied()) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;

@@ -14,7 +14,7 @@ public class ConstructionController : NetworkBehaviour {
 	public GameObject currentBuildingToConstruct;
 	Camera playerCamera;
 	Vector3 buildingPlacementPosition;
-
+	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInConstructor = true, isTargetingEnergyField;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
@@ -109,7 +109,7 @@ public class ConstructionController : NetworkBehaviour {
 				}
 				break;
 			case ConstructionState.SpawnBuilding:
-				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController>().playerInt, currentBuildingToConstructType);
+				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController>().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
@@ -151,10 +151,14 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	[Command]
-	public void CmdSpawnBuilding(Vector3 placementPos, int thisPlayerID, BuildingType thisType) {
+	public void CmdSpawnBuilding(Vector3 placementPos, int thisPlayerID, BuildingType thisType, NetworkIdentity thisEnergyPool, bool isEnergy) {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
-		temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
+		if (isEnergy) {
+			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID, thisEnergyPool);
+		} else {
+			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
+		}
 		NetworkServer.Spawn (temp);
 	}
 
@@ -162,7 +166,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 		    canBuild) { 
-			switchToSpawnBuilding = true;
 			HandleSpendEnergyOnBuilding ();
 		}
 	}
@@ -171,10 +174,13 @@ public class ConstructionController : NetworkBehaviour {
 		GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 		if (currentBuildingToConstructType == BuildingType.Energy) {
 			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
-			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().isOccupied = true;
+			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().RpcSetIsOccupied(true);
+			currentEnergyFieldTargeted = GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<NetworkIdentity> ();
+
 		} else {
 			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
+		switchToSpawnBuilding = true;
 	}
 
 	void SelectConstructBuildingType(BuildingType thisBuildingType) {
