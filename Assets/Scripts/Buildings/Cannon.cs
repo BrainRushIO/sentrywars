@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class Cannon : NetworkBehaviour {
-	[SyncVar] NetworkInstanceId currentTarget;
+	[SyncVar(hook = "OnChangeTarget")] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;
 	float towerFireRadius = 100;
@@ -25,7 +25,6 @@ public class Cannon : NetworkBehaviour {
 		buildingLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
   	}
 
-	// Update is called once per frame
 	void Update () {
 		if (abilitiesActive) {
 			if (cooldownTimer > 0) {
@@ -42,11 +41,6 @@ public class Cannon : NetworkBehaviour {
 				DetectEnemies ();
 			}
 		}
-		if (changeTarget) {
-			ChangeTarget(GameManager.players [GetComponent<BuildingBase> ().ReturnOwner ()].ReturnCurrentTarget().GetComponent<NetworkIdentity>());
-			changeTarget = false;
-		}
-
 	}
 
 	[Command]
@@ -59,13 +53,8 @@ public class Cannon : NetworkBehaviour {
 		cooldownTimer = fireCooldown;
 		NetworkServer.Spawn (tempBullet);
 	}
-
-	void ChangeTarget(NetworkIdentity thisId) {
-		Debug.Log ("stuck");
-		currentTarget = thisId.netId;
-	}
-	public void TargetNewBuilding() {
-		changeTarget = true;
+	public void OnChangeTarget(NetworkInstanceId thisId) {
+		currentTarget = thisId;
 	}
 				
 	void DetectEnemies () {

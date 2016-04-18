@@ -75,6 +75,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public void TakeDamage (float amount) {
+//		if (isServer) TODO
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;

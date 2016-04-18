@@ -56,6 +56,7 @@ public class ConstructionController : NetworkBehaviour {
 	public void BuildInitialBuilding() {
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
 		currConstructionState = ConstructionState.SpawnBuilding;
+
 	}
 
 	// Update is called once per frame
@@ -160,6 +161,7 @@ public class ConstructionController : NetworkBehaviour {
 			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		}
 		NetworkServer.Spawn (temp);
+
 	}
 
 	void SwitchToSpawnBuilding() {

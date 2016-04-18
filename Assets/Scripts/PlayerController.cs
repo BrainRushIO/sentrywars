@@ -13,6 +13,7 @@ public class PlayerController : NetworkBehaviour {
 	public int playerInt;
 	public string playerID;
 	public GameObject currentInhabitedBuilding;
+	[SyncVar] NetworkInstanceId currentInhabitedBuildingNetID;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
 	GameObject currentTarget;
 	NetworkInstanceId currentBuildingID;
@@ -39,22 +40,25 @@ public class PlayerController : NetworkBehaviour {
 	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
-		if (Input.GetKeyDown (KeyCode.P)) {
-			InitializePlayer (0);
-			GameManager.gameHasStarted = true;
-		}
-		if (!isInitialized) {
-			InhabitClosestBuilding ();
-		}
-		if (currentInhabitedBuilding != null) {
-			if (thisBuildingHP != null)
-				thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-			if (thisBuildingCooldown != null)
-				thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
+		if (isLocalPlayer) {
+			if (Input.GetKeyDown (KeyCode.P)) {
+				InitializePlayer (0);
+				GameManager.gameHasStarted = true;
+			}
+			if (!isInitialized) {
+				InhabitClosestBuilding ();
+			}
+			if (currentInhabitedBuilding != null) {
+				if (thisBuildingHP != null)
+					thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+				if (thisBuildingCooldown != null)
+					thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
+			}
 		}
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
+		if (isLocalPlayer) {
 		if (currentInhabitedBuilding == null) {
 			return;
 		}
@@ -93,6 +97,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 		HandleSelectBuildingVFX ();
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
+		}
 	}
 
 	void HandleSelectBuildingVFX () {
@@ -120,20 +125,25 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
-			TeleportToBuilding ();
-		} else {
-			switch (currentInhabitedBuildingType) {
-			case BuildingType.Cannon:
-				ChangeTarget ();
-				break;
+		if (isServer) {
+			if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
+				TeleportToBuilding ();
+			} else {
+				switch (currentInhabitedBuildingType) {
+				case BuildingType.Cannon:
+					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+					CmdChangeTarget (currentInhabitedBuildingNetID, tempTargeted);
+					break;
+				}
 			}
 		}
 
 	}
 
-	void ChangeTarget() {
-		currentInhabitedBuilding.GetComponent<Cannon> ().TargetNewBuilding ();
+	void CmdChangeTarget(NetworkInstanceId thisCannonIdentity, NetworkInstanceId thisTargetIdentity) {
+			GameObject temp = NetworkServer.FindLocalObject (thisCannonIdentity);
+			Debug.Log (temp.name + " CMD");
+			temp.GetComponent<Cannon> ().OnChangeTarget (thisTargetIdentity);
 	}
 
 	void PressGUIButton() {
@@ -142,6 +152,7 @@ public class PlayerController : NetworkBehaviour {
 
 	void TeleportToBuilding () {
 		currentInhabitedBuilding = currentTarget;
+		currentInhabitedBuildingNetID = currentTarget.GetComponent<NetworkIdentity>().netId;
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
@@ -159,11 +170,12 @@ public class PlayerController : NetworkBehaviour {
 		transform.position = currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position;
 		Destroy (otherBuildingSelectedIndicator);
 	}
-		
+
 	public void InitializePlayer(int thisPlayerInt) {
 		playerInt = thisPlayerInt;
 		transform.name = playerID;
 		//TODO
+
 		GetComponent<ConstructionController> ().BuildInitialBuilding ();
 
 	}
