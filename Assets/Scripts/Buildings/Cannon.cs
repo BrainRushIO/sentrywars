@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class Cannon : NetworkBehaviour {
-	[SyncVar(hook = "OnChangeTarget")] NetworkInstanceId currentTarget;
+	
+	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;
 	float towerFireRadius = 100;
@@ -53,7 +54,10 @@ public class Cannon : NetworkBehaviour {
 		cooldownTimer = fireCooldown;
 		NetworkServer.Spawn (tempBullet);
 	}
-	public void OnChangeTarget(NetworkInstanceId thisId) {
+
+	[Command]
+	public void CmdOnChangeTarget(NetworkInstanceId thisId) {
+		Debug.Log ("CHANGE TARGET " + thisId);
 		currentTarget = thisId;
 	}
 				

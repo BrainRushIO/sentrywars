@@ -160,7 +160,7 @@ public class ConstructionController : NetworkBehaviour {
 		} else {
 			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		}
-		NetworkServer.Spawn (temp);
+		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
 
 	}
 
