@@ -12,8 +12,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 public class PlayerController : NetworkBehaviour {
 	public int playerInt;
 	public string playerID;
-	public GameObject currentInhabitedBuilding;
-	[SyncVar] NetworkInstanceId currentInhabitedBuildingNetID;
+	[SyncVar] public NetworkIdentity currentInhabitedBuilding;
 	[SerializeField] GameObject otherBuildingSelectedIndicatorPrefab, teleportPrefab;
 	GameObject currentTarget;
 	NetworkInstanceId currentBuildingID;
@@ -40,7 +39,6 @@ public class PlayerController : NetworkBehaviour {
 	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
-		if (isLocalPlayer) {
 			if (Input.GetKeyDown (KeyCode.P)) {
 				InitializePlayer (0);
 				GameManager.gameHasStarted = true;
@@ -54,11 +52,9 @@ public class PlayerController : NetworkBehaviour {
 				if (thisBuildingCooldown != null)
 					thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
 			}
-		}
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
-		if (isLocalPlayer) {
 		if (currentInhabitedBuilding == null) {
 			return;
 		}
@@ -98,7 +94,6 @@ public class PlayerController : NetworkBehaviour {
 		HandleSelectBuildingVFX ();
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
 		}
-	}
 
 	void HandleSelectBuildingVFX () {
 		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
@@ -120,30 +115,21 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 
-	void HandleRightTriggerUp() {
-
-	}
-
 	void PerformActionOnTargetedBuilding() {
-		if (isServer) {
-			if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
-				TeleportToBuilding ();
-			} else {
-				switch (currentInhabitedBuildingType) {
-				case BuildingType.Cannon:
-					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
-					CmdChangeTarget (currentInhabitedBuildingNetID, tempTargeted);
-					break;
-				}
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
+			TeleportToBuilding ();
+		} else {
+			switch (currentInhabitedBuildingType) {
+			case BuildingType.Cannon:
+				NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+				CmdChangeTarget (tempTargeted);
+				break;
 			}
 		}
-
 	}
 
-	void CmdChangeTarget(NetworkInstanceId thisCannonIdentity, NetworkInstanceId thisTargetIdentity) {
-			GameObject temp = NetworkServer.FindLocalObject (thisCannonIdentity);
-			Debug.Log (temp.name + " CMD");
-			temp.GetComponent<Cannon> ().OnChangeTarget (thisTargetIdentity);
+	void CmdChangeTarget(NetworkInstanceId thisTargetIdentity) {
+		currentInhabitedBuilding.GetComponent<Cannon> ().CmdOnChangeTarget (thisTargetIdentity);
 	}
 
 	void PressGUIButton() {
@@ -151,8 +137,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void TeleportToBuilding () {
-		currentInhabitedBuilding = currentTarget;
-		currentInhabitedBuildingNetID = currentTarget.GetComponent<NetworkIdentity>().netId;
+		currentInhabitedBuilding = currentTarget.GetComponent<NetworkIdentity>();
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
@@ -185,7 +170,7 @@ public class PlayerController : NetworkBehaviour {
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
-				currentInhabitedBuilding = x.gameObject;
+				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
 				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
 				isInitialized = true;
