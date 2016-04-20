@@ -79,7 +79,7 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-			RpcDestroyBuilding ();
+			CmdDestroyBuilding ();
 		}
 	}
 
@@ -106,24 +106,24 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	[ClientRpc]
-	void RpcDestroyBuilding () {
+	[Command]
+	void CmdDestroyBuilding () {
 		GameObject curOwner = GameManager.players [owner].gameObject;
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
-			linkedEnergyField.GetComponent<EnergyField> ().RpcSetIsOccupied( false );
+			linkedEnergyField.GetComponent<EnergyField> ().CmdSetIsOccupied( false );
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 			break;
 		}
-		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding.netId == GetComponent<NetworkIdentity>().netId) {
-			foreach (PlayerController x in GameManager.players) {
-				if (x.playerInt == owner) {
-					x.EndMatch (false);
-				} else {
-					x.EndMatch (true);
-				}
-			}
-		}
+//		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding.netId == GetComponent<NetworkIdentity>().netId) {
+//			foreach (PlayerController x in GameManager.players) {
+//				if (x.playerInt == owner) {
+//					x.EndMatch (false);
+//				} else {
+//					x.EndMatch (true);
+//				}
+//			}
+//		}
 		Destroy (gameObject);
 	}
 

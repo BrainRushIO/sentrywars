@@ -3,12 +3,13 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class EnergyField : NetworkBehaviour {
-	[SyncVar] bool isOccupied = false;
+	[SerializeField] [SyncVar] bool isOccupied = false;
 
-	[ClientRpc]
-	public void RpcSetIsOccupied(bool val) {
+	[Command]
+	public void CmdSetIsOccupied(bool val) {
 		isOccupied = val;
 	}
+
 	public bool ReturnIsOccupied() {
 		return isOccupied;
 	}

@@ -182,17 +182,21 @@ public class ConstructionController : NetworkBehaviour {
 			HandleSpendEnergyOnBuilding ();
 		} 
 	}
-
 	void HandleSpendEnergyOnBuilding() {
 		GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 		if (currentBuildingToConstructType == BuildingType.Energy) {
 			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
-			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().RpcSetIsOccupied(true);
 			currentEnergyFieldTargeted = GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<NetworkIdentity> ();
-		} else {
+			CmdLinkEnergyField (currentEnergyFieldTargeted);
 		}
 		switchToSpawnBuilding = true;
 	}
+
+	[Command]
+	void CmdLinkEnergyField (NetworkIdentity thisField) {
+		thisField.GetComponent<EnergyField> ().CmdSetIsOccupied(true);
+	}
+
 
 	void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		if (currConstructionState == ConstructionState.PlacingBuilding) {
