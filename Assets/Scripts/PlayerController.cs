@@ -166,6 +166,19 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 
+	public void EndMatch(bool win) {
+		if (win) {
+			GetComponent<GUIManager> ().endMatch.text = "Victory";
+		} else {
+			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+		}
+		GetComponent<ConstructionController> ().enabled = false;
+		GetComponent<PlayerController> ().enabled = false;
+		GetComponent<InputController> ().enabled = false;
+
+
+	}
+
 	void InhabitClosestBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {

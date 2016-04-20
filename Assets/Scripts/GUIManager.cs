@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
 	public Text constructBuildingType, constructBuildingCost;
-	public Text thisBuildingHP, youlose;
+	public Text thisBuildingHP, endMatch;
 	public Text currentEnergyText, energyUptakeText;
 	public Text alert;
 

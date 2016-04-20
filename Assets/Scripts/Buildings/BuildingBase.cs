@@ -115,8 +115,15 @@ public class BuildingBase : NetworkBehaviour {
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 			break;
 		}
-//		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding == gameObject) {
-//		}
+		if (curOwner.GetComponent<PlayerController> ().currentInhabitedBuilding.netId == GetComponent<NetworkIdentity>().netId) {
+			foreach (PlayerController x in GameManager.players) {
+				if (x.playerInt == owner) {
+					x.EndMatch (false);
+				} else {
+					x.EndMatch (true);
+				}
+			}
+		}
 		Destroy (gameObject);
 	}
 
