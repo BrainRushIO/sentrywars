@@ -35,8 +35,6 @@ public class PlayerController : NetworkBehaviour {
 		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
 
 	}
-		
-	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
 			if (Input.GetKeyDown (KeyCode.P)) {
@@ -47,11 +45,10 @@ public class PlayerController : NetworkBehaviour {
 				InhabitClosestBuilding ();
 			}
 			if (currentInhabitedBuilding != null) {
-				if (thisBuildingHP != null)
-					thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-				if (thisBuildingCooldown != null)
-					thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
-			}
+				
+			GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+
+		}
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
@@ -125,7 +122,7 @@ public class PlayerController : NetworkBehaviour {
 					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
 					CmdChangeTarget (tempTargeted);
 				} else {
-					Debug.Log ("Out of Range");
+					GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
 				}
 				break;
 			}

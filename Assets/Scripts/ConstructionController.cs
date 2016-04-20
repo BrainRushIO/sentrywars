@@ -29,8 +29,6 @@ public class ConstructionController : NetworkBehaviour {
 	public void SwitchToInactive() {
 		switchToInactive = true;
 	}
-	
-	[SerializeField] Text constructBuildingType, constructBuildingCost;
 
 	[SerializeField]
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
@@ -75,9 +73,9 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Energy);
 		}
 			
-		//temp UI
-		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
-		if(constructBuildingType!=null)constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
+		//UI
+		GetComponent<GUIManager>().constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
+		GetComponent<GUIManager>().constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 
 		if (isInConstructor) {
@@ -169,6 +167,9 @@ public class ConstructionController : NetworkBehaviour {
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 		    canBuild) { 
 			HandleSpendEnergyOnBuilding ();
+		} else if (!GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) && 
+			GetComponent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().thisBuildingType == BuildingType.Constructor) {
+			GetComponent<GUIManager> ().SetAlert ("Not Enough Energy");
 		}
 	}
 
@@ -180,7 +181,6 @@ public class ConstructionController : NetworkBehaviour {
 			currentEnergyFieldTargeted = GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<NetworkIdentity> ();
 
 		} else {
-			//throw some NOT ENOUGH ENERGY MESSAGE
 		}
 		switchToSpawnBuilding = true;
 	}
