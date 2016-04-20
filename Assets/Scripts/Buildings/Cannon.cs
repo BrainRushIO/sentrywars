@@ -8,7 +8,7 @@ public class Cannon : NetworkBehaviour {
 	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab;
-	float towerFireRadius = 100;
+	public const float towerAttackRange = 100;
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer, radarSweepTime = 1f;
@@ -62,7 +62,7 @@ public class Cannon : NetworkBehaviour {
 	}
 				
 	void DetectEnemies () {
-		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerFireRadius, buildingLayerMask);
+		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerAttackRange, buildingLayerMask);
 		foreach (Collider x in collidersInRange) {
 			if (x.GetComponent<BuildingBase> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
 				currentTarget = x.GetComponent<NetworkIdentity>().netId;

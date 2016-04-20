@@ -121,8 +121,10 @@ public class PlayerController : NetworkBehaviour {
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Cannon:
-				NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
-				CmdChangeTarget (tempTargeted);
+				if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
+					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+					CmdChangeTarget (tempTargeted);
+				}
 				break;
 			}
 		}
