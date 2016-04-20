@@ -9,7 +9,6 @@ public class ConstructionController : NetworkBehaviour {
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	BuildingType currentBuildingToConstructType;
 
-
 	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
 	Camera playerCamera;
@@ -35,12 +34,13 @@ public class ConstructionController : NetworkBehaviour {
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
-		InputController.OnRightTriggerFingerDown += SwitchToSpawnBuilding;
+		InputController.OnRightTriggerFingerDown += HandleConstructionCall;
+
 	}
 
 	void OnDisable() {
 		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
-		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
+		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
 	}
 
 	// Use this for initialization
@@ -114,6 +114,7 @@ public class ConstructionController : NetworkBehaviour {
 			}
 		} 
 	}
+
 	void PlaceBuildingTemplate (RaycastHit hit) {
 		if (currentBuildingToConstruct != null) {
 			buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
@@ -162,15 +163,24 @@ public class ConstructionController : NetworkBehaviour {
 
 	}
 
+	void HandleConstructionCall() {
+		if (currentBuildingToConstruct != null) {
+			if (!IsBuildingTemplateInConstructionRange ()) {
+				GetComponent<GUIManager> ().SetAlert ("Out of Build Range");
+			}
+			else if (!GetComponent<PlayerStats>().IsThereEnoughEnergy(buildingCosts [currentBuildingToConstructType])) {
+				GetComponent<GUIManager> ().SetAlert ("Not Enough Energy");
+			}
+		}
+		SwitchToSpawnBuilding ();
+	}
+
 	void SwitchToSpawnBuilding() {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 		    canBuild) { 
 			HandleSpendEnergyOnBuilding ();
-		} else if (!GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) && 
-			GetComponent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().thisBuildingType == BuildingType.Constructor) {
-			GetComponent<GUIManager> ().SetAlert ("Not Enough Energy");
-		}
+		} 
 	}
 
 	void HandleSpendEnergyOnBuilding() {
@@ -179,7 +189,6 @@ public class ConstructionController : NetworkBehaviour {
 			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
 			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().RpcSetIsOccupied(true);
 			currentEnergyFieldTargeted = GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<NetworkIdentity> ();
-
 		} else {
 		}
 		switchToSpawnBuilding = true;
@@ -203,7 +212,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (isBuildable && !isBuildingTemplateGreen) {
 			isBuildingTemplateGreen = true;
 			RenderMeshGreenRed (true);
-
 		} else if (!isBuildable && isBuildingTemplateGreen) {
 			isBuildingTemplateGreen = false;
 			RenderMeshGreenRed (false);
@@ -240,8 +248,12 @@ public class ConstructionController : NetworkBehaviour {
 		isBuildingTemplateInstantiated = false;
 	}
 
+	bool IsBuildingTemplateInConstructionRange() {
+		return (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE);
+	}
+
 	void CheckIfCanBuild () {
-		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE && currentBuildingToConstruct!=null) {
+		if (IsBuildingTemplateInConstructionRange() && currentBuildingToConstruct!=null) {
 			canBuild = true;
 			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
