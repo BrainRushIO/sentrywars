@@ -79,7 +79,7 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-			CmdDestroyBuilding ();
+			CmdDestroyBuilding (owner);
 		}
 	}
 
@@ -107,11 +107,11 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	[Command]
-	void CmdDestroyBuilding () {
-		GameObject curOwner = GameManager.players [owner].gameObject;
+	void CmdDestroyBuilding (int thisOwner) {
+		GameObject curOwner = GameManager.players[thisOwner].gameObject;
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
-			linkedEnergyField.GetComponent<EnergyField> ().CmdSetIsOccupied( false );
+			linkedEnergyField.GetComponent<EnergyField> ().CmdSetIsOccupied(false);
 			curOwner.GetComponent<PlayerStats> ().DecreaseEnergyUptake ();
 			break;
 		}
