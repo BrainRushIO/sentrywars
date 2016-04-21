@@ -166,17 +166,21 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 
-	public void EndMatch(bool win) {
-		if (win) {
-			GetComponent<GUIManager> ().endMatch.text = "Victory";
-		} else {
-			GetComponent<GUIManager> ().endMatch.text = "Defeat";
-		}
-		GetComponent<ConstructionController> ().enabled = false;
-		GetComponent<PlayerController> ().enabled = false;
-		GetComponent<InputController> ().enabled = false;
+	[Command]
+	public void CmdEndMatch(bool win) {
+		RpcEndMatch (win);
+	}
 
-
+	[ClientRpc]
+	void RpcEndMatch(bool didWin) {
+			if (didWin) {
+				GetComponent<GUIManager> ().endMatch.text = "Victory";
+			} else {
+				GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			}
+			GetComponent<ConstructionController> ().enabled = false;
+			GetComponent<PlayerController> ().enabled = false;
+			GetComponent<InputController> ().enabled = false;
 	}
 
 	void InhabitClosestBuilding () {
