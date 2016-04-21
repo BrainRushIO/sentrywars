@@ -32,6 +32,7 @@ public class InputController : NetworkBehaviour {
 		if (GameManager.gameHasStarted) {
 			if( steamVrRunning ) {
 				if( rightController.triggerButtonDown == true ) {
+					Debug.LogWarning( "Right Controller trigger down" );
 					OnRightTriggerFingerDown();
 				}
 			} else {
@@ -62,7 +63,9 @@ public class InputController : NetworkBehaviour {
 		RaycastHit hit = new RaycastHit();
 
 		if( steamVrRunning ) {
+			Debug.Log( "Getting ray from Controller" );
 			ray = new Ray( rightControllerRaycastOrigin.position, rightControllerRaycastOrigin.forward );
+			Debug.Log( "Ray: " + ray );
 		} else {
 			ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 		}
@@ -70,6 +73,11 @@ public class InputController : NetworkBehaviour {
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
 			OnSendPointerInfo (hit);
 		}
+	}
+
+	void OnDrawGizmos() {
+		Gizmos.color = Color.magenta;
+		Gizmos.DrawRay( rightControllerRaycastOrigin.position, rightControllerRaycastOrigin.forward );
 	}
 
 	public delegate void RightTriggerFingerDownAction();
