@@ -50,6 +50,9 @@ public class BuildingBase : NetworkBehaviour {
 
 	}
 
+	void Update() {
+	}
+
 	void CheckIfIsPowered() {
 		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
 		int totalConstructors = 0;
@@ -74,22 +77,35 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth = maxHealth;
 	}
 
-	[Command]
-	public void CmdTakeDamage (float amount) {
+	public void TakeDamage (float amount) {
 //		if (isServer) TODO
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-			CmdDestroyBuilding (GameManager.players[owner].netId);
-			if (isOccupied) {
-				foreach (NetworkIdentity x in GameManager.players) {
-					if (x.netId == GameManager.players[owner].netId) {
-						NetworkServer.FindLocalObject (x.netId).SendMessage ("EndMatch", x.netId);
-					} 
-				}
-			}
+			CmdDestroyBuilding(GameManager.players [owner].netId);
+//			if (isOccupied) {
+//				RpcSendEndMatchMessages(GameManager.players [owner].netId);
+//				CmdSendEndMatchMessages(GameManager.players [owner].netId);
+//			}
 		}
+
 	}
+//	[Command]
+//	void CmdSendEndMatchMessages(NetworkInstanceId thisNetId) {
+//		foreach (NetworkConnection c in NetworkServer.connections) {
+//			foreach (NetworkInstanceId x in c.clientOwnedObjects) {
+//				NetworkServer.FindLocalObject (x).SendMessage ("CmdPlayerWin", thisNetId, SendMessageOptions.DontRequireReceiver);
+//			}
+//		}
+//	}
+//	[ClientRpc]
+//	void RpcSendEndMatchMessages(NetworkInstanceId thisNetId) {
+//		foreach (NetworkConnection c in NetworkServer.connections) {
+//			foreach (NetworkInstanceId x in c.clientOwnedObjects) {
+//				NetworkServer.FindLocalObject (x).SendMessage ("CmdPlayerWin", thisNetId, SendMessageOptions.DontRequireReceiver);
+//			}
+//		}
+//	}
 
 	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null) {
 		owner = thisOwner;
@@ -122,7 +138,7 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerStats> ().CmdDecreaseEnergyUptake ();
 			break;
 		}
-
+		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdCheckIfPlayerDeath(GetComponent<NetworkIdentity>().netId);
 		Destroy (gameObject);
 	}
 }

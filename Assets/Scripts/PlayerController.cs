@@ -46,7 +46,9 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
-
+		if (currentInhabitedBuilding == null) {
+			Lose ();
+		}
 		if (Input.GetKeyDown (KeyCode.K)) {
 			foreach (NetworkConnection x in NetworkServer.connections) {
 				foreach (NetworkInstanceId y in x.clientOwnedObjects) {
@@ -185,19 +187,56 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 
-
-
-	void EndMatch(NetworkInstanceId thisNetId) {
-		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
-			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+	void Lose() {
+		if (isInitialized) {
+			isInitialized = false;
 			loseSphere.SetActive (true);
-		} else {
-			GetComponent<GUIManager> ().endMatch.text = "Victory";
-		}
+			GetComponent<GUIManager> ().endMatch.text = "Defeat";
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
+		}
 	}
+
+//	void RpcEndMatch(NetworkInstanceId thisNetId) {
+//		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
+//			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+//			loseSphere.SetActive (true);
+//		} else {
+//			GetComponent<GUIManager> ().endMatch.text = "Victory";
+//		}
+//		GetComponent<ConstructionController> ().enabled = false;
+//		GetComponent<PlayerController> ().enabled = false;
+//		GetComponent<InputController> ().enabled = false;
+//	}
+	[Command]
+	public void CmdCheckIfPlayerDeath(NetworkInstanceId thisNetId) {
+		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
+			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			if (isLocalPlayer) {
+				loseSphere.SetActive (true);
+			}
+			GetComponent<ConstructionController> ().enabled = false;
+//			GetComponent<PlayerController> ().enabled = false;
+			GetComponent<InputController> ().enabled = false;
+			if (playerInt == 0) {
+				NetworkServer.FindLocalObject (GameManager.players [1].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
+
+			} else {
+				NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
+
+			}
+		} 
+	}
+	[ClientRpc]
+	public void RpcPlayerWin () {
+		GetComponent<ConstructionController> ().enabled = false;
+//		GetComponent<PlayerController> ().enabled = false;
+		GetComponent<InputController> ().enabled = false;
+		GetComponent<GUIManager> ().endMatch.text = "Victory";
+
+	}
+
 
 	void InhabitClosestBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();

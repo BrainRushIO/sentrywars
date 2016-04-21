@@ -41,6 +41,7 @@ public class ConstructionController : NetworkBehaviour {
 	void OnDisable() {
 		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
 		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
+		Destroy (currentBuildingToConstruct);
 	}
 
 	// Use this for initialization
