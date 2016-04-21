@@ -32,7 +32,7 @@ public class InputController : NetworkBehaviour {
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
 		
-		bool steamVrRunning = false;
+//		bool steamVrRunning = false;
 //		steamVrRunning = ( !SteamVR.active && playInVR ) ? true : false;
 		if( playInVR ) {
 			VRCamera.gameObject.SetActive( true );
