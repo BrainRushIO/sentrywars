@@ -114,16 +114,16 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerStats> ().CmdDecreaseEnergyUptake ();
 			break;
 		}
-		if (thisOwnerId == GetComponent<NetworkIdentity>().netId) {
-			Debug.Log ("fuckin christ");
-			foreach (PlayerController x in GameManager.players) {
-				if (x.playerInt == owner) {
-					x.CmdEndMatch (false);
-				} else {
-					x.CmdEndMatch (true);
-				}
-			}
-		}
+//		if (thisOwnerId == GetComponent<NetworkIdentity>().netId) {
+//			Debug.Log ("fuckin christ");
+//			foreach (NetworkIdentity x in GameManager.players) {
+//				if (x.playerInt == owner) {
+//					x.CmdEndMatch (false);
+//				} else {
+//					x.CmdEndMatch (true);
+//				}
+//			}
+//		}
 		Destroy (gameObject);
 	}
 }

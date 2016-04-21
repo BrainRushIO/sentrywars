@@ -37,6 +37,15 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
+
+		if (Input.GetKeyDown (KeyCode.K)) {
+			foreach (NetworkConnection x in NetworkServer.connections) {
+				foreach (NetworkInstanceId y in x.clientOwnedObjects) {
+					print (y);
+				}
+			}
+		}
+
 			if (Input.GetKeyDown (KeyCode.P)) {
 				InitializePlayer (0);
 				GameManager.gameHasStarted = true;
@@ -159,6 +168,7 @@ public class PlayerController : NetworkBehaviour {
 
 	public void InitializePlayer(int thisPlayerInt) {
 		playerInt = thisPlayerInt;
+		playerID = "Player" + thisPlayerInt.ToString ();
 		transform.name = playerID;
 		//TODO
 

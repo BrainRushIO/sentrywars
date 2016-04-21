@@ -29,8 +29,7 @@ public class PlayerSetup : NetworkBehaviour {
 //			tempID = 1;
 //		}
 		string _netID = tempID.ToString ();
-		PlayerController _player = GetComponent<PlayerController> ();
-		_player.playerID = "Player" + _netID;
+		NetworkIdentity _player = GetComponent<NetworkIdentity> ();
 		GameManager.RegisterPlayer (_player);
 	}
 
@@ -48,6 +47,6 @@ public class PlayerSetup : NetworkBehaviour {
 		if (sceneCamera != null) {
 			sceneCamera.gameObject.SetActive (true);
 		}
-		GameManager.UnRegisterPlayer (GetComponent<PlayerController>());
+		GameManager.UnRegisterPlayer (GetComponent<NetworkIdentity>());
 	}
 }
