@@ -22,9 +22,14 @@ public class InputController : NetworkBehaviour {
 		playerCamera = GetComponentInChildren<Camera> ();
 		
 		bool steamVrRunning = false;
-		steamVrRunning = ( SteamVR.instance != null && playInVR ) ? true : false;
-		VRCamera.gameObject.SetActive( steamVrRunning );
-		VRHandlers.SetActive( steamVrRunning );
+//		steamVrRunning = ( !SteamVR.active && playInVR ) ? true : false;
+		if( playInVR ) {
+			VRCamera.gameObject.SetActive( true );
+			VRHandlers.SetActive( true );
+		} else {
+			DestroyImmediate( VRCamera.gameObject );
+			DestroyImmediate( VRHandlers );
+		}
 	}
 	
 	// Update is called once per frame
@@ -73,11 +78,6 @@ public class InputController : NetworkBehaviour {
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
 			OnSendPointerInfo (hit);
 		}
-	}
-
-	void OnDrawGizmos() {
-		Gizmos.color = Color.magenta;
-		Gizmos.DrawRay( rightControllerRaycastOrigin.position, rightControllerRaycastOrigin.forward );
 	}
 
 	public delegate void RightTriggerFingerDownAction();
