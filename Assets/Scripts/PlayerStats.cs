@@ -33,7 +33,15 @@ public class PlayerStats : NetworkBehaviour {
 		currentEnergy += energyUptake;
 	}
 
-	public void DecreaseEnergyUptake () {
+	[Command]
+	public void CmdDecreaseEnergyUptake () {
+		if (isServer) {
+			RpcDecreaseEnergyUptake ();
+		}
+	}
+
+	[ClientRpc]
+	void RpcDecreaseEnergyUptake() {
 		if (isLocalPlayer) {
 			energyUptake -= 1;
 		}
