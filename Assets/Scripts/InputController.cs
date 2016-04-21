@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 /// Input controller.
 /// </summary>
 public class InputController : NetworkBehaviour {
+	private static InputController s_instance;
+	public static InputController instance {get {return s_instance;}}
 
 	public bool playInVR = false, isMouseKeyboardDebug;
 	public Transform rightControllerRaycastOrigin, leftControllerRaycastOrigin;
@@ -16,6 +18,15 @@ public class InputController : NetworkBehaviour {
 	Camera playerCamera;
 	float raycastDistance = 1000;
 	[SerializeField] GameObject targetBubble;
+
+	void Awake() {
+		if( s_instance == null ) {
+			s_instance = this;
+		} else {
+			Debug.Log( "Destroying additional InputController in object: " +gameObject.name );
+			DestroyImmediate( this.gameObject );
+		}
+	}
 
 	// Use this for initialization
 	void Start () {
