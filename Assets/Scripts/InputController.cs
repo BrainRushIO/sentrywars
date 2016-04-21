@@ -7,8 +7,7 @@ using UnityEngine.Networking;
 /// </summary>
 public class InputController : NetworkBehaviour {
 
-	public bool steamVrRunning = false;
-	public bool isMouseKeyboardDebug;
+	public bool playInVR = false, isMouseKeyboardDebug;
 	public Transform rightControllerRaycastOrigin, leftControllerRaycastOrigin;
 	public Camera VRCamera;
 	public GameObject VRHandlers;
@@ -22,7 +21,8 @@ public class InputController : NetworkBehaviour {
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
 		
-		steamVrRunning = ( SteamVR.active && SteamVR.instance != null ) ? true : false;
+		bool steamVrRunning = false;
+		steamVrRunning = ( SteamVR.instance != null && playInVR ) ? true : false;
 		VRCamera.gameObject.SetActive( steamVrRunning );
 		VRHandlers.SetActive( steamVrRunning );
 	}
@@ -30,7 +30,7 @@ public class InputController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (GameManager.gameHasStarted) {
-			if( steamVrRunning ) {
+			if( SteamVR.active && playInVR ) {
 				if( rightController.triggerButtonDown == true ) {
 					Debug.LogWarning( "Right Controller trigger down" );
 					OnRightTriggerFingerDown();
@@ -62,7 +62,7 @@ public class InputController : NetworkBehaviour {
 		Ray ray = new Ray();
 		RaycastHit hit = new RaycastHit();
 
-		if( steamVrRunning ) {
+		if( SteamVR.active && playInVR ) {
 			Debug.Log( "Getting ray from Controller" );
 			ray = new Ray( rightControllerRaycastOrigin.position, rightControllerRaycastOrigin.forward );
 			Debug.Log( "Ray: " + ray );
