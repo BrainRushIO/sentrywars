@@ -27,7 +27,7 @@ public class Bullet : NetworkBehaviour {
 	void OnTriggerEnter(Collider other) {
 		
 		if (other.tag == "Building" && other.GetComponent<BuildingBase>().ReturnOwner()!=owner && initialized && isServer) {
-			other.GetComponent<BuildingBase> ().TakeDamage (bulletDamage);
+			other.GetComponent<BuildingBase> ().CmdTakeDamage (bulletDamage);
 			CmdSpawnExplosion (gameObject.transform.position);
 			Destroy (gameObject);
 		}

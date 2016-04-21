@@ -10,6 +10,14 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 */
 
 public class PlayerController : NetworkBehaviour {
+
+//	NetworkClient client;
+//
+//	void Start() {
+//		client = new NetworkClient();
+//		client.RegisterHandler(MsgType.Rpc, EndMatch);
+//	}
+
 	public int playerInt;
 	public string playerID;
 	[SyncVar] public NetworkIdentity currentInhabitedBuilding;
@@ -24,6 +32,7 @@ public class PlayerController : NetworkBehaviour {
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
 	bool isInitialized;
+	[SerializeField] GameObject loseSphere;
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
@@ -176,18 +185,15 @@ public class PlayerController : NetworkBehaviour {
 
 	}
 
-	[Command]
-	public void CmdEndMatch(bool win) {
-		RpcEndMatch (win);
-	}
 
-	[ClientRpc]
-	void RpcEndMatch(bool didWin) {
-			if (didWin) {
-				GetComponent<GUIManager> ().endMatch.text = "Victory";
-			} else {
-				GetComponent<GUIManager> ().endMatch.text = "Defeat";
-			}
+
+	void EndMatch(NetworkInstanceId thisNetId) {
+		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
+			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			loseSphere.SetActive (true);
+		} else {
+			GetComponent<GUIManager> ().endMatch.text = "Victory";
+		}
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;

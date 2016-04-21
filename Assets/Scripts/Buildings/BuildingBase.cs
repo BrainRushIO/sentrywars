@@ -74,12 +74,20 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth = maxHealth;
 	}
 
-	public void TakeDamage (float amount) {
+	[Command]
+	public void CmdTakeDamage (float amount) {
 //		if (isServer) TODO
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players[owner].netId);
+			if (isOccupied) {
+				foreach (NetworkIdentity x in GameManager.players) {
+					if (x.netId == GameManager.players[owner].netId) {
+						NetworkServer.FindLocalObject (x.netId).SendMessage ("EndMatch", x.netId);
+					} 
+				}
+			}
 		}
 	}
 
@@ -114,16 +122,7 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerStats> ().CmdDecreaseEnergyUptake ();
 			break;
 		}
-//		if (thisOwnerId == GetComponent<NetworkIdentity>().netId) {
-//			Debug.Log ("fuckin christ");
-//			foreach (NetworkIdentity x in GameManager.players) {
-//				if (x.playerInt == owner) {
-//					x.CmdEndMatch (false);
-//				} else {
-//					x.CmdEndMatch (true);
-//				}
-//			}
-//		}
+
 		Destroy (gameObject);
 	}
 }
