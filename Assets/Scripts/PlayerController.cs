@@ -219,13 +219,11 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().enabled = false;
 //			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
-			if (playerInt == 0) {
 				NetworkServer.FindLocalObject (GameManager.players [1].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
 
-			} else {
 				NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
 
-			}
+
 		} 
 	}
 	[ClientRpc]
