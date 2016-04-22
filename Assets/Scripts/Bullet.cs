@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
-	int owner;
+	[SyncVar] int owner;
+	[SyncVar] NetworkIdentity ownerNetID;
 	float bulletSpeed = 10f;
 	float bulletDamage = 5f;
 	bool initialized;
@@ -18,17 +19,19 @@ public class Bullet : NetworkBehaviour {
 		transform.Translate (Vector3.forward * bulletSpeed);
 	}
 
-	public void InitializeBullet (int thisOwner) {
+	public void InitializeBullet (int thisOwner, NetworkIdentity ownerID) {
+		ownerNetID = ownerID;
 		owner = thisOwner;
 		initialized = true;
 		Destroy (gameObject, 5f);
 	}
 
 	void OnTriggerEnter(Collider other) {
-		
 		if (other.tag == "Building" && other.GetComponent<BuildingBase>().ReturnOwner()!=owner && initialized && isServer) {
-				other.GetComponent<BuildingBase> ().TakeDamage (bulletDamage);
-
+			if (other.GetComponent<BuildingBase> ().ReturnCurrentHealth () < bulletDamage && other.GetComponent<BuildingBase> ().isOccupied) {
+				CmdCallWinOnPlayer(ownerNetID.netId);
+			}
+			other.GetComponent<BuildingBase> ().TakeDamage (bulletDamage);
 			CmdSpawnExplosion (gameObject.transform.position);
 			Destroy (gameObject);
 		}
@@ -39,6 +42,11 @@ public class Bullet : NetworkBehaviour {
 		GameObject temp = (GameObject)Instantiate (explosionPrefab, thisPosition, Quaternion.identity);
 		Destroy (temp, 5f);
 		NetworkServer.Spawn (temp);
+	}
+
+	[Command]
+	public void CmdCallWinOnPlayer (NetworkInstanceId thisOwnerId) {
+		NetworkServer.FindLocalObject (thisOwnerId).GetComponent<PlayerController> ().CmdPlayerWin ();
 	}
 
 }
