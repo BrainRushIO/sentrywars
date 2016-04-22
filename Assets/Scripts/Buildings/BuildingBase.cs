@@ -23,6 +23,8 @@ public class BuildingBase : NetworkBehaviour {
 	[SyncVar] bool hasBeenDestroyed;
 	[SyncVar] NetworkIdentity linkedEnergyField;
 	[SyncVar] NetworkIdentity ownerID;
+	public NetworkIdentity ReturnOwnerNetID() {return ownerID;}
+
 	/// <summary>
 	/// The colored mesh that switches from player to player.
 	/// </summary>

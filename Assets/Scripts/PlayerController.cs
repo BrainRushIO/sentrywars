@@ -197,18 +197,7 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<InputController> ().enabled = false;
 		}
 	}
-
-//	void RpcEndMatch(NetworkInstanceId thisNetId) {
-//		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
-//			GetComponent<GUIManager> ().endMatch.text = "Defeat";
-//			loseSphere.SetActive (true);
-//		} else {
-//			GetComponent<GUIManager> ().endMatch.text = "Victory";
-//		}
-//		GetComponent<ConstructionController> ().enabled = false;
-//		GetComponent<PlayerController> ().enabled = false;
-//		GetComponent<InputController> ().enabled = false;
-//	}
+		
 	[Command]
 	public void CmdCheckIfPlayerDeath(NetworkInstanceId thisNetId) {
 		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
