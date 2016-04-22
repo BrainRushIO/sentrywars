@@ -199,7 +199,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 
-	void SelectConstructBuildingType(BuildingType thisBuildingType) {
+	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		if (currConstructionState == ConstructionState.PlacingBuilding) {
 			currentBuildingToConstructType = thisBuildingType;
 			SwitchBuildingTemplate ();

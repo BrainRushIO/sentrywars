@@ -5,10 +5,10 @@ using UnityEngine.Networking;
 
 public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 
-/*
-	Handle player movement through towers
-*/
 
+/// <summary>
+/// Handle player movement through towers.
+/// </summary>
 public class PlayerController : NetworkBehaviour {
 
 //	NetworkClient client;
@@ -57,16 +57,23 @@ public class PlayerController : NetworkBehaviour {
 			}
 		}
 
+		if( InputController.instance.playInVR && SteamVR.active ) {
+			if( InputController.instance.rightController.gripButtonDown ) {
+				InitializePlayer (0);
+				GameManager.gameHasStarted = true;
+			}
+		}else {
 			if (Input.GetKeyDown (KeyCode.P)) {
 				InitializePlayer (0);
 				GameManager.gameHasStarted = true;
 			}
-			if (!isInitialized) {
-				InhabitClosestBuilding ();
-			}
-			if (currentInhabitedBuilding != null) {
-				
-			GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+		}
+		if (!isInitialized) {
+			InhabitClosestBuilding ();
+		}
+		if (currentInhabitedBuilding != null) {
+			
+		GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
 
 		}
 	}
