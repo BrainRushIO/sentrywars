@@ -15,9 +15,11 @@ public class InputController : NetworkBehaviour {
 	public GameObject VRHandlers;
 	public WandController rightController, leftController;
 
-	Camera playerCamera;
-	float raycastDistance = 1000;
-	[SerializeField] GameObject targetBubble;
+	private ConstructionController constructionController;
+	private Camera playerCamera;
+	private float raycastDistance = 1000;
+	[SerializeField] private GameObject targetBubble;
+	private int buildingTypeSelected = 0;
 
 	void Awake() {
 		if( s_instance == null ) {
@@ -31,6 +33,7 @@ public class InputController : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
+		constructionController = GetComponent<ConstructionController>();
 		
 //		bool steamVrRunning = false;
 //		steamVrRunning = ( !SteamVR.active && playInVR ) ? true : false;
@@ -45,8 +48,10 @@ public class InputController : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		CheckWeaponChange();
 		if (GameManager.gameHasStarted) {
 			if( SteamVR.active && playInVR ) {
+
 				if( rightController.triggerButtonDown == true ) {
 					Debug.LogWarning( "Right Controller trigger down" );
 					OnRightTriggerFingerDown();
@@ -89,6 +94,32 @@ public class InputController : NetworkBehaviour {
 		if (Physics.Raycast (ray, out hit, raycastDistance)) {
 			OnSendPointerInfo (hit);
 		}
+	}
+
+	private void CheckWeaponChange() {
+		if( rightController.touchPadTouchUp ) {
+			SelectNewBuilding();
+			return;
+		}
+
+		if( rightController.touchPadTouchPosition.magnitude == 0f )
+			return;
+
+		Vector2 normalizedDir = rightController.touchPadTouchPosition.normalized;
+		float deg = Mathf.Atan2( normalizedDir.y, normalizedDir.x ) * Mathf.Rad2Deg;
+		if( deg < 0f ) {
+			deg += 360f;
+		}
+
+		float numOptions = 3f; // Number of BuildingTypes in Constructor.cs
+		float startPoint =  (0.5f-(1f / numOptions)) / 2f; // We want th first option to take up the top hemisphere (0.5f) 
+		deg /= 360f;
+
+		buildingTypeSelected = ( deg >= startPoint ) ? Mathf.FloorToInt((deg)*numOptions) : (int)numOptions-1;
+	}
+
+	private void SelectNewBuilding() {
+		constructionController.SelectConstructBuildingType((BuildingType)buildingTypeSelected);
 	}
 
 	public delegate void RightTriggerFingerDownAction();

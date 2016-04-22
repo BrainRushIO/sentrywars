@@ -2,26 +2,34 @@
 using System.Collections;
 
 public class WandController : MonoBehaviour {
+	// Grip Button
 	private Valve.VR.EVRButtonId gripButton = Valve.VR.EVRButtonId.k_EButton_Grip;
 	public bool gripButtonDown = false;
 	public bool gripButtonUp = false;
 	public bool gripButtonPressed = false;
 
 
+	// Trigger
 	private Valve.VR.EVRButtonId triggerButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger;
 	public bool triggerButtonDown = false;
 	public bool triggerButtonUp = false;
 	public bool triggerButtonPressed = false;
 
+
+	// TouchPad
+	private Valve.VR.EVRButtonId touchPad = Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad;
+	public Vector2 touchPadTouchPosition = Vector2.zero;
+	public bool touchPadTouchDown = false;
+	public bool touchPadTouchUp = false;
+
+
 	private SteamVR_Controller.Device controller { get { return SteamVR_Controller.Input((int)trackedObj.index); } }
 	private SteamVR_TrackedObject trackedObj;
 
-	// Use this for initialization
 	void Start () {
 		trackedObj = GetComponent<SteamVR_TrackedObject>();
 	}
-
-	// Update is called once per frame
+		
 	void Update () {
 		if (controller == null) {
 			Debug.Log("Controller not initialized");
@@ -35,6 +43,15 @@ public class WandController : MonoBehaviour {
 		triggerButtonDown = controller.GetPressDown(triggerButton);
 		triggerButtonUp = controller.GetPressUp(triggerButton);
 		triggerButtonPressed = controller.GetPress(triggerButton);
+
+
+		touchPadTouchDown = controller.GetTouchDown(touchPad);
+		touchPadTouchUp = controller.GetTouchUp(touchPad);
+		if( controller.GetTouch(touchPad) ) {
+			touchPadTouchPosition = controller.GetAxis(touchPad);
+		} else {
+			touchPadTouchPosition = Vector3.zero;
+		}
 
 		if (gripButtonDown) {
 			Debug.Log("Grip Button was just pressed");
