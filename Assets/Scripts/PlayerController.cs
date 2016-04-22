@@ -46,10 +46,6 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
-		if (currentInhabitedBuilding == null) {
-			Lose ();
-		}
-
 		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
 			if( GetComponent<InputController>().rightController.gripButtonDown ) {
 				InitializePlayer (0);
@@ -186,51 +182,38 @@ public class PlayerController : NetworkBehaviour {
 		GetComponent<ConstructionController> ().BuildInitialBuilding ();
 
 	}
+		
+	[Command]
+	public void CmdPlayerLose() {
+		if (isServer) {
 
-	void Lose() {
-		if (isInitialized) {
-			isInitialized = false;
-			loseSphere.SetActive (true);
+		}
+	} 
+
+	[ClientRpc]
+	void RpcPlayerLose() {
+		if (isLocalPlayer) {
 			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			loseSphere.SetActive (true);
 			GetComponent<ConstructionController> ().enabled = false;
-			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
 		}
 	}
-
-//	void RpcEndMatch(NetworkInstanceId thisNetId) {
-//		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
-//			GetComponent<GUIManager> ().endMatch.text = "Defeat";
-//			loseSphere.SetActive (true);
-//		} else {
-//			GetComponent<GUIManager> ().endMatch.text = "Victory";
-//		}
-//		GetComponent<ConstructionController> ().enabled = false;
-//		GetComponent<PlayerController> ().enabled = false;
-//		GetComponent<InputController> ().enabled = false;
-//	}
-	[Command]
-	public void CmdCheckIfPlayerDeath(NetworkInstanceId thisNetId) {
-		if (thisNetId == GetComponent<NetworkIdentity>().netId) {
-			GetComponent<GUIManager> ().endMatch.text = "Defeat";
-			if (isLocalPlayer) {
-				loseSphere.SetActive (true);
-			}
-			GetComponent<ConstructionController> ().enabled = false;
-//			GetComponent<PlayerController> ().enabled = false;
-			GetComponent<InputController> ().enabled = false;
-
-
-
-		} 
-	}
+		
 	[Command]
 	public void CmdPlayerWin () {
-		GetComponent<ConstructionController> ().enabled = false;
-//		GetComponent<PlayerController> ().enabled = false;
-		GetComponent<InputController> ().enabled = false;
-		GetComponent<GUIManager> ().endMatch.text = "Victory";
+		if (isServer) {
+			RpcPlayerWin ();
+		}
 
+	}
+	[ClientRpc]
+	void RpcPlayerWin () {
+		if (isLocalPlayer) {
+			GetComponent<ConstructionController> ().enabled = false;
+			GetComponent<InputController> ().enabled = false;
+			GetComponent<GUIManager> ().endMatch.text = "Victory";
+		}
 	}
 
 

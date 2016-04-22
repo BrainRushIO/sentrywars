@@ -147,7 +147,7 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerStats> ().CmdDecreaseEnergyUptake ();
 			break;
 		}
-		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdCheckIfPlayerDeath(GetComponent<NetworkIdentity>().netId);
+		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdPlayerLose(GetComponent<NetworkIdentity>().netId);
 		Destroy (gameObject);
 	}
 
