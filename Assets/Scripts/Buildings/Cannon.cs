@@ -52,7 +52,7 @@ public class Cannon : NetworkBehaviour {
 		tempBullet.transform.LookAt (target.transform.position+ new Vector3(0,5f,0));
 		tempBullet.GetComponent<Bullet> ().InitializeBullet (bulletOwner);
 		cooldownTimer = fireCooldown;
-		NetworkServer.Spawn (tempBullet);
+		NetworkServer.SpawnWithClientAuthority (tempBullet, GameManager.players[bulletOwner].gameObject);
 	}
 
 	[Command]

@@ -62,7 +62,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 		}
 		if (!isInitialized) {
-			InhabitClosestBuilding ();
+			CmdInhabitClosestBuilding ();
 		}
 		if (currentInhabitedBuilding != null) {
 			
@@ -217,31 +217,27 @@ public class PlayerController : NetworkBehaviour {
 				loseSphere.SetActive (true);
 			}
 			GetComponent<ConstructionController> ().enabled = false;
-//			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
-
-
-
 		} 
 	}
+
 	[Command]
 	public void CmdPlayerWin () {
 		GetComponent<ConstructionController> ().enabled = false;
-//		GetComponent<PlayerController> ().enabled = false;
 		GetComponent<InputController> ().enabled = false;
 		GetComponent<GUIManager> ().endMatch.text = "Victory";
 
 	}
 
-
-	void InhabitClosestBuilding () {
+	[Command]
+	void CmdInhabitClosestBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
 				Debug.Log ("Init building from player " + playerID);
-				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt, GetComponent<NetworkIdentity>());
 				isInitialized = true;
 			}
 		}

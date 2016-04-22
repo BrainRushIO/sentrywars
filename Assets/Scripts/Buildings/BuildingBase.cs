@@ -21,7 +21,8 @@ public class BuildingBase : NetworkBehaviour {
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
 	[SyncVar] bool hasBeenDestroyed;
-	NetworkIdentity linkedEnergyField;
+	[SyncVar] NetworkIdentity linkedEnergyField;
+	[SyncVar] NetworkIdentity ownerID;
 	/// <summary>
 	/// The colored mesh that switches from player to player.
 	/// </summary>
@@ -78,45 +79,14 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public void TakeDamage (float amount) {
-//		if (isServer) TODO
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-
-			//GhettoFix for Win state on player
-			Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, 1000000f);
-			foreach (Collider x in nearbyBuildings) {
-				if (x.GetComponent<BuildingBase>() != null) {
-					if (x.GetComponent<BuildingBase> ().isOccupied && x.GetComponent<BuildingBase> ().owner != owner) {
-						CmdWinGameForBuildingOwner(GameManager.players [x.GetComponent<BuildingBase> ().owner].netId);
-					}
-				}
-			}
-//			if (isOccupied) {
-//				RpcSendEndMatchMessages(GameManager.players [owner].netId);
-//				CmdSendEndMatchMessages(GameManager.players [owner].netId);
-//			}
+			CmdDestroyBuilding(GameManager.players [owner].netId);
 		}
-
 	}
-//	[Command]
-//	void CmdSendEndMatchMessages(NetworkInstanceId thisNetId) {
-//		foreach (NetworkConnection c in NetworkServer.connections) {
-//			foreach (NetworkInstanceId x in c.clientOwnedObjects) {
-//				NetworkServer.FindLocalObject (x).SendMessage ("CmdPlayerWin", thisNetId, SendMessageOptions.DontRequireReceiver);
-//			}
-//		}
-//	}
-//	[ClientRpc]
-//	void RpcSendEndMatchMessages(NetworkInstanceId thisNetId) {
-//		foreach (NetworkConnection c in NetworkServer.connections) {
-//			foreach (NetworkInstanceId x in c.clientOwnedObjects) {
-//				NetworkServer.FindLocalObject (x).SendMessage ("CmdPlayerWin", thisNetId, SendMessageOptions.DontRequireReceiver);
-//			}
-//		}
-//	}
 
-	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null) {
+	public void InitializeBuilding(int thisOwner, NetworkIdentity thisOwnerId, NetworkIdentity thisLinkedEnergyField = null) {
 		owner = thisOwner;
 //		towerNetID = gameObject.GetComponent<NetworkBehaviour> ().netId;
 		if (thisLinkedEnergyField != null) {
@@ -149,11 +119,5 @@ public class BuildingBase : NetworkBehaviour {
 		}
 		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdCheckIfPlayerDeath(GetComponent<NetworkIdentity>().netId);
 		Destroy (gameObject);
-	}
-
-	[Command]
-	public void CmdWinGameForBuildingOwner (NetworkInstanceId thisOwnerId) {
-		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdPlayerWin();
-
 	}
 }
