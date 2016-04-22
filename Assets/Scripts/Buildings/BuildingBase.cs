@@ -82,7 +82,16 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-			CmdDestroyBuilding(GameManager.players [owner].netId);
+
+			//GhettoFix for Win state on player
+			Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, 1000000f);
+			foreach (Collider x in nearbyBuildings) {
+				if (x.GetComponent<BuildingBase>() != null) {
+					if (x.GetComponent<BuildingBase> ().isOccupied && x.GetComponent<BuildingBase> ().owner != owner) {
+						CmdWinGameForBuildingOwner(GameManager.players [x.GetComponent<BuildingBase> ().owner].netId);
+					}
+				}
+			}
 //			if (isOccupied) {
 //				RpcSendEndMatchMessages(GameManager.players [owner].netId);
 //				CmdSendEndMatchMessages(GameManager.players [owner].netId);
@@ -140,5 +149,11 @@ public class BuildingBase : NetworkBehaviour {
 		}
 		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdCheckIfPlayerDeath(GetComponent<NetworkIdentity>().netId);
 		Destroy (gameObject);
+	}
+
+	[Command]
+	public void CmdWinGameForBuildingOwner (NetworkInstanceId thisOwnerId) {
+		NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerController> ().CmdPlayerWin();
+
 	}
 }

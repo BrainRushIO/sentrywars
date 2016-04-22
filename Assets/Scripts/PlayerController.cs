@@ -49,16 +49,9 @@ public class PlayerController : NetworkBehaviour {
 		if (currentInhabitedBuilding == null) {
 			Lose ();
 		}
-		if (Input.GetKeyDown (KeyCode.K)) {
-			foreach (NetworkConnection x in NetworkServer.connections) {
-				foreach (NetworkInstanceId y in x.clientOwnedObjects) {
-					print (y);
-				}
-			}
-		}
 
-		if( InputController.instance.playInVR && SteamVR.active ) {
-			if( InputController.instance.rightController.gripButtonDown ) {
+		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
+			if( GetComponent<InputController>().rightController.gripButtonDown ) {
 				InitializePlayer (0);
 				GameManager.gameHasStarted = true;
 			}
@@ -226,15 +219,13 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().enabled = false;
 //			GetComponent<PlayerController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
-				NetworkServer.FindLocalObject (GameManager.players [1].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
 
-				NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().RpcPlayerWin ();
 
 
 		} 
 	}
-	[ClientRpc]
-	public void RpcPlayerWin () {
+	[Command]
+	public void CmdPlayerWin () {
 		GetComponent<ConstructionController> ().enabled = false;
 //		GetComponent<PlayerController> ().enabled = false;
 		GetComponent<InputController> ().enabled = false;

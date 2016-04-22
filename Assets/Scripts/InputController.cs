@@ -21,14 +21,14 @@ public class InputController : NetworkBehaviour {
 	[SerializeField] private GameObject targetBubble;
 	private int buildingTypeSelected = 0;
 
-	void Awake() {
-		if( s_instance == null ) {
-			s_instance = this;
-		} else {
-			Debug.Log( "Destroying additional InputController in object: " +gameObject.name );
-			DestroyImmediate( this.gameObject );
-		}
-	}
+//	void Awake() {
+//		if( s_instance == null ) {
+//			s_instance = this;
+//		} else {
+//			Debug.Log( "Destroying additional InputController in object: " +gameObject.name );
+//			DestroyImmediate( this.gameObject );
+//		}
+//	}
 
 	// Use this for initialization
 	void Start () {
