@@ -16,8 +16,10 @@ public class ConstructionController : NetworkBehaviour {
 	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInConstructor = true, isTargetingEnergyField;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
-	float buildCoolDown = 3f, buildCooldownTimer;
-
+	float buildCoolDown = .3f, buildCooldownTimer;
+	public float ReturnCooldownTimer() {
+		return buildCooldownTimer;
+	}
 	const float GRID_SPACING = 10f;
 	public const float CONSTRUCTION_RANGE = 100f;
 

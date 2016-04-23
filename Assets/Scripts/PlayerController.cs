@@ -11,6 +11,8 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 /// </summary>
 public class PlayerController : NetworkBehaviour {
 
+	enum PlayerMode {CoolDown, Active};
+
 	public int playerInt;
 	public string playerID;
 	[SyncVar] public NetworkIdentity currentInhabitedBuilding;
@@ -69,6 +71,7 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().SwitchToInactive ();
 			return;
 		}
+		print (thisHit.transform.tag);
 		switch(thisHit.transform.tag){
 		case "Building":
 			currentTargetType = TargetTypes.Building;
@@ -90,7 +93,7 @@ public class PlayerController : NetworkBehaviour {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
-			}
+			} 
 			break;
 
 		default :

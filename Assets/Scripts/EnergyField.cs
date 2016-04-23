@@ -7,7 +7,12 @@ public class EnergyField : NetworkBehaviour {
 
 	[Command]
 	public void CmdSetIsOccupied(bool val) {
+		RpcSetIsOccupied(val);
+	}
+	[ClientRpc]
+	void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
+
 	}
 
 	public bool ReturnIsOccupied() {
