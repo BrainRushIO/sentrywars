@@ -25,7 +25,7 @@ public class PlayerController : NetworkBehaviour {
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
 	bool isInitialized;
-	[SerializeField] GameObject loseSphere;
+	[SerializeField] GameObject loseSphere, gameplayGui;
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
@@ -197,6 +197,7 @@ public class PlayerController : NetworkBehaviour {
 			loseSphere.SetActive (true);
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
+			gameplayGui.SetActive (false);
 		}
 	}
 
@@ -213,6 +214,8 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
 			GetComponent<GUIManager> ().endMatch.text = "Victory";
+			gameplayGui.SetActive (false);
+
 		}
 	}
 
