@@ -11,13 +11,6 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 /// </summary>
 public class PlayerController : NetworkBehaviour {
 
-//	NetworkClient client;
-//
-//	void Start() {
-//		client = new NetworkClient();
-//		client.RegisterHandler(MsgType.Rpc, EndMatch);
-//	}
-
 	public int playerInt;
 	public string playerID;
 	[SyncVar] public NetworkIdentity currentInhabitedBuilding;
@@ -58,7 +51,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 		}
 		if (!isInitialized) {
-			CmdInhabitClosestBuilding ();
+			InhabitClosestBuilding ();
 		}
 		if (currentInhabitedBuilding != null) {
 			
@@ -154,17 +147,24 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void TeleportToBuilding () {
+		CmdSetIsOccupiedOnCurBuilding (currentInhabitedBuilding, currentTarget.GetComponent<NetworkIdentity> ());
 		currentInhabitedBuilding = currentTarget.GetComponent<NetworkIdentity>();
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
- 		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
-		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
 		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
 		if (currentInhabitedBuildingType != BuildingType.Constructor) {
 			GetComponent<ConstructionController> ().isInConstructor = false;
 		} else {
 			GetComponent<ConstructionController> ().isInConstructor = true;
+		}
+	}
+
+	[Command] 
+	void CmdSetIsOccupiedOnCurBuilding(NetworkIdentity curr, NetworkIdentity target){
+		if (isServer) {
+			NetworkServer.FindLocalObject(curr.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (false);
+			NetworkServer.FindLocalObject(target.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
 		}
 	}
 
@@ -216,15 +216,14 @@ public class PlayerController : NetworkBehaviour {
 		}
 	}
 
-	[Command]
-	void CmdInhabitClosestBuilding () {
+	void InhabitClosestBuilding () {
 		BuildingBase[] allBuildings = FindObjectsOfType<BuildingBase> ();
 		foreach (BuildingBase x in allBuildings) {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
 				Debug.Log ("Init building from player " + playerID);
-				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt, GetComponent<NetworkIdentity>());
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
 				isInitialized = true;
 			}
 		}

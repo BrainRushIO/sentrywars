@@ -156,9 +156,9 @@ public class ConstructionController : NetworkBehaviour {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
 		if (isEnergy) {
-			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID, GetComponent<NetworkIdentity>(), thisEnergyPool);
+			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID, thisEnergyPool);
 		} else {
-			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID, GetComponent<NetworkIdentity>());
+			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		}
 		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
 

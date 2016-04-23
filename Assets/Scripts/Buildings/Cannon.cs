@@ -33,7 +33,7 @@ public class Cannon : NetworkBehaviour {
 			} else if (cooldownTimer <= 0 && NetworkServer.FindLocalObject(currentTarget)!=null) {
 				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -15f, 0),
 					currentTarget,
-					GetComponent<BuildingBase>().ReturnOwner(), GetComponent<BuildingBase>().ReturnOwnerNetID());
+					GetComponent<BuildingBase>().ReturnOwner());
 			}
 			radarSweepTimer += Time.deltaTime;
 
@@ -45,14 +45,14 @@ public class Cannon : NetworkBehaviour {
 	}
 
 	[Command]
-	void CmdFireAtTarget(Vector3 thisPosition, NetworkInstanceId targetID, int bulletOwner, NetworkIdentity thisOwnerID) {
+	void CmdFireAtTarget(Vector3 thisPosition, NetworkInstanceId targetID, int bulletOwner) {
 		GameObject tempBullet = (GameObject)Instantiate (bulletPrefab, 
 			thisPosition, Quaternion.identity);
 		GameObject target = NetworkServer.FindLocalObject (targetID);
 		tempBullet.transform.LookAt (target.transform.position+ new Vector3(0,5f,0));
-		tempBullet.GetComponent<Bullet> ().InitializeBullet (bulletOwner, thisOwnerID);
+		tempBullet.GetComponent<Bullet> ().InitializeBullet (bulletOwner);
 		cooldownTimer = fireCooldown;
-		NetworkServer.SpawnWithClientAuthority (tempBullet, GameManager.players[bulletOwner].gameObject);
+		NetworkServer.Spawn (tempBullet);
 	}
 
 	[Command]
