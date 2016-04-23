@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class ConstructionController : NetworkBehaviour {
-	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding};
+	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding, Cooldown};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	BuildingType currentBuildingToConstructType;
 
@@ -111,7 +111,10 @@ public class ConstructionController : NetworkBehaviour {
 				break;
 			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
+				currConstructionState = ConstructionState.Cooldown;
 
+				break;
+			case ConstructionState.Cooldown:
 				buildCooldownTimer += Time.deltaTime;
 				if (buildCooldownTimer > buildCoolDown) {
 					buildCooldownTimer = 0;
