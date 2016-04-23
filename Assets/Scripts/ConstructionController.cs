@@ -16,6 +16,7 @@ public class ConstructionController : NetworkBehaviour {
 	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInConstructor = true, isTargetingEnergyField;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
+	float buildCoolDown = 3f, buildCooldownTimer;
 
 	const float GRID_SPACING = 10f;
 	public const float CONSTRUCTION_RANGE = 100f;
@@ -109,8 +110,14 @@ public class ConstructionController : NetworkBehaviour {
 				}
 				break;
 			case ConstructionState.SpawnBuilding:
-				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController>().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
-				currConstructionState = ConstructionState.Inactive;
+				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
+
+				buildCooldownTimer += Time.deltaTime;
+				if (buildCooldownTimer > buildCoolDown) {
+					buildCooldownTimer = 0;
+					currConstructionState = ConstructionState.Inactive;
+				}
+					
 				break;
 			}
 		} 
@@ -118,7 +125,11 @@ public class ConstructionController : NetworkBehaviour {
 
 	void PlaceBuildingTemplate (RaycastHit hit) {
 		if (currentBuildingToConstruct != null) {
-			buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
+			if (isTargetingEnergyField) {
+				buildingPlacementPosition = ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
+			} else {
+				buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
+			}
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
 	}
@@ -128,7 +139,7 @@ public class ConstructionController : NetworkBehaviour {
 		float zCoordinate = thisPoint.z;
 		xCoordinate = RoundToGridSpacing (xCoordinate);
 		zCoordinate = RoundToGridSpacing (zCoordinate);
-		Vector3 output = new Vector3 (xCoordinate, thisPoint.y, zCoordinate);
+		Vector3 output = new Vector3 (xCoordinate, 0, zCoordinate);
 		return output;
 	}
 

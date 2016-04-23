@@ -86,11 +86,11 @@ public class PlayerController : NetworkBehaviour {
 			}
 			break;
 		case "Energy":
-			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied()) {
+			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
-			} 
+			}
 			break;
 
 		default :
@@ -122,7 +122,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
 			TeleportToBuilding ();
 		} else {
 			switch (currentInhabitedBuildingType) {
@@ -215,7 +215,6 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<InputController> ().enabled = false;
 			GetComponent<GUIManager> ().endMatch.text = "Victory";
 			gameplayGui.SetActive (false);
-
 		}
 	}
 
