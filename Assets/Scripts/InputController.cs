@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 /// </summary>
 public class InputController : NetworkBehaviour {
 	private static InputController s_instance;
-	public static InputController instance {get {return s_instance;}}
 
 	public bool playInVR = false, isMouseKeyboardDebug;
 	public Transform rightControllerRaycastOrigin, leftControllerRaycastOrigin;

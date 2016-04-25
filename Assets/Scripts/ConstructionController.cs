@@ -16,10 +16,7 @@ public class ConstructionController : NetworkBehaviour {
 	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInConstructor = true, isTargetingEnergyField;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
-	float buildCoolDown = .3f, buildCooldownTimer;
-	public float ReturnCooldownTimer() {
-		return buildCooldownTimer;
-	}
+
 	const float GRID_SPACING = 10f;
 	public const float CONSTRUCTION_RANGE = 100f;
 
@@ -36,13 +33,13 @@ public class ConstructionController : NetworkBehaviour {
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
 
 	void OnEnable() {
-		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
+		PlayerController.OnSendPlayerInputInfo += PlaceBuildingTemplate;
 		InputController.OnRightTriggerFingerDown += HandleConstructionCall;
 
 	}
 
 	void OnDisable() {
-		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
+		PlayerController.OnSendPlayerInputInfo -= PlaceBuildingTemplate;
 		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
 		Destroy (currentBuildingToConstruct);
 	}
@@ -113,16 +110,8 @@ public class ConstructionController : NetworkBehaviour {
 				break;
 			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
-				currConstructionState = ConstructionState.Cooldown;
-
-				break;
-			case ConstructionState.Cooldown:
-				buildCooldownTimer += Time.deltaTime;
-				if (buildCooldownTimer > buildCoolDown) {
-					buildCooldownTimer = 0;
-					currConstructionState = ConstructionState.Inactive;
-				}
-					
+				GetComponent<PlayerController> ().SetCoolDown ();
+				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
 		} 

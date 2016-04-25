@@ -12,6 +12,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 public class PlayerController : NetworkBehaviour {
 
 	enum PlayerMode {CoolDown, Active};
+	PlayerMode curPlayerMode = PlayerMode.Active;
 
 	public int playerInt;
 	public string playerID;
@@ -29,6 +30,19 @@ public class PlayerController : NetworkBehaviour {
 	bool isInitialized;
 	[SerializeField] GameObject loseSphere, gameplayGui;
 
+	public delegate void SendPlayerInputInfo(RaycastHit thisHit);
+	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
+	RaycastHit currentRayCastHit;
+
+	float buildCoolDown = .3f, buildCooldownTimer;
+	public float ReturnCooldownTimer() {
+		return buildCooldownTimer;
+	}
+	public void SetCoolDown () {
+		buildCooldownTimer = 0;
+		curPlayerMode = PlayerMode.CoolDown;
+	}
+
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
 		InputController.OnRightTriggerFingerDown += HandleRightTriggerDown;
@@ -41,6 +55,18 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
+		print (curPlayerMode);
+		switch (curPlayerMode) {
+		case PlayerMode.CoolDown:
+			buildCooldownTimer += Time.deltaTime;
+			if (buildCooldownTimer > buildCoolDown) {
+				curPlayerMode = PlayerMode.Active;
+			}
+			break;
+		case PlayerMode.Active:
+			OnSendPlayerInputInfo (currentRayCastHit);
+			break;
+		}
 		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
 			if( GetComponent<InputController>().rightController.gripButtonDown ) {
 				InitializePlayer (0);
@@ -52,13 +78,13 @@ public class PlayerController : NetworkBehaviour {
 				GameManager.gameHasStarted = true;
 			}
 		}
+
+		//For Beginning of Game
 		if (!isInitialized) {
 			InhabitClosestBuilding ();
 		}
 		if (currentInhabitedBuilding != null) {
-			
-		GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-
+			GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
 		}
 	}
 		
@@ -66,12 +92,12 @@ public class PlayerController : NetworkBehaviour {
 		if (currentInhabitedBuilding == null) {
 			return;
 		}
+		currentRayCastHit = thisHit;
 		currentTarget = thisHit.collider.gameObject;
 		if (currentTarget == currentInhabitedBuilding) {
 			GetComponent<ConstructionController> ().SwitchToInactive ();
 			return;
 		}
-		print (thisHit.transform.tag);
 		switch(thisHit.transform.tag){
 		case "Building":
 			currentTargetType = TargetTypes.Building;
@@ -102,7 +128,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 		HandleSelectBuildingVFX ();
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
-		}
+	}
 
 	void HandleSelectBuildingVFX () {
 		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
@@ -121,9 +147,7 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		}
-
 	}
-
 	void PerformActionOnTargetedBuilding() {
 		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
 			TeleportToBuilding ();
@@ -233,5 +257,4 @@ public class PlayerController : NetworkBehaviour {
 			}
 		}
 	}
-
 }
