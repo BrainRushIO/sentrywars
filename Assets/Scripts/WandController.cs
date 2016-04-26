@@ -21,6 +21,9 @@ public class WandController : MonoBehaviour {
 	public Vector2 touchPadTouchPosition = Vector2.zero;
 	public bool touchPadTouchDown = false;
 	public bool touchPadTouchUp = false;
+	public bool touchPadButtonUp = false;
+	public bool touchPadButtonDown = false;
+	public bool touchPadButtonPress = false;
 
 
 	private SteamVR_Controller.Device controller { get { return SteamVR_Controller.Input((int)trackedObj.index); } }
@@ -47,6 +50,10 @@ public class WandController : MonoBehaviour {
 
 		touchPadTouchDown = controller.GetTouchDown(touchPad);
 		touchPadTouchUp = controller.GetTouchUp(touchPad);
+		touchPadButtonDown = controller.GetPressDown( touchPad );
+		touchPadButtonUp = controller.GetPressUp( touchPad );
+		touchPadButtonPress = controller.GetPress( touchPad );
+
 		if( controller.GetTouch(touchPad) ) {
 			touchPadTouchPosition = controller.GetAxis(touchPad);
 		} else {

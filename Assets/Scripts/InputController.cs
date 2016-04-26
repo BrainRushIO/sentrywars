@@ -83,9 +83,7 @@ public class InputController : NetworkBehaviour {
 		RaycastHit hit = new RaycastHit();
 
 		if( SteamVR.active && playInVR ) {
-			Debug.Log( "Getting ray from Controller" );
 			ray = new Ray( rightControllerRaycastOrigin.position, rightControllerRaycastOrigin.forward );
-			Debug.Log( "Ray: " + ray );
 		} else {
 			ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 		}
@@ -96,25 +94,31 @@ public class InputController : NetworkBehaviour {
 	}
 
 	private void CheckWeaponChange() {
-		if( rightController.touchPadTouchUp ) {
+		if( rightController.touchPadButtonDown ) {
+			// Cycle through building types. 3 is the number of items in the public BuildingType enum.
+			if( buildingTypeSelected+1 < 3 )
+				buildingTypeSelected++;
+			else
+				buildingTypeSelected = 0;
+
 			SelectNewBuilding();
 			return;
 		}
 
-		if( rightController.touchPadTouchPosition.magnitude == 0f )
-			return;
-
-		Vector2 normalizedDir = rightController.touchPadTouchPosition.normalized;
-		float deg = Mathf.Atan2( normalizedDir.y, normalizedDir.x ) * Mathf.Rad2Deg;
-		if( deg < 0f ) {
-			deg += 360f;
-		}
-
-		float numOptions = 3f; // Number of BuildingTypes in Constructor.cs
-		float startPoint =  (0.5f-(1f / numOptions)) / 2f; // We want th first option to take up the top hemisphere (0.5f) 
-		deg /= 360f;
-
-		buildingTypeSelected = ( deg >= startPoint ) ? Mathf.FloorToInt((deg)*numOptions) : (int)numOptions-1;
+//		if( rightController.touchPadTouchPosition.magnitude == 0f )
+//			return;
+//
+//		Vector2 normalizedDir = rightController.touchPadTouchPosition.normalized;
+//		float deg = Mathf.Atan2( normalizedDir.y, normalizedDir.x ) * Mathf.Rad2Deg;
+//		if( deg < 0f ) {
+//			deg += 360f;
+//		}
+//
+//		float numOptions = 3f; // Number of BuildingTypes in Constructor.cs
+//		float startPoint =  (0.5f-(1f / numOptions)) / 2f; // We want th first option to take up the top hemisphere (0.5f) 
+//		deg /= 360f;
+//
+//		buildingTypeSelected = ( deg >= startPoint ) ? Mathf.FloorToInt((deg)*numOptions) : (int)numOptions-1;
 	}
 
 	private void SelectNewBuilding() {
