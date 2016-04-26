@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
 	int owner;
+	[SyncVar] NetworkIdentity ownerNetID;
 	float bulletSpeed = 10f;
 	float bulletDamage = 5f;
 	bool initialized;
@@ -25,7 +26,6 @@ public class Bullet : NetworkBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other) {
-		
 		if (other.tag == "Building" && other.GetComponent<BuildingBase>().ReturnOwner()!=owner && initialized && isServer) {
 			other.GetComponent<BuildingBase> ().TakeDamage (bulletDamage);
 			CmdSpawnExplosion (gameObject.transform.position);
@@ -39,5 +39,4 @@ public class Bullet : NetworkBehaviour {
 		Destroy (temp, 5f);
 		NetworkServer.Spawn (temp);
 	}
-
 }

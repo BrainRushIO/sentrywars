@@ -5,11 +5,15 @@ using UnityEngine.Networking;
 
 public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 
-/*
-	Handle player movement through towers
-*/
 
+/// <summary>
+/// Handle player movement through towers.
+/// </summary>
 public class PlayerController : NetworkBehaviour {
+
+	enum PlayerMode {CoolDown, Active};
+	PlayerMode curPlayerMode = PlayerMode.Active;
+
 	public int playerInt;
 	public string playerID;
 	[SyncVar] public NetworkIdentity currentInhabitedBuilding;
@@ -24,6 +28,20 @@ public class PlayerController : NetworkBehaviour {
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
 	bool isInitialized;
+	[SerializeField] GameObject loseSphere, gameplayGui;
+
+	public delegate void SendPlayerInputInfo(RaycastHit thisHit);
+	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
+	RaycastHit currentRayCastHit;
+
+	float buildCoolDown = .3f, buildCooldownTimer;
+	public float ReturnCooldownTimer() {
+		return buildCooldownTimer;
+	}
+	public void SetCoolDown () {
+		buildCooldownTimer = 0;
+		curPlayerMode = PlayerMode.CoolDown;
+	}
 
 	void OnEnable() {
 		InputController.OnSendPointerInfo += HandleRightHandTargeting;
@@ -35,29 +53,46 @@ public class PlayerController : NetworkBehaviour {
 		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
 
 	}
-		
-	[SerializeField] Text thisBuildingHP, thisBuildingCooldown, youlose;
 
 	void Update() {
+		print (curPlayerMode);
+		switch (curPlayerMode) {
+		case PlayerMode.CoolDown:
+			buildCooldownTimer += Time.deltaTime;
+			if (buildCooldownTimer > buildCoolDown) {
+				curPlayerMode = PlayerMode.Active;
+			}
+			break;
+		case PlayerMode.Active:
+			OnSendPlayerInputInfo (currentRayCastHit);
+			break;
+		}
+		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
+			if( GetComponent<InputController>().rightController.gripButtonDown ) {
+				InitializePlayer (0);
+				GameManager.gameHasStarted = true;
+			}
+		}else {
 			if (Input.GetKeyDown (KeyCode.P)) {
 				InitializePlayer (0);
 				GameManager.gameHasStarted = true;
 			}
-			if (!isInitialized) {
-				InhabitClosestBuilding ();
-			}
-			if (currentInhabitedBuilding != null) {
-				if (thisBuildingHP != null)
-					thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
-				if (thisBuildingCooldown != null)
-					thisBuildingCooldown.text = "This Tower's Cooldown: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentCooldown ().ToString ("F0");
-			}
+		}
+
+		//For Beginning of Game
+		if (!isInitialized) {
+			InhabitClosestBuilding ();
+		}
+		if (currentInhabitedBuilding != null) {
+			GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+		}
 	}
 		
 	void HandleRightHandTargeting(RaycastHit thisHit) {
 		if (currentInhabitedBuilding == null) {
 			return;
 		}
+		currentRayCastHit = thisHit;
 		currentTarget = thisHit.collider.gameObject;
 		if (currentTarget == currentInhabitedBuilding) {
 			GetComponent<ConstructionController> ().SwitchToInactive ();
@@ -80,7 +115,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 			break;
 		case "Energy":
-			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied()) {
+			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
@@ -93,7 +128,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 		HandleSelectBuildingVFX ();
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
-		}
+	}
 
 	void HandleSelectBuildingVFX () {
 		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
@@ -112,17 +147,19 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		}
-
 	}
-
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt) {
+		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
 			TeleportToBuilding ();
 		} else {
 			switch (currentInhabitedBuildingType) {
 			case BuildingType.Cannon:
-				NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
-				CmdChangeTarget (tempTargeted);
+				if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
+					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+					CmdChangeTarget (tempTargeted);
+				} else {
+					GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
+				}
 				break;
 			}
 		}
@@ -137,17 +174,24 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void TeleportToBuilding () {
+		CmdSetIsOccupiedOnCurBuilding (currentInhabitedBuilding, currentTarget.GetComponent<NetworkIdentity> ());
 		currentInhabitedBuilding = currentTarget.GetComponent<NetworkIdentity>();
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
- 		currentInhabitedBuilding.GetComponent<BuildingBase> ().isOccupied = false;
-		currentTarget.GetComponent<BuildingBase> ().isOccupied = true;
 		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
 		if (currentInhabitedBuildingType != BuildingType.Constructor) {
 			GetComponent<ConstructionController> ().isInConstructor = false;
 		} else {
 			GetComponent<ConstructionController> ().isInConstructor = true;
+		}
+	}
+
+	[Command] 
+	void CmdSetIsOccupiedOnCurBuilding(NetworkIdentity curr, NetworkIdentity target){
+		if (isServer) {
+			NetworkServer.FindLocalObject(curr.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (false);
+			NetworkServer.FindLocalObject(target.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
 		}
 	}
 
@@ -158,11 +202,47 @@ public class PlayerController : NetworkBehaviour {
 
 	public void InitializePlayer(int thisPlayerInt) {
 		playerInt = thisPlayerInt;
+		playerID = "Player" + thisPlayerInt.ToString ();
 		transform.name = playerID;
 		//TODO
 
 		GetComponent<ConstructionController> ().BuildInitialBuilding ();
 
+	}
+		
+	[Command]
+	public void CmdPlayerLose() {
+		if (isServer) {
+			RpcPlayerLose ();
+		}
+	}
+
+	[ClientRpc]
+	void RpcPlayerLose() {
+		if (isLocalPlayer) {
+			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			loseSphere.SetActive (true);
+			GetComponent<ConstructionController> ().enabled = false;
+			GetComponent<InputController> ().enabled = false;
+			gameplayGui.SetActive (false);
+		}
+	}
+
+	[Command]
+	public void CmdPlayerWin () {
+		if (isServer) {
+			RpcPlayerWin ();
+		}
+	}
+
+	[ClientRpc]
+	void RpcPlayerWin () {
+		if (isLocalPlayer) {
+			GetComponent<ConstructionController> ().enabled = false;
+			GetComponent<InputController> ().enabled = false;
+			GetComponent<GUIManager> ().endMatch.text = "Victory";
+			gameplayGui.SetActive (false);
+		}
 	}
 
 	void InhabitClosestBuilding () {
@@ -177,5 +257,4 @@ public class PlayerController : NetworkBehaviour {
 			}
 		}
 	}
-
 }

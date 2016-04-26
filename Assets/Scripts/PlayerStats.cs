@@ -33,7 +33,15 @@ public class PlayerStats : NetworkBehaviour {
 		currentEnergy += energyUptake;
 	}
 
-	public void DecreaseEnergyUptake () {
+	[Command]
+	public void CmdDecreaseEnergyUptake () {
+		if (isServer) {
+			RpcDecreaseEnergyUptake ();
+		}
+	}
+
+	[ClientRpc]
+	void RpcDecreaseEnergyUptake() {
 		if (isLocalPlayer) {
 			energyUptake -= 1;
 		}
@@ -46,8 +54,6 @@ public class PlayerStats : NetworkBehaviour {
 			return false;
 		}
 	}
-		
-	[SerializeField] Text currentEnergyText, energyUptakeText;
 
 	// Use this for initialization
 	void Start () {
@@ -56,10 +62,8 @@ public class PlayerStats : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (currentEnergyText != null && energyUptakeText!= null) {
-			currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
-			energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
-		}
+		GetComponent<GUIManager>().currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
+		GetComponent<GUIManager>().energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
 		if (GameManager.gameHasStarted) {
 			HandleTimer ();
 		}

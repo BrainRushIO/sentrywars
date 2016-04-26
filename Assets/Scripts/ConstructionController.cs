@@ -5,10 +5,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class ConstructionController : NetworkBehaviour {
-	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding};
+	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding, Cooldown};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
 	BuildingType currentBuildingToConstructType;
-
 
 	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
@@ -18,8 +17,13 @@ public class ConstructionController : NetworkBehaviour {
 	public bool isInConstructor = true, isTargetingEnergyField;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
-	const float GRID_SPACING = 10f;
+	const float GRID_SPACING = 2f;
 	public const float CONSTRUCTION_RANGE = 100f;
+	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
+
+	int layerIdBuilding = 10;
+	int layerMaskBuilding;
+
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -29,20 +33,20 @@ public class ConstructionController : NetworkBehaviour {
 	public void SwitchToInactive() {
 		switchToInactive = true;
 	}
-	
-	[SerializeField] Text constructBuildingType, constructBuildingCost;
 
 	[SerializeField]
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
 
 	void OnEnable() {
-		InputController.OnSendPointerInfo += PlaceBuildingTemplate;
-		InputController.OnRightTriggerFingerDown += SwitchToSpawnBuilding;
+		PlayerController.OnSendPlayerInputInfo += PlaceBuildingTemplate;
+		InputController.OnRightTriggerFingerDown += HandleConstructionCall;
+
 	}
 
 	void OnDisable() {
-		InputController.OnSendPointerInfo -= PlaceBuildingTemplate;
-		InputController.OnRightTriggerFingerDown -= SwitchToSpawnBuilding;
+		PlayerController.OnSendPlayerInputInfo -= PlaceBuildingTemplate;
+		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
+		Destroy (currentBuildingToConstruct);
 	}
 
 	// Use this for initialization
@@ -51,6 +55,7 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Constructor, 20);
 		buildingCosts.Add (BuildingType.Cannon, 10);
 		buildingCosts.Add (BuildingType.Energy, 20);
+		layerMaskBuilding = 1 << layerIdBuilding;
 	}
 
 	public void BuildInitialBuilding() {
@@ -75,9 +80,9 @@ public class ConstructionController : NetworkBehaviour {
 			SelectConstructBuildingType(BuildingType.Energy);
 		}
 			
-		//temp UI
-		if(constructBuildingCost!=null)constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
-		if(constructBuildingType!=null)constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
+		//UI
+		GetComponent<GUIManager>().constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
+		GetComponent<GUIManager>().constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 
 		if (isInConstructor) {
@@ -110,15 +115,21 @@ public class ConstructionController : NetworkBehaviour {
 				}
 				break;
 			case ConstructionState.SpawnBuilding:
-				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController>().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
+				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
+				GetComponent<PlayerController> ().SetCoolDown ();
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
 		} 
 	}
+
 	void PlaceBuildingTemplate (RaycastHit hit) {
 		if (currentBuildingToConstruct != null) {
-			buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
+			if (isTargetingEnergyField) {
+				buildingPlacementPosition = ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
+			} else {
+				buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
+			}
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
 	}
@@ -128,7 +139,7 @@ public class ConstructionController : NetworkBehaviour {
 		float zCoordinate = thisPoint.z;
 		xCoordinate = RoundToGridSpacing (xCoordinate);
 		zCoordinate = RoundToGridSpacing (zCoordinate);
-		Vector3 output = new Vector3 (xCoordinate, thisPoint.y, zCoordinate);
+		Vector3 output = new Vector3 (xCoordinate, 0, zCoordinate);
 		return output;
 	}
 
@@ -164,28 +175,42 @@ public class ConstructionController : NetworkBehaviour {
 
 	}
 
+	void HandleConstructionCall() {
+		if (currentBuildingToConstruct != null) {
+			if (!IsBuildingTemplateInConstructionRange ()) {
+				GetComponent<GUIManager> ().SetAlert ("Out of Build Range");
+			}
+			else if (!GetComponent<PlayerStats>().IsThereEnoughEnergy(buildingCosts [currentBuildingToConstructType])) {
+				GetComponent<GUIManager> ().SetAlert ("Not Enough Energy");
+			}
+		}
+		SwitchToSpawnBuilding ();
+	}
+
 	void SwitchToSpawnBuilding() {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
 		    canBuild) { 
 			HandleSpendEnergyOnBuilding ();
-		}
+		} 
 	}
-
 	void HandleSpendEnergyOnBuilding() {
 		GetComponent<PlayerStats> ().SpendEnergy (buildingCosts [currentBuildingToConstructType]);
 		if (currentBuildingToConstructType == BuildingType.Energy) {
 			GetComponent<PlayerStats> ().IncreaseEnergyUptake ();
-			GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<EnergyField> ().RpcSetIsOccupied(true);
 			currentEnergyFieldTargeted = GetComponent<PlayerController> ().ReturnCurrentTarget ().GetComponent<NetworkIdentity> ();
-
-		} else {
-			//throw some NOT ENOUGH ENERGY MESSAGE
+			CmdLinkEnergyField (currentEnergyFieldTargeted);
 		}
 		switchToSpawnBuilding = true;
 	}
 
-	void SelectConstructBuildingType(BuildingType thisBuildingType) {
+	[Command]
+	void CmdLinkEnergyField (NetworkIdentity thisField) {
+		thisField.GetComponent<EnergyField> ().CmdSetIsOccupied(true);
+	}
+
+
+	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		if (currConstructionState == ConstructionState.PlacingBuilding) {
 			currentBuildingToConstructType = thisBuildingType;
 			SwitchBuildingTemplate ();
@@ -203,7 +228,6 @@ public class ConstructionController : NetworkBehaviour {
 		if (isBuildable && !isBuildingTemplateGreen) {
 			isBuildingTemplateGreen = true;
 			RenderMeshGreenRed (true);
-
 		} else if (!isBuildable && isBuildingTemplateGreen) {
 			isBuildingTemplateGreen = false;
 			RenderMeshGreenRed (false);
@@ -240,15 +264,23 @@ public class ConstructionController : NetworkBehaviour {
 		isBuildingTemplateInstantiated = false;
 	}
 
+	bool IsBuildingTemplateInConstructionRange() {
+		return (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE);
+	}
+
 	void CheckIfCanBuild () {
-		if (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE && currentBuildingToConstruct!=null) {
+		if (IsBuildingTemplateInConstructionRange() && currentBuildingToConstruct!=null) {
 			canBuild = true;
 			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else if (currentBuildingToConstructType == BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (true);
-			} else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
+			} else if (CheckIfOtherBuildingsInRadius ()){
+				RenderCurrentBuildingAsTemplate (false);
+				canBuild = false;
+			}
+			else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else {
@@ -258,5 +290,15 @@ public class ConstructionController : NetworkBehaviour {
 			RenderCurrentBuildingAsTemplate (false);
 			canBuild = false;
 		}
+	}
+
+	bool CheckIfOtherBuildingsInRadius () {
+		Collider[] temp = Physics.OverlapSphere(buildingPlacementPosition, 50f, layerMaskBuilding);
+		if (temp.Length > 0) {
+			return true;
+		} else {
+			return false;
+		}
+			
 	}
 }

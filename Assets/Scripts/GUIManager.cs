@@ -1,15 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
+	public Text constructBuildingType, constructBuildingCost;
+	public Text thisBuildingHP, endMatch;
+	public Text currentEnergyText, energyUptakeText;
+	public Text alert;
 
-	// Use this for initialization
-	void Start () {
-	
+	float alertTimer, alertDuration = 3f;
+
+	public void SetAlert(string message) {
+		alert.text = message;
+		alert.enabled = true;
+		alertTimer = alertDuration;
+
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
-	
+		if (alertTimer >= 0) {
+			alertTimer -= Time.deltaTime;
+			if (alertTimer < 0) {
+				alert.enabled = false;
+			}
+		}
 	}
+	
 }
