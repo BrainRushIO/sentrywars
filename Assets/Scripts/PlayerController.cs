@@ -11,7 +11,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 /// </summary>
 public class PlayerController : NetworkBehaviour {
 
-	enum PlayerMode {CoolDown, Active, Dead};
+	enum PlayerMode {CoolDown, Active, GameOver};
 	PlayerMode curPlayerMode = PlayerMode.Active;
 
 	public int playerInt;
@@ -233,7 +233,10 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
 			gameplayGui.SetActive (false);
-			curPlayerMode = PlayerMode.Dead;
+			curPlayerMode = PlayerMode.GameOver;
+			GameObject.Find ("Soundtrack").SetActive (false);
+			GameObject.Find ("loseSound").GetComponent<AudioSource> ().Play ();
+
 		}
 	}
 
@@ -251,7 +254,11 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<InputController> ().enabled = false;
 			GetComponent<GUIManager> ().endMatch.text = "Victory";
 			gameplayGui.SetActive (false);
+			curPlayerMode = PlayerMode.GameOver;
 			GameObject.Find ("Soundtrack").SetActive (false);
+			GameObject.Find ("winSound").GetComponent<AudioSource> ().Play ();
+
+
 		}
 	}
 
