@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour {
 	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
 	RaycastHit currentRayCastHit;
 
-	float buildCoolDown = .3f, buildCooldownTimer;
+	float buildCoolDown = 1.5f, buildCooldownTimer;
 	public float ReturnCooldownTimer() {
 		return buildCooldownTimer;
 	}
@@ -55,12 +55,13 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
-		print (curPlayerMode);
 		switch (curPlayerMode) {
 		case PlayerMode.CoolDown:
 			buildCooldownTimer += Time.deltaTime;
 			if (buildCooldownTimer > buildCoolDown) {
 				curPlayerMode = PlayerMode.Active;
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().cooldownOver);
+
 			}
 			break;
 		case PlayerMode.Active:
@@ -108,14 +109,14 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()) {
+			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()&&curPlayerMode == PlayerMode.Active) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			}
 			break;
 		case "Energy":
-			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()) {
+			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()&&curPlayerMode == PlayerMode.Active) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
@@ -133,6 +134,8 @@ public class PlayerController : NetworkBehaviour {
 	void HandleSelectBuildingVFX () {
 		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
+			GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().selectTarget);
+
 		} else if (currentTargetType != TargetTypes.Building && otherBuildingSelectedIndicator != null) {
 			Destroy (otherBuildingSelectedIndicator);
 		}
@@ -156,9 +159,12 @@ public class PlayerController : NetworkBehaviour {
 			case BuildingType.Cannon:
 				if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
 					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().changeTarget);
 					CmdChangeTarget (tempTargeted);
 				} else {
 					GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
+					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
+
 				}
 				break;
 			}
@@ -168,6 +174,7 @@ public class PlayerController : NetworkBehaviour {
 	void CmdChangeTarget(NetworkInstanceId thisTargetIdentity) {
 		currentInhabitedBuilding.GetComponent<Cannon> ().CmdOnChangeTarget (thisTargetIdentity);
 	}
+		
 
 	void PressGUIButton() {
 		
@@ -179,6 +186,7 @@ public class PlayerController : NetworkBehaviour {
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
 		Destroy (tempTeleportVFX, 4f);
 		MovePlayerToBuildingCockpit ();
+		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().warp);
 		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
 		if (currentInhabitedBuildingType != BuildingType.Constructor) {
 			GetComponent<ConstructionController> ().isInConstructor = false;
@@ -251,6 +259,7 @@ public class PlayerController : NetworkBehaviour {
 			//assign current
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
 				isInitialized = true;

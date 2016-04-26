@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class PlayerStats : NetworkBehaviour {
 	
 	[SyncVar]
-	float currentEnergy = 100f;
+	float currentEnergy = 40f;
 	[SyncVar]
 	float energyUptake = 1f;
 	[SyncVar]
