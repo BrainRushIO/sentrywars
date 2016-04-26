@@ -60,7 +60,7 @@ Category {
 		
 		// Standard, but unused in this project
 		//#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-		//#pragma shader_feature _EMISSION
+		#pragma shader_feature _EMISSION
 		//#pragma shader_feature _PARALLAXMAP
 				
 		#pragma multi_compile _ ATMOSPHERICS ATMOSPHERICS_PER_PIXEL

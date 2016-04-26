@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 3a1f1000932cc5e49ac7bd1d5b23ec73
-timeCreated: 1461284729
+timeCreated: 1461709759
 licenseType: Pro
 ModelImporter:
   serializedVersion: 19
@@ -8,26 +8,36 @@ ModelImporter:
     100000: _EnergyShield
     100002: //RootNode
     100004: AttackTower_GEO
-    100006: InnerShield_GEO
-    100008: OuterShield_GEO
+    100006: craters
+    100008: InnerShield_GEO
+    100010: OuterShield_GEO
+    100012: pSphere2
     400000: _EnergyShield
     400002: //RootNode
     400004: AttackTower_GEO
-    400006: InnerShield_GEO
-    400008: OuterShield_GEO
+    400006: craters
+    400008: InnerShield_GEO
+    400010: OuterShield_GEO
+    400012: pSphere2
     2300000: AttackTower_GEO
-    2300002: InnerShield_GEO
-    2300004: OuterShield_GEO
+    2300002: craters
+    2300004: InnerShield_GEO
+    2300006: OuterShield_GEO
+    2300008: pSphere2
     3300000: AttackTower_GEO
-    3300002: InnerShield_GEO
-    3300004: OuterShield_GEO
+    3300002: craters
+    3300004: InnerShield_GEO
+    3300006: OuterShield_GEO
+    3300008: pSphere2
     4300000: AttackTower_GEO
     4300002: InnerShield_GEO
     4300004: OuterShield_GEO
-    7400000: Tower_Idle
+    4300006: pSphere2
+    4300008: craters
+    7400000: Idle
     9500000: //RootNode
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:
@@ -48,7 +58,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Tower_Idle
+      name: Idle
       takeName: Take 001
       firstFrame: 1
       lastFrame: 64
@@ -80,7 +90,11 @@ ModelImporter:
         weight: 1
       - path: _EnergyShield/OuterShield_GEO
         weight: 1
+      - path: _EnergyShield/pSphere2
+        weight: 1
       - path: AttackTower_GEO
+        weight: 1
+      - path: craters
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
