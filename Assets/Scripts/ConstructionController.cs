@@ -119,6 +119,7 @@ public class ConstructionController : NetworkBehaviour {
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
 				GetComponent<PlayerController> ().SetCoolDown ();
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
+				switchToPlacingBuilding = false;
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
@@ -301,7 +302,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	bool CheckIfOtherBuildingsInRadius () {
-		Collider[] temp = Physics.OverlapSphere(buildingPlacementPosition, 50f, layerMaskBuilding);
+		Collider[] temp = Physics.OverlapSphere(buildingPlacementPosition, MIN_PROXIMITY_BTWN_BUILDING, layerMaskBuilding);
 		if (temp.Length > 0) {
 			tooCloseToOtherBuilding = true;
 			return true;

@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour {
 	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
 	RaycastHit currentRayCastHit;
 
-	float buildCoolDown = .8f, buildCooldownTimer;
+	float buildCoolDown = 1.5f, buildCooldownTimer;
 	public float ReturnCooldownTimer() {
 		return buildCooldownTimer;
 	}
@@ -55,7 +55,6 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
-		print (curPlayerMode);
 		switch (curPlayerMode) {
 		case PlayerMode.CoolDown:
 			buildCooldownTimer += Time.deltaTime;
@@ -110,14 +109,14 @@ public class PlayerController : NetworkBehaviour {
 			PressGUIButton ();
 			break;
 		case "Floor":
-			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()) {
+			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()&&curPlayerMode == PlayerMode.Active) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			}
 			break;
 		case "Energy":
-			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()) {
+			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()&&curPlayerMode == PlayerMode.Active) {
 				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
