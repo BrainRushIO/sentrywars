@@ -15,10 +15,16 @@ public class ConstructionController : NetworkBehaviour {
 	Vector3 buildingPlacementPosition;
 	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInConstructor = true, isTargetingEnergyField;
+	bool tooCloseToOtherBuilding;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
-	const float GRID_SPACING = 10f;
+	const float GRID_SPACING = 2f;
 	public const float CONSTRUCTION_RANGE = 100f;
+	const float MIN_PROXIMITY_BTWN_BUILDING = 25f;
+
+	int layerIdBuilding = 10;
+	int layerMaskBuilding;
+
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
@@ -50,6 +56,7 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.Constructor, 20);
 		buildingCosts.Add (BuildingType.Cannon, 10);
 		buildingCosts.Add (BuildingType.Energy, 20);
+		layerMaskBuilding = 1 << layerIdBuilding;
 	}
 
 	public void BuildInitialBuilding() {
@@ -111,6 +118,7 @@ public class ConstructionController : NetworkBehaviour {
 			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
 				GetComponent<PlayerController> ().SetCoolDown ();
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
@@ -173,9 +181,15 @@ public class ConstructionController : NetworkBehaviour {
 		if (currentBuildingToConstruct != null) {
 			if (!IsBuildingTemplateInConstructionRange ()) {
 				GetComponent<GUIManager> ().SetAlert ("Out of Build Range");
-			}
-			else if (!GetComponent<PlayerStats>().IsThereEnoughEnergy(buildingCosts [currentBuildingToConstructType])) {
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
+
+			} else if (!GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType])) {
 				GetComponent<GUIManager> ().SetAlert ("Not Enough Energy");
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
+
+			} else if (tooCloseToOtherBuilding) {
+				GetComponent<GUIManager> ().SetAlert ("Too Close to Nearby Structure");
+				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
 			}
 		}
 		SwitchToSpawnBuilding ();
@@ -270,7 +284,11 @@ public class ConstructionController : NetworkBehaviour {
 				canBuild = false;
 			} else if (currentBuildingToConstructType == BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (true);
-			} else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
+			} else if (CheckIfOtherBuildingsInRadius ()){
+				RenderCurrentBuildingAsTemplate (false);
+				canBuild = false;
+			}
+			else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
 				canBuild = false;
 			} else {
@@ -280,5 +298,17 @@ public class ConstructionController : NetworkBehaviour {
 			RenderCurrentBuildingAsTemplate (false);
 			canBuild = false;
 		}
+	}
+
+	bool CheckIfOtherBuildingsInRadius () {
+		Collider[] temp = Physics.OverlapSphere(buildingPlacementPosition, 50f, layerMaskBuilding);
+		if (temp.Length > 0) {
+			tooCloseToOtherBuilding = true;
+			return true;
+		} else {
+			tooCloseToOtherBuilding = false;
+			return false;
+		}
+			
 	}
 }
