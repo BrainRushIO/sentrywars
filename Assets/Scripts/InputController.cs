@@ -10,8 +10,7 @@ public class InputController : NetworkBehaviour {
 
 	public bool playInVR = false, isMouseKeyboardDebug;
 	public Transform rightControllerRaycastOrigin, leftControllerRaycastOrigin;
-	public Camera VRCamera;
-	public GameObject VRHandlers;
+	public GameObject VRCameraRig;
 	public WandController rightController, leftController;
 
 	private ConstructionController constructionController;
@@ -37,11 +36,9 @@ public class InputController : NetworkBehaviour {
 //		bool steamVrRunning = false;
 //		steamVrRunning = ( !SteamVR.active && playInVR ) ? true : false;
 		if( playInVR ) {
-			VRCamera.gameObject.SetActive( true );
-			VRHandlers.SetActive( true );
+			VRCameraRig.SetActive( true );
 		} else {
-			DestroyImmediate( VRCamera.gameObject );
-			DestroyImmediate( VRHandlers );
+			DestroyImmediate( VRCameraRig );
 		}
 	}
 	
