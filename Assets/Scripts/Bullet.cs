@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class Bullet : NetworkBehaviour {
 	int owner;
 	[SyncVar] NetworkIdentity ownerNetID;
-	float bulletSpeed = 10f;
+	float bulletSpeed = 4f;
 	float bulletDamage = 5f;
 	bool initialized;
 	[SerializeField] GameObject explosionPrefab;

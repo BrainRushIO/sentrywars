@@ -11,7 +11,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 /// </summary>
 public class PlayerController : NetworkBehaviour {
 
-	enum PlayerMode {CoolDown, Active};
+	enum PlayerMode {CoolDown, Active, Dead};
 	PlayerMode curPlayerMode = PlayerMode.Active;
 
 	public int playerInt;
@@ -233,6 +233,7 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
 			gameplayGui.SetActive (false);
+			curPlayerMode = PlayerMode.Dead;
 		}
 	}
 

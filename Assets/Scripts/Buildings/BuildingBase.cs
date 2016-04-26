@@ -22,7 +22,7 @@ public class BuildingBase : NetworkBehaviour {
 	[SyncVar] bool hasBeenDestroyed;
 	[SyncVar] NetworkIdentity linkedEnergyField;
 
-	[SyncVar] [SerializeField] bool isOccupied;
+	[SyncVar] bool isOccupied = false;
 	[ClientRpc]
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
@@ -131,6 +131,9 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject(thisOwnerId).GetComponent<PlayerStats> ().CmdDecreaseEnergyUptake ();
 			break;
 		}
+		GameObject temp = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs[5], transform.position + Vector3.down * -20, Quaternion.identity);
+		Destroy (temp, 5f);
+		NetworkServer.Spawn (temp);
 		Destroy (gameObject);
 	}
 }
