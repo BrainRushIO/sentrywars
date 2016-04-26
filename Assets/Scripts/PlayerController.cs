@@ -251,6 +251,7 @@ public class PlayerController : NetworkBehaviour {
 			GetComponent<InputController> ().enabled = false;
 			GetComponent<GUIManager> ().endMatch.text = "Victory";
 			gameplayGui.SetActive (false);
+			GameObject.Find ("Soundtrack").SetActive (false);
 		}
 	}
 
