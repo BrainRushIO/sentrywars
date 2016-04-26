@@ -195,7 +195,9 @@ public class ViveControllerInput : BaseInputModule
     private void UpdateCameraPosition(int index)
     {
         ControllerCamera.transform.position = Controllers[index].transform.position;
-        ControllerCamera.transform.forward = Controllers[index].transform.forward;
+//        ControllerCamera.transform.forward = Controllers[index].transform.forward;
+		ControllerCamera.transform.rotation = Controllers[index].transform.rotation;
+		ControllerCamera.transform.Rotate( new Vector3( 45f, 0f, 0f ) );
     }
 
     private void InitializeControllers()
