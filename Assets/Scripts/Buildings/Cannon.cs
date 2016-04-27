@@ -7,22 +7,27 @@ public class Cannon : NetworkBehaviour {
 	
 	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
-	[SerializeField] GameObject bulletPrefab;
+	[SerializeField] GameObject bulletPrefab, rangeRing;
 	public const float towerAttackRange = 100;
 
 	float fireCooldown = 3f, cooldownTimer;
-	float radarSweepTimer, radarSweepTime = 1f;
+	float radarSweepTimer = .8f, radarSweepTime = 1f;
 	int buildingLayerMask;
 	bool changeTarget;
 
+	void ShowRangeRing(bool show) {
+		rangeRing.SetActive (show);
+	}
+
 	public void EnableTowerAbilities() {
-		abilitiesActive = true;	
+		abilitiesActive = true;
 	}
 	public void DisableTowerAbilities () {
 		abilitiesActive = false;	
 	}
 
 	void Start () {
+		rangeRing.transform.localScale = new Vector3 (towerAttackRange/10, 1, towerAttackRange/10);
 		buildingLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
   	}
 
@@ -35,6 +40,7 @@ public class Cannon : NetworkBehaviour {
 					currentTarget,
 					GetComponent<BuildingBase>().ReturnOwner());
 			}
+		
 			radarSweepTimer += Time.deltaTime;
 
 			if (radarSweepTimer > radarSweepTime && NetworkServer.FindLocalObject(currentTarget)==null) {

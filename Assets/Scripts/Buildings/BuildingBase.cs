@@ -37,8 +37,10 @@ public class BuildingBase : NetworkBehaviour {
 	/// </summary>
 
 
-	void Start() {
-		CheckIfIsPowered ();
+
+
+	void Start () {
+		SendMessage ("EnableTowerAbilities");
 	}
 
 	[SyncVar] bool abilitiesActive = false;
@@ -112,12 +114,15 @@ public class BuildingBase : NetworkBehaviour {
 
 
 	public void DisableAllColliders() {
+		SendMessage ("ShowRangeRing", true, SendMessageOptions.DontRequireReceiver);
 		foreach (Collider x in allColliders) {
 			x.enabled = false;
 		}
 	}
 
 	public void EnableAllColliders () {
+		SendMessage ("ShowRangeRing", false, SendMessageOptions.DontRequireReceiver);
+
 		foreach (Collider x in allColliders) {
 			x.enabled = true;
 		}
