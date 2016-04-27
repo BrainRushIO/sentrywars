@@ -144,7 +144,7 @@ public class PlayerController : NetworkBehaviour {
 	void HandleRightTriggerDown() {
 		switch (currentTargetType) {
 		case TargetTypes.Building:
-			if (curPlayerMode == PlayerMode.Active) {
+			if (curPlayerMode != PlayerMode.GameOver) {
 				PerformActionOnTargetedBuilding ();
 			}
 			break;

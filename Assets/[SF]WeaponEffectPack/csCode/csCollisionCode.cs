@@ -22,26 +22,26 @@ public class csCollisionCode : MonoBehaviour {
     public string FireName; // For Check the FireEmission name in the Hitted Object.
 	Vector3 Velocity = Vector3.zero;
 
-    void FixedUpdate()
-    {
-
-        if (OnMove)
-        {
-            if (Code.isRigidBody) // if Parents code isRigidBody is true, execute this.
-            {
-                Velocity = (Code.GetComponent<Rigidbody>().rotation * Vector3.forward) * (Speed);
-                Code.GetComponent<Rigidbody>().velocity = Vector3.Lerp(Code.GetComponent<Rigidbody>().velocity, Velocity, Time.fixedDeltaTime);
-            }
-        }
-    }
+//    void FixedUpdate()
+//    {
+//
+//        if (OnMove)
+//        {
+//            if (Code.isRigidBody) // if Parents code isRigidBody is true, execute this.
+//            {
+//                Velocity = (Code.GetComponent<Rigidbody>().rotation * Vector3.forward) * (Speed);
+//                Code.GetComponent<Rigidbody>().velocity = Vector3.Lerp(Code.GetComponent<Rigidbody>().velocity, Velocity, Time.fixedDeltaTime);
+//            }
+//        }
+//    }
 
     void Update()
     {
-        if (OnMove)
-        {
-            if (!Code.isRigidBody) // if Parents code isRigidBody is false, execute this.
-                Code.transform.Translate(Vector3.forward * Speed * Time.deltaTime);
-        }
+//        if (OnMove)
+//        {
+//            if (!Code.isRigidBody) // if Parents code isRigidBody is false, execute this.
+//                Code.transform.Translate(Vector3.forward * Speed * Time.deltaTime);
+//        }
 
 
         if (isAnimationPlay)

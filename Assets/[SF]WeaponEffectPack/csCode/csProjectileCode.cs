@@ -20,13 +20,13 @@ public class csProjectileCode : MonoBehaviour
 
     public void MakeExplosion()
     {
-        GameObject Exp = Instantiate(Explosion,transform.position, transform.rotation) as GameObject;
-        Exp.transform.parent = this.transform;
+//        GameObject Exp = Instantiate(Explosion,transform.position, transform.rotation) as GameObject;
+//        Exp.transform.parent = this.transform;
     }
 
     public void MakeExplosion(Vector3 Pos, Quaternion Rot)
     {
-        Instantiate(Explosion, Pos, Rot);
+//        Instantiate(Explosion, Pos, Rot);
     }
 
     public Transform Flame(Collider Col, string Name)
