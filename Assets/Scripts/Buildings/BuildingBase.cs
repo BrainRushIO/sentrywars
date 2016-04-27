@@ -90,9 +90,9 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth -= amount;
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
-			CmdDestroyBuilding(GameManager.players [owner].netId);
+			CmdDestroyBuilding (GameManager.players [owner].netId);
 			if (isOccupied) {
-				NetworkServer.FindLocalObject(GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose();
+				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose ();
 				if (owner == 1) {
 					NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().CmdPlayerWin ();
 				} else {
@@ -100,6 +100,8 @@ public class BuildingBase : NetworkBehaviour {
 				}
 
 			}
+		} else if (isOccupied) {
+			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
 		}
 	}
 

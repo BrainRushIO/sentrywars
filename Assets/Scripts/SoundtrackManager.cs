@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SoundtrackManager : MonoBehaviour {
 	
-	public AudioSource warp, error, constructBuilding, cooldownOver, selectTarget, changeTarget; //soundtrack files
+	public AudioSource warp, error, constructBuilding, cooldownOver, selectTarget, changeTarget, playerHit; //soundtrack files
 
 	
 //	IEnumerator FadeOutAudioSource(AudioSource x) { //call from elsewhere

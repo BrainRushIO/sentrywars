@@ -144,7 +144,9 @@ public class PlayerController : NetworkBehaviour {
 	void HandleRightTriggerDown() {
 		switch (currentTargetType) {
 		case TargetTypes.Building:
-			PerformActionOnTargetedBuilding ();
+			if (curPlayerMode == PlayerMode.Active) {
+				PerformActionOnTargetedBuilding ();
+			}
 			break;
 		case TargetTypes.GUIButton:
 			PressGUIButton ();
@@ -260,6 +262,26 @@ public class PlayerController : NetworkBehaviour {
 
 
 		}
+	}
+
+	[Command]
+	public void CmdPlayerHit () {
+		if (isServer) {
+			RpcPlayerHit ();
+		}
+	}
+
+	[ClientRpc]
+	void RpcPlayerHit () {
+		if (isLocalPlayer) {
+			StartCoroutine ("FlashPlayerScreenRed");
+		}
+	}
+	IEnumerator FlashPlayerScreenRed() {
+		loseSphere.SetActive (true);
+		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().playerHit);
+		yield return new WaitForSeconds (.12f);
+		loseSphere.SetActive (false);
 	}
 
 	void InhabitClosestBuilding () {
