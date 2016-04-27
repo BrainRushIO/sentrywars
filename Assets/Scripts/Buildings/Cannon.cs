@@ -49,7 +49,8 @@ public class Cannon : NetworkBehaviour {
 		GameObject tempBullet = (GameObject)Instantiate (bulletPrefab, 
 			thisPosition, Quaternion.identity);
 		GameObject target = NetworkServer.FindLocalObject (targetID);
-		tempBullet.transform.LookAt (target.transform.position+ new Vector3(0,5f,0));
+		float randVerticality = Random.Range (0, 20);
+		tempBullet.transform.LookAt (target.transform.position+ new Vector3(0,5f+randVerticality,0));
 		tempBullet.GetComponent<Bullet> ().InitializeBullet (bulletOwner);
 		cooldownTimer = fireCooldown;
 		NetworkServer.Spawn (tempBullet);
