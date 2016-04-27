@@ -40,7 +40,7 @@ public class BuildingBase : NetworkBehaviour {
 
 
 	void Start () {
-		SendMessage ("EnableTowerAbilities");
+		CheckIfIsPowered ();
 	}
 
 	[SyncVar] bool abilitiesActive = false;
