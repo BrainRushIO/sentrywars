@@ -19,8 +19,8 @@ public class ConstructionController : NetworkBehaviour {
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
 	const float GRID_SPACING = 2f;
-	public const float CONSTRUCTION_RANGE = 100f;
-	const float MIN_PROXIMITY_BTWN_BUILDING = 25f;
+	public const float CONSTRUCTION_RANGE = 250f;
+	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
 
 	int layerIdBuilding = 10;
 	int layerMaskBuilding;
