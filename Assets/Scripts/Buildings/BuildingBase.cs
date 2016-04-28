@@ -88,6 +88,8 @@ public class BuildingBase : NetworkBehaviour {
 
 	public void TakeDamage (float amount) {
 		currentHealth -= amount;
+		CmdSetDamageState (currentHealth / maxHealth);
+
 		if (currentHealth < 0 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
@@ -102,6 +104,16 @@ public class BuildingBase : NetworkBehaviour {
 			}
 		} else if (isOccupied) {
 			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
+		}
+	}
+	[Command]
+	void CmdSetDamageState(float val) {
+		if (val > .65f && val < 1f) {
+			GetComponent<BuildingStateController> ().CmdSetDamageState (0);
+		} else if (val > .4f) {
+			GetComponent<BuildingStateController> ().CmdSetDamageState (1);
+		} else if (val > .1f) {
+			GetComponent<BuildingStateController> ().CmdSetDamageState (2);
 		}
 	}
 
