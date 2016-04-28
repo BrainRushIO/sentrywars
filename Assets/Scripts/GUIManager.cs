@@ -7,10 +7,6 @@ public class GUIManager : MonoBehaviour {
 
 	float alertTimer, alertDuration = 3f;
 
-	void Start() {
-		currentHUD = overlayHUD;
-	}
-
 	public void SetAlert(string message) {
 		currentHUD.alert.text = message;
 		currentHUD.alert.enabled = true;
@@ -26,5 +22,18 @@ public class GUIManager : MonoBehaviour {
 			}
 		}
 	}
+
+	public void ActivateOverlayHud() {
+		currentHUD = overlayHUD;
+
+		overlayHUD.gameObject.SetActive( true );
+		vrHUD.gameObject.SetActive( false );
+	}
 	
+	public void ActivateVrHud() {
+		currentHUD = vrHUD;
+		
+		vrHUD.gameObject.SetActive( true );
+		overlayHUD.gameObject.SetActive( false );
+	}
 }

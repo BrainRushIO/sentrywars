@@ -37,7 +37,14 @@ public class InputController : NetworkBehaviour {
 //		steamVrRunning = ( !SteamVR.active && playInVR ) ? true : false;
 		if( playInVR ) {
 			VRCameraRig.SetActive( true );
-			DestroyImmediate( firstPersonCharacter );
+			firstPersonCharacter.SetActive( false );
+
+			GetComponent<GUIManager>().ActivateVrHud();
+			//Disable currentEventSystem and activate the one on the VR CameraRig
+			UnityEngine.EventSystems.EventSystem.current.enabled = false;
+			GameObject.FindObjectOfType<ViveControllerInput>().GetComponent<UnityEngine.EventSystems.EventSystem>().enabled = true;
+			//Disable First Person Controller so we can't move the player with a mouse drag when in vr.
+			GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = false;
 		} else {
 			DestroyImmediate( VRCameraRig );
 		}
