@@ -12,7 +12,8 @@ public class PlayerSetup : NetworkBehaviour {
 			DisableComponents ();
 			AssignRemotePlayer ();
 		} else {
-			sceneCamera = Camera.main;
+//			sceneCamera = Camera.main;
+			sceneCamera = GameObject.Find( "IntroCamera" ).GetComponent<Camera>();
 			if (sceneCamera != null) {
 				sceneCamera.gameObject.SetActive (false);
 			}
