@@ -32,7 +32,7 @@ public class Cannon : NetworkBehaviour {
   	}
 
 	void Update () {
-		if (abilitiesActive &&hasAuthority) {
+		if (abilitiesActive) {
 			if (cooldownTimer > 0) {
 				cooldownTimer -= Time.deltaTime;
 			} else if (cooldownTimer <= 0 && NetworkServer.FindLocalObject(currentTarget)!=null) {
