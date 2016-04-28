@@ -62,8 +62,8 @@ public class PlayerStats : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		GetComponent<GUIManager>().currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
-		GetComponent<GUIManager>().energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
+		GetComponent<GUIManager>().currentHUD.currentEnergyText.text = "Energy: " + currentEnergy.ToString ("F0");
+		GetComponent<GUIManager>().currentHUD.energyUptakeText.text = "Energy Uptake: " + energyUptake + "/sec";
 		if (GameManager.gameHasStarted) {
 			HandleTimer ();
 		}

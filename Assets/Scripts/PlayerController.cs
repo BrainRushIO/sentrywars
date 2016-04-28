@@ -85,7 +85,7 @@ public class PlayerController : NetworkBehaviour {
 			InhabitClosestBuilding ();
 		}
 		if (currentInhabitedBuilding != null) {
-			GetComponent<GUIManager>().thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
+			GetComponent<GUIManager>().currentHUD.thisBuildingHP.text = "This Tower's HP: " + currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnCurrentHealth ().ToString ("F0");
 		}
 	}
 		
@@ -230,7 +230,7 @@ public class PlayerController : NetworkBehaviour {
 	[ClientRpc]
 	void RpcPlayerLose() {
 		if (isLocalPlayer && curPlayerMode == PlayerMode.Active) {
-			GetComponent<GUIManager> ().endMatch.text = "Defeat";
+			GetComponent<GUIManager> ().currentHUD.endMatch.text = "Defeat";
 			loseSphere.SetActive (true);
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
@@ -254,7 +254,7 @@ public class PlayerController : NetworkBehaviour {
 		if (isLocalPlayer && curPlayerMode == PlayerMode.Active) {
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
-			GetComponent<GUIManager> ().endMatch.text = "Victory";
+			GetComponent<GUIManager> ().currentHUD.endMatch.text = "Victory";
 			gameplayGui.SetActive (false);
 			curPlayerMode = PlayerMode.GameOver;
 			GameObject.Find ("Soundtrack").SetActive (false);

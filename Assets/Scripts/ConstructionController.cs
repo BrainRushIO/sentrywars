@@ -82,8 +82,8 @@ public class ConstructionController : NetworkBehaviour {
 		}
 			
 		//UI
-		GetComponent<GUIManager>().constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
-		GetComponent<GUIManager>().constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
+		GetComponent<GUIManager>().currentHUD.constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
+		GetComponent<GUIManager>().currentHUD.constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 
 		if (isInConstructor) {
