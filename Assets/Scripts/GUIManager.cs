@@ -3,16 +3,17 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
-	public Text constructBuildingType, constructBuildingCost;
-	public Text thisBuildingHP, endMatch;
-	public Text currentEnergyText, energyUptakeText;
-	public Text alert;
+	public HUD overlayHUD, vrHUD, currentHUD;
 
 	float alertTimer, alertDuration = 3f;
 
+	void Start() {
+		currentHUD = overlayHUD;
+	}
+
 	public void SetAlert(string message) {
-		alert.text = message;
-		alert.enabled = true;
+		currentHUD.alert.text = message;
+		currentHUD.alert.enabled = true;
 		alertTimer = alertDuration;
 
 	}
@@ -21,7 +22,7 @@ public class GUIManager : MonoBehaviour {
 		if (alertTimer >= 0) {
 			alertTimer -= Time.deltaTime;
 			if (alertTimer < 0) {
-				alert.enabled = false;
+				currentHUD.alert.enabled = false;
 			}
 		}
 	}
