@@ -26,7 +26,7 @@ public class BuildingStateController : NetworkBehaviour {
 	[ClientRpc]
 	void RpcSwitchColor (Color col) {
 		foreach (MeshRenderer x in coloredMesh) {
-			x.material.SetColor ("_Color", col);
+			x.material.SetColor ("_EmissionColor", thisBuildingColor);
 		}
 	}
 
