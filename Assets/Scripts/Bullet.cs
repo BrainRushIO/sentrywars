@@ -6,7 +6,7 @@ public class Bullet : NetworkBehaviour {
 	int owner;
 	[SyncVar] NetworkIdentity ownerNetID;
 	float bulletSpeed = 4f;
-	float bulletDamage = 5f;
+	float bulletDamage = 10f;
 	bool initialized;
 	[SerializeField] GameObject explosionPrefab;
 	// Use this for initialization

@@ -8,7 +8,7 @@ public class Cannon : NetworkBehaviour {
 	[SyncVar] NetworkInstanceId currentTarget;
 	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab, rangeRing;
-	public const float towerAttackRange = 100;
+	public const float towerAttackRange = 200;
 
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
