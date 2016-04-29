@@ -158,7 +158,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 	}
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
+		if (currentTarget.GetComponent<BuildingBase> ()!=null&&currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
 			TeleportToBuilding ();
 		} else {
 			switch (currentInhabitedBuildingType) {
