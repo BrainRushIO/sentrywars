@@ -90,7 +90,7 @@ public class BuildingBase : NetworkBehaviour {
 		currentHealth -= amount;
 //		CmdSetDamageState (currentHealth / maxHealth);
 
-		if (currentHealth < 0 && !hasBeenDestroyed) {
+		if (currentHealth < 1 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
 			if (isOccupied) {
