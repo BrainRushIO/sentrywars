@@ -70,8 +70,8 @@ public class PlayerController : NetworkBehaviour {
 		}
 		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
 			if( GetComponent<InputController>().rightController.gripButtonDown ) {
-				InitializePlayer (0);
-				GameManager.gameHasStarted = true;
+//				InitializePlayer (0);
+//				GameManager.gameHasStarted = true;
 			}
 		}else {
 			if (Input.GetKeyDown (KeyCode.P)) {
