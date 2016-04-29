@@ -123,6 +123,9 @@ public class PlayerController : NetworkBehaviour {
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
 			} 
 			break;
+		case "Wall":
+			GetComponent<ConstructionController> ().SwitchToInactive ();
+			break;
 
 		default :
 			currentTargetType = TargetTypes.None;
