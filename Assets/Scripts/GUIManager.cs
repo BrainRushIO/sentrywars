@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class GUIManager : MonoBehaviour {
 	public HUD overlayHUD, vrHUD, currentHUD;
 
-	float alertTimer, alertDuration = 3f;
+	float alertTimer, alertDuration = 1.6f;
 
 	public void SetAlert(string message) {
 		currentHUD.alert.text = message;

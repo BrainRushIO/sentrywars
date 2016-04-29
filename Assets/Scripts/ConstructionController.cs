@@ -54,8 +54,8 @@ public class ConstructionController : NetworkBehaviour {
 	void Start () {
 		playerCamera = GetComponentInChildren<Camera> ();
 		buildingCosts.Add (BuildingType.Constructor, 10);
-		buildingCosts.Add (BuildingType.Cannon, 20);
-		buildingCosts.Add (BuildingType.Energy, 10);
+		buildingCosts.Add (BuildingType.Cannon, 40);
+		buildingCosts.Add (BuildingType.Energy, 20);
 		layerMaskBuilding = 1 << layerIdBuilding;
 	}
 
