@@ -14,8 +14,12 @@ public class SoundtrackManager : MonoBehaviour {
 //		x.Stop ();
 //	}
 	
-	public void PlayAudioSource(AudioSource x) { //call from elsewhere
-		x.volume = 1;
-		x.Play ();
+	public void PlayAudioSource(AudioSource x, bool overrideIsPlaying = true) { //call from elsewhere
+		if (overrideIsPlaying) {
+			x.Play ();
+		} else if (!overrideIsPlaying && !x.isPlaying) {
+			x.Play ();
+
+		}
 	}
 }

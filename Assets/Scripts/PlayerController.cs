@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour {
 	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
 	RaycastHit currentRayCastHit;
 
-	float buildCoolDown = 1.5f, buildCooldownTimer;
+	float buildCoolDown = 2.5f, buildCooldownTimer;
 	public float ReturnCooldownTimer() {
 		return buildCooldownTimer;
 	}
@@ -101,6 +101,7 @@ public class PlayerController : NetworkBehaviour {
 		}
 		switch(thisHit.transform.tag){
 		case "Building":
+			HandleSelectBuildingVFX ();
 			currentTargetType = TargetTypes.Building;
 			currentBuildingID = currentTarget.GetComponent<NetworkIdentity> ().netId;
 			break;
@@ -127,12 +128,12 @@ public class PlayerController : NetworkBehaviour {
 			currentTargetType = TargetTypes.None;
 			break;
 		}
-		HandleSelectBuildingVFX ();
+
 		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
 	}
 
 	void HandleSelectBuildingVFX () {
-		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding) {
+		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget.GetComponent<NetworkIdentity>()!=currentInhabitedBuilding) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
 			GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().selectTarget);
 
@@ -279,7 +280,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 	IEnumerator FlashPlayerScreenRed() {
 		loseSphere.SetActive (true);
-		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().playerHit);
+		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().playerHit, false);
 		yield return new WaitForSeconds (.12f);
 		loseSphere.SetActive (false);
 	}
