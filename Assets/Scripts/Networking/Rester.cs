@@ -177,4 +177,30 @@ public class Rester : MonoBehaviour
 		private byte[] _Data;
 		private Dictionary< string, string > _Headers;
 	}
+
+
+	#region Custom Sentry Wars Commands
+	//SW COMMANDS
+	string swURL = "sentrywars.herokuapp.com";
+
+
+
+	public void GetGameID() {
+		JsonObject idObject = new JsonObject();
+		int thisGameID;
+		GetJSON(swURL+"/game/start",( err, result ) => {
+			Debug.Log( "GAME ID TEST: " + result ["gameID"]);
+			string stringInt = result["gameID"].ToString();
+			thisGameID = Int32.Parse(stringInt);
+			GameManager.SetGameID (thisGameID);
+
+
+		});
+//		int thisID;
+//		thisID = Convert.ToInt32 (idObject);
+
+
+	}
+
+	#endregion
 }

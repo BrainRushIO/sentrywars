@@ -13,7 +13,7 @@ public class POSTTestLogin : MonoBehaviour {
 	public InputField emailInputField;
 	public InputField passwordInputField;
 
-	private const string url = "asaghostmatch.herokuapp.com/";
+	private const string url = "sentrywars.herokuapp.com/";
 	private Rester _Rester;
 	
 	void Start () {
@@ -37,4 +37,5 @@ public class POSTTestLogin : MonoBehaviour {
 			Debug.LogWarning( "Result: " + result );
 		});
 	}
+
 }
