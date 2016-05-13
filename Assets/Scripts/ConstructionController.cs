@@ -169,6 +169,7 @@ public class ConstructionController : NetworkBehaviour {
 	public void CmdSpawnBuilding(Vector3 placementPos, int thisPlayerID, BuildingType thisType, NetworkIdentity thisEnergyPool, bool isEnergy) {
 		isBuildingTemplateInstantiated = false;
 		GameObject temp = (GameObject)Instantiate (buildingPrefabs [(int)thisType], placementPos, Quaternion.identity);
+		temp.GetComponent<BuildingBase> ().enabled = true;
 		if (isEnergy) {
 			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID, thisEnergyPool);
 		} else {
