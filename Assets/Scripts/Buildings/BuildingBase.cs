@@ -94,6 +94,7 @@ public class BuildingBase : NetworkBehaviour {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
 			if (isOccupied) {
+				print ("END GAME");
 				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose ();
 				if (owner == 1) {
 					NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().CmdPlayerWin ();
@@ -123,6 +124,7 @@ public class BuildingBase : NetworkBehaviour {
 			linkedEnergyField = thisLinkedEnergyField;
 		}
 		EnableAllColliders ();
+		isOccupied = true;
 		currentHealth = maxHealth;
 	}
 
