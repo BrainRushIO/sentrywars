@@ -27,9 +27,18 @@ public class BuildingBase : NetworkBehaviour {
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
 	}
+	[SyncVar] bool isInitBuilding = false;
+	[ClientRpc]
+	public void RpcSetSsInitBuilding (bool val) {
+		isInitBuilding = val;
+	}
 
 	public bool ReturnIsOccupied() {
 		return isOccupied;
+	}
+
+	public bool ReturnIsInitBuilding() {
+		return isInitBuilding;
 	}
 
 	/// <summary>
@@ -93,7 +102,7 @@ public class BuildingBase : NetworkBehaviour {
 		if (currentHealth < 1 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
-			if (isOccupied) {
+			if (isOccupied || isInitBuilding) {
 				print ("END GAME");
 				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose ();
 				if (owner == 1) {
@@ -103,7 +112,7 @@ public class BuildingBase : NetworkBehaviour {
 				}
 
 			}
-		} else if (isOccupied) {
+		} else if (isOccupied || isInitBuilding) {
 			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
 		}
 	}
@@ -125,6 +134,7 @@ public class BuildingBase : NetworkBehaviour {
 		}
 		EnableAllColliders ();
 		isOccupied = true;
+		isInitBuilding = true;
 		currentHealth = maxHealth;
 	}
 
