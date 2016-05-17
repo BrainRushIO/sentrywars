@@ -32,9 +32,6 @@ public class PlayerSetup : NetworkBehaviour {
 		string _netID = tempID.ToString ();
 		NetworkIdentity _player = GetComponent<NetworkIdentity> ();
 		GameManager.RegisterPlayer (_player);
-		if (isServer) {
-			GetComponent<Rester> ().GetGameID ();
-		}
 	}
 
 	void DisableComponents() {
