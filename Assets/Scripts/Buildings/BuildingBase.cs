@@ -29,7 +29,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 	[SyncVar] bool isInitBuilding = false;
 	[ClientRpc]
-	public void RpcSetSsInitBuilding (bool val) {
+	public void RpcSetIsInitBuilding (bool val) {
 		isInitBuilding = val;
 	}
 
@@ -97,7 +97,7 @@ public class BuildingBase : NetworkBehaviour {
 
 	public void TakeDamage (float amount) {
 		currentHealth -= amount;
-//		CmdSetDamageState (currentHealth / maxHealth);
+		if (isServer) SetDamageState (currentHealth / maxHealth);
 
 		if (currentHealth < 1 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
@@ -116,16 +116,15 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
 		}
 	}
-//	[Command]
-//	void CmdSetDamageState(float val) {
-//		if (val > .65f && val < 1f) {
-//			GetComponent<BuildingStateController> ().CmdSetDamageState (0);
-//		} else if (val > .4f) {
-//			GetComponent<BuildingStateController> ().CmdSetDamageState (1);
-//		} else if (val > .1f) {
-//			GetComponent<BuildingStateController> ().CmdSetDamageState (2);
-//		}
-//	}
+	void SetDamageState(float val) {
+		if (val > .65f && val < 1f) {
+			GetComponent<BuildingStateController> ().RpcSetDamageState (0);
+		} else if (val > .4f) {
+			GetComponent<BuildingStateController> ().RpcSetDamageState (1);
+		} else if (val > .1f) {
+			GetComponent<BuildingStateController> ().RpcSetDamageState (2);
+		}
+	}
 
 	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null) {
 		owner = thisOwner;
