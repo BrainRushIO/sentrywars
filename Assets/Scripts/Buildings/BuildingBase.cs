@@ -27,10 +27,10 @@ public class BuildingBase : NetworkBehaviour {
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
 	}
-	[SyncVar] bool isInitBuilding = false;
+	[SyncVar] bool isFirstBuilding = false;
 	[ClientRpc]
 	public void RpcSetIsInitBuilding (bool val) {
-		isInitBuilding = val;
+		isFirstBuilding = val;
 	}
 
 	public bool ReturnIsOccupied() {
@@ -38,7 +38,7 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public bool ReturnIsInitBuilding() {
-		return isInitBuilding;
+		return isFirstBuilding;
 	}
 
 	/// <summary>
@@ -102,7 +102,7 @@ public class BuildingBase : NetworkBehaviour {
 		if (currentHealth < 1 && !hasBeenDestroyed) {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
-			if (isOccupied || isInitBuilding) {
+			if (isOccupied || isFirstBuilding) {
 				print ("END GAME");
 				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose ();
 				if (owner == 1) {
@@ -112,7 +112,7 @@ public class BuildingBase : NetworkBehaviour {
 				}
 
 			}
-		} else if (isOccupied || isInitBuilding) {
+		} else if (isOccupied || isFirstBuilding) {
 			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
 		}
 	}
@@ -126,15 +126,17 @@ public class BuildingBase : NetworkBehaviour {
 		}
 	}
 
-	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null) {
+	public void InitializeBuilding(int thisOwner, NetworkIdentity thisLinkedEnergyField = null, bool isFirst = false) {
 		owner = thisOwner;
 		if (thisLinkedEnergyField != null) {
 			linkedEnergyField = thisLinkedEnergyField;
 		}
 		EnableAllColliders ();
 		isOccupied = true;
-		isInitBuilding = true;
 		currentHealth = maxHealth;
+		if (isFirst) {
+			isFirstBuilding = true;
+		}
 	}
 
 

@@ -297,7 +297,7 @@ public class PlayerController : NetworkBehaviour {
 				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				Debug.Log ("Init building from player " + playerID);
-				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt);
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt,null, true);
 				isInitialized = true;
 			}
 		}
