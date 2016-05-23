@@ -22,7 +22,7 @@ public class BuildingBase : NetworkBehaviour {
 	[SyncVar] bool hasBeenDestroyed;
 	[SyncVar] NetworkIdentity linkedEnergyField;
 
-	[SyncVar] bool isOccupied = false;
+	[SerializeField][SyncVar] bool isOccupied = false;
 	[ClientRpc]
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
@@ -132,7 +132,6 @@ public class BuildingBase : NetworkBehaviour {
 			linkedEnergyField = thisLinkedEnergyField;
 		}
 		EnableAllColliders ();
-		isOccupied = true;
 		currentHealth = maxHealth;
 		if (isFirst) {
 			isFirstBuilding = true;
