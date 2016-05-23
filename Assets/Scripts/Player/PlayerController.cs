@@ -238,7 +238,7 @@ public class PlayerController : NetworkBehaviour {
 	[ClientRpc]
 	void RpcPlayerLose() {
 		if (isLocalPlayer) {
-			GetComponent<GUIManager> ().currentHUD.endMatch.text = "Defeat";
+			GetComponent<GUIManager> ().SetAlert("Defeat", 6f);
 			loseSphere.SetActive (true);
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
@@ -263,7 +263,7 @@ public class PlayerController : NetworkBehaviour {
 		if (isLocalPlayer) {
 			GetComponent<ConstructionController> ().enabled = false;
 			GetComponent<InputController> ().enabled = false;
-			GetComponent<GUIManager> ().currentHUD.endMatch.text = "Victory";
+			GetComponent<GUIManager> ().SetAlert("Victory", 6f);
 			gameplayGui.SetActive (false);
 			curPlayerMode = PlayerMode.GameOver;
 			GameObject.Find ("Soundtrack").SetActive (false);
