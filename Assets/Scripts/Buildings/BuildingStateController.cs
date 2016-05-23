@@ -26,6 +26,7 @@ public class BuildingStateController : NetworkBehaviour {
 
 	[ClientRpc]
 	void RpcSwitchColor (Color col) {
+		GetComponent<BuildingBase> ().enabled = true;
 		foreach (MeshRenderer x in coloredMesh) {
 			x.material.SetColor ("_EmissionColor", col);
 		}
@@ -67,5 +68,4 @@ public class BuildingStateController : NetworkBehaviour {
 			}
 		}
 	}
-
 }

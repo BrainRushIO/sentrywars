@@ -52,6 +52,8 @@ public class BuildingBase : NetworkBehaviour {
 		CheckIfIsPowered ();
 	}
 
+
+
 	[SyncVar] bool abilitiesActive = false;
 	public bool ReturnIsBuildingActive() {
 		return abilitiesActive;
