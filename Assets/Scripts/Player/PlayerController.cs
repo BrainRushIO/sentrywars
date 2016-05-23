@@ -187,6 +187,10 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void TeleportToBuilding () {
+		if (currentTarget.GetComponent<BuildingStateController> ().damageState == 2) {
+			GetComponent<GUIManager> ().SetAlert ("Cannot Teleport into Damaged Tower");
+			return;
+		}
 		CmdSetIsOccupiedOnCurBuilding (currentInhabitedBuilding, currentTarget.GetComponent<NetworkIdentity> ());
 		currentInhabitedBuilding = currentTarget.GetComponent<NetworkIdentity>();
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);

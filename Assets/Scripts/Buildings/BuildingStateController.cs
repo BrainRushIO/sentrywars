@@ -8,6 +8,7 @@ public class BuildingStateController : NetworkBehaviour {
 	public MeshRenderer[] coloredMesh;
 	[SyncVar] Color thisBuildingColor = new Color();
 	[SyncVar] NetworkInstanceId towerNetID;
+	[SyncVar] public int damageState;
 	public GameObject[] stage1damage, stage2damage, stage3damage;
 	List<GameObject[]> damageStages;
 	public void SetMeshRendererColor(bool isPowered) {
@@ -37,9 +38,10 @@ public class BuildingStateController : NetworkBehaviour {
 //
 	[ClientRpc]
 	public void RpcSetDamageState(int stage) {
-			foreach (GameObject x in damageStages[stage]) {
-				x.SetActive (true);
-			}
+		damageState = stage;
+		foreach (GameObject x in damageStages[stage]) {
+			x.SetActive (true);
+		}
 	}
 
 	void GetBuildingColor (bool isPowered) {
