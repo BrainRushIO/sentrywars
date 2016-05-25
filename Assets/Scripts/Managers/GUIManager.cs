@@ -7,7 +7,7 @@ public class GUIManager : MonoBehaviour {
 
 	float alertTimer, alertDuration = 1.6f;
 
-	public void SetAlert(string message, float duration = alertDuration) {
+	public void SetAlert(string message, float duration = 1.6f) {
 		currentHUD.alert.text = message;
 		currentHUD.alert.enabled = true;
 		alertTimer = duration;
