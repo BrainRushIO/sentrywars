@@ -21,11 +21,15 @@ public class BuildingBase : NetworkBehaviour {
 	public BuildingType thisBuildingType;
 	[SyncVar] bool hasBeenDestroyed;
 	[SyncVar] NetworkIdentity linkedEnergyField;
+	public GameObject rangeRing;
 
 	[SerializeField][SyncVar] bool isOccupied = false;
 	[ClientRpc]
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
+		if (rangeRing != null) {
+			rangeRing.SetActive (val);
+		}
 	}
 	[SyncVar] bool isFirstBuilding = false;
 	[ClientRpc]

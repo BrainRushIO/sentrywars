@@ -19,7 +19,7 @@ public class ConstructionController : NetworkBehaviour {
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
 	const float GRID_SPACING = 2f;
-	public const float CONSTRUCTION_RANGE = 250f;
+	public const float CONSTRUCTION_RANGE = 200f;
 	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
 
 	int layerIdBuilding = 10;
@@ -275,7 +275,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	bool IsBuildingTemplateInConstructionRange() {
-		return (Vector3.Distance (buildingPlacementPosition, gameObject.transform.position) < CONSTRUCTION_RANGE);
+		return (Vector3.Distance (buildingPlacementPosition, new Vector3(transform.position.x, 0f, transform.position.z)) < CONSTRUCTION_RANGE);
 	}
 
 	void CheckIfCanBuild () {
