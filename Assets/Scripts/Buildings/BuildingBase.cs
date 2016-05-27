@@ -65,14 +65,14 @@ public class BuildingBase : NetworkBehaviour {
 	public void EnableTowerAbilities() {
 		if (isServer) {
 			abilitiesActive = true;
-			GetComponent<BuildingStateController> ().SetMeshRendererColor (abilitiesActive);
+			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
 	}
 
 	public void DisableTowerAbilities () {
 		if (isServer) {
 			abilitiesActive = false;
-			GetComponent<BuildingStateController> ().SetMeshRendererColor (abilitiesActive);
+			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
 
 	}
@@ -138,9 +138,23 @@ public class BuildingBase : NetworkBehaviour {
 			linkedEnergyField = thisLinkedEnergyField;
 		}
 		EnableAllColliders ();
+		DisableMeshRenderers ();
 		currentHealth = maxHealth;
 		if (isFirst) {
 			isFirstBuilding = true;
+		}
+	}
+
+	public void DisableMeshRenderers () {
+		GetComponent<MeshRenderer> ().enabled = false;
+		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>()) {
+			x.enabled = false;
+		}
+	}
+	public void EnableMeshRenderers () {
+		GetComponent<MeshRenderer> ().enabled = true;
+		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>()) {
+			x.enabled = true;
 		}
 	}
 

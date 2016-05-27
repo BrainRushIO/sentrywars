@@ -11,8 +11,17 @@ public class BuildingStateController : NetworkBehaviour {
 	[SyncVar] public int damageState;
 	public GameObject[] stage1damage, stage2damage, stage3damage;
 	List<GameObject[]> damageStages;
-	public void SetMeshRendererColor(bool isPowered) {
-		GetBuildingColor (isPowered);
+
+	[SerializeField] GameObject warpEffect;
+
+	public void SetMeshRendererColor() {
+		StartCoroutine (WarpInComplete ());
+	}
+
+
+	IEnumerator WarpInComplete() {
+		yield return new WaitForSeconds (3);
+		GetBuildingColor ();
 		RpcSwitchColor (thisBuildingColor);
 	}
 	void Start () {
@@ -24,9 +33,13 @@ public class BuildingStateController : NetworkBehaviour {
 		}
 	}
 
+
+
+
 	[ClientRpc]
 	void RpcSwitchColor (Color col) {
 		GetComponent<BuildingBase> ().enabled = true;
+		GetComponent<BuildingBase> ().EnableMeshRenderers ();
 		foreach (MeshRenderer x in coloredMesh) {
 			x.material.SetColor ("_EmissionColor", col);
 		}
@@ -45,10 +58,9 @@ public class BuildingStateController : NetworkBehaviour {
 		}
 	}
 
-	void GetBuildingColor (bool isPowered) {
+	void GetBuildingColor () {
 		PlayerController owner = GameManager.players[GetComponent<BuildingBase> ().ReturnOwner ()].GetComponent<PlayerController>();
-		if (isPowered) {
-			switch (owner.playerInt) {
+		switch (owner.playerInt) {
 			case 0:
 				thisBuildingColor = Color.red;
 				break;
@@ -56,16 +68,5 @@ public class BuildingStateController : NetworkBehaviour {
 				thisBuildingColor = Color.blue;
 				break;
 			}
-		} else {
-			switch (owner.playerInt) {
-			case 0:
-				thisBuildingColor = new Color(0.5f,0f,0f);
-				break;
-			case 1:
-				thisBuildingColor = new Color(0f,0f,.5f);
-				break;
-
-			}
 		}
-	}
 }

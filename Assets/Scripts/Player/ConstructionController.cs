@@ -21,6 +21,8 @@ public class ConstructionController : NetworkBehaviour {
 	const float GRID_SPACING = 2f;
 	public const float CONSTRUCTION_RANGE = 200f;
 	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
+	public const float WARPIN_TIME = 3f;
+
 
 	int layerIdBuilding = 10;
 	int layerMaskBuilding;
@@ -175,8 +177,23 @@ public class ConstructionController : NetworkBehaviour {
 		} else {
 			temp.GetComponent<BuildingBase> ().InitializeBuilding (thisPlayerID);
 		}
+		GameObject warpFX = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [6], placementPos+ new Vector3(0,2f,0), Quaternion.Euler(new Vector3(180,0,0)));
+		NetworkServer.Spawn (warpFX);
 		NetworkServer.SpawnWithClientAuthority (temp, gameObject);
+		StartCoroutine (WarpSplash(placementPos));
 
+	}
+
+	IEnumerator WarpSplash (Vector3 pos) {
+		yield return new WaitForSeconds (WARPIN_TIME);
+		CmdSpawnWarpSplash (pos);
+	}
+
+	[Command]
+	void CmdSpawnWarpSplash (Vector3 thisPos) {
+		print ("CALLLED");
+		GameObject thisSplash = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [7], thisPos, Quaternion.identity);
+		NetworkServer.Spawn (thisSplash);
 	}
 
 	void HandleConstructionCall() {

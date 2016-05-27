@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour {
 	public static event SendPlayerInputInfo OnSendPlayerInputInfo;
 	RaycastHit currentRayCastHit;
 
-	float buildCoolDown = 2.5f, buildCooldownTimer;
+	float buildCoolDown = 0, buildCooldownTimer;
 	public float ReturnCooldownTimer() {
 		return buildCooldownTimer;
 	}
