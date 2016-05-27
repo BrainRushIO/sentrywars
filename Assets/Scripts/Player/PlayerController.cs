@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
+public enum TargetTypes {None, Building, VRUIObject, Floor, EnergyPool};
 
 
 /// <summary>
@@ -11,7 +11,7 @@ public enum TargetTypes {None, Building, GUIButton, Floor, EnergyPool};
 /// </summary>
 public class PlayerController : NetworkBehaviour {
 
-	enum PlayerMode {CoolDown, Active, GameOver};
+	enum PlayerMode {Inactive, Active, GameOver};
 	PlayerMode curPlayerMode = PlayerMode.Active;
 
 	public int playerInt;
@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 	public void SetCoolDown () {
 		buildCooldownTimer = 0;
-		curPlayerMode = PlayerMode.CoolDown;
+		curPlayerMode = PlayerMode.Inactive;
 	}
 
 	void OnEnable() {
@@ -56,7 +56,7 @@ public class PlayerController : NetworkBehaviour {
 
 	void Update() {
 		switch (curPlayerMode) {
-		case PlayerMode.CoolDown:
+		case PlayerMode.Inactive:
 			buildCooldownTimer += Time.deltaTime;
 			if (buildCooldownTimer > buildCoolDown) {
 				curPlayerMode = PlayerMode.Active;
@@ -68,16 +68,10 @@ public class PlayerController : NetworkBehaviour {
 			OnSendPlayerInputInfo (currentRayCastHit);
 			break;
 		}
-		if( GetComponent<InputController>().playInVR && SteamVR.active ) {
-			if( GetComponent<InputController>().rightController.gripButtonDown ) {
-//				InitializePlayer (0);
-//				GameManager.gameHasStarted = true;
-			}
-		}else {
-			if (Input.GetKeyDown (KeyCode.P)) {
-				InitializePlayer (0);
-				GameManager.gameHasStarted = true;
-			}
+
+		if (Input.GetKeyDown (KeyCode.P)) {
+			InitializePlayer (0);
+			GameManager.gameHasStarted = true;
 		}
 
 		//For Beginning of Game
@@ -95,30 +89,29 @@ public class PlayerController : NetworkBehaviour {
 		}
 		currentRayCastHit = thisHit;
 		currentTarget = thisHit.collider.gameObject;
-		if (currentTarget == currentInhabitedBuilding) {
+		if (currentTarget == currentInhabitedBuilding.gameObject) {
 			GetComponent<ConstructionController> ().SwitchToInactive ();
 			return;
 		}
+
 		switch(thisHit.transform.tag){
 		case "Building":
 			HandleSelectBuildingVFX ();
 			currentTargetType = TargetTypes.Building;
 			currentBuildingID = currentTarget.GetComponent<NetworkIdentity> ().netId;
 			break;
-		case "GUIButton":
-			currentTargetType = TargetTypes.GUIButton;
-			PressGUIButton ();
+		case "VRUIObject":
+			currentTargetType = TargetTypes.VRUIObject;
+			PressVRUIButton ();
 			break;
 		case "Floor":
-			if (currentInhabitedBuilding.GetComponent<BuildingBase> ().ReturnIsBuildingActive()&&curPlayerMode == PlayerMode.Active) {
-				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+			if (curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			}
 			break;
 		case "Energy":
 			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()&&curPlayerMode == PlayerMode.Active) {
-				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
 			} 
@@ -136,7 +129,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void HandleSelectBuildingVFX () {
-		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget.GetComponent<NetworkIdentity>()!=currentInhabitedBuilding) {
+		if (currentTarget.GetComponent<BuildingBase>()!=null && otherBuildingSelectedIndicator == null && currentTarget!=currentInhabitedBuilding.gameObject) {
 			otherBuildingSelectedIndicator = Instantiate (otherBuildingSelectedIndicatorPrefab, currentTarget.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity) as GameObject;
 			GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().selectTarget);
 
@@ -152,8 +145,8 @@ public class PlayerController : NetworkBehaviour {
 				PerformActionOnTargetedBuilding ();
 			}
 			break;
-		case TargetTypes.GUIButton:
-			PressGUIButton ();
+		case TargetTypes.VRUIObject:
+			PressVRUIButton ();
 			break;
 		}
 	}
@@ -170,7 +163,6 @@ public class PlayerController : NetworkBehaviour {
 				} else {
 					GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
 					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
-
 				}
 				break;
 			}
@@ -182,7 +174,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 		
 
-	void PressGUIButton() {
+	void PressVRUIButton() {
 		
 	}
 
@@ -222,75 +214,11 @@ public class PlayerController : NetworkBehaviour {
 		playerInt = thisPlayerInt;
 		playerID = "Player" + thisPlayerInt.ToString ();
 		transform.name = playerID;
-		//TODO
-
-		GetComponent<ConstructionController> ().BuildInitialBuilding ();
-
-	}
-		
-	[Command]
-	public void CmdPlayerLose() {
-		if (isServer) {
-			RpcPlayerLose ();
-		}
+		GetComponent<ConstructionController> ().BuildInitialPowerCore ();
 	}
 
-	[ClientRpc]
-	void RpcPlayerLose() {
-		if (isLocalPlayer) {
-			GetComponent<GUIManager> ().SetAlert("Defeat", 6f);
-			loseSphere.SetActive (true);
-			GetComponent<ConstructionController> ().enabled = false;
-			GetComponent<InputController> ().enabled = false;
-			gameplayGui.SetActive (false);
-			curPlayerMode = PlayerMode.GameOver;
-			GameObject.Find ("Soundtrack").SetActive (false);
-			GameObject.Find ("loseSound").GetComponent<AudioSource> ().Play ();
-
-		}
-	}
-
-	[Command]
-	public void CmdPlayerWin () {
-		if (isServer) {
-			Debug.Log ("PLAYER WIN CMD");
-			RpcPlayerWin ();
-		}
-	}
-
-	[ClientRpc]
-	void RpcPlayerWin () {
-		if (isLocalPlayer) {
-			GetComponent<ConstructionController> ().enabled = false;
-			GetComponent<InputController> ().enabled = false;
-			GetComponent<GUIManager> ().SetAlert("Victory", 6f);
-			gameplayGui.SetActive (false);
-			curPlayerMode = PlayerMode.GameOver;
-			GameObject.Find ("Soundtrack").SetActive (false);
-			GameObject.Find ("winSound").GetComponent<AudioSource> ().Play ();
-
-
-		}
-	}
-
-	[Command]
-	public void CmdPlayerHit () {
-		if (isServer) {
-			RpcPlayerHit ();
-		}
-	}
-
-	[ClientRpc]
-	void RpcPlayerHit () {
-		if (isLocalPlayer) {
-			StartCoroutine ("FlashPlayerScreenRed");
-		}
-	}
-	IEnumerator FlashPlayerScreenRed() {
-		loseSphere.SetActive (true);
-		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().playerHit, false);
-		yield return new WaitForSeconds (.12f);
-		loseSphere.SetActive (false);
+	public void EndGame() {
+		curPlayerMode = PlayerMode.GameOver;
 	}
 
 	void InhabitClosestBuilding () {

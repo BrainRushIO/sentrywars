@@ -101,29 +101,11 @@ public class InputController : NetworkBehaviour {
 	private void CheckWeaponChange() {
 		if( rightController.touchPadButtonDown ) {
 			// Cycle through building types. 3 is the number of items in the public BuildingType enum.
-			if( buildingTypeSelected+1 < 3 )
-				buildingTypeSelected++;
-			else
-				buildingTypeSelected = 0;
-
-			SelectNewBuilding();
-			return;
+			OnRightTouchPadDown();
 		}
-
-//		if( rightController.touchPadTouchPosition.magnitude == 0f )
-//			return;
-//
-//		Vector2 normalizedDir = rightController.touchPadTouchPosition.normalized;
-//		float deg = Mathf.Atan2( normalizedDir.y, normalizedDir.x ) * Mathf.Rad2Deg;
-//		if( deg < 0f ) {
-//			deg += 360f;
-//		}
-//
-//		float numOptions = 3f; // Number of BuildingTypes in Constructor.cs
-//		float startPoint =  (0.5f-(1f / numOptions)) / 2f; // We want th first option to take up the top hemisphere (0.5f) 
-//		deg /= 360f;
-//
-//		buildingTypeSelected = ( deg >= startPoint ) ? Mathf.FloorToInt((deg)*numOptions) : (int)numOptions-1;
+		if (Input.GetKeyDown (KeyCode.Tab)) {
+			OnRightTouchPadDown ();
+		}
 	}
 
 	private void SelectNewBuilding() {
@@ -138,6 +120,9 @@ public class InputController : NetworkBehaviour {
 	public static event LeftTriggerFingerDownAction OnLeftTriggerFingerDown;
 	public delegate void LeftTriggerFingerUpAction();
 	public static event LeftTriggerFingerUpAction OnLeftTriggerFingerUp;
+
+	public delegate void RightTouchPadDown();
+	public static event RightTouchPadDown OnRightTouchPadDown;
 
 	public delegate void SendPointerInfoAction(RaycastHit thisHit);
 	public static event SendPointerInfoAction OnSendPointerInfo;

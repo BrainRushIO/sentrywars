@@ -58,23 +58,17 @@ public class BuildingBase : NetworkBehaviour {
 
 
 
-	[SyncVar] bool abilitiesActive = false;
-	public bool ReturnIsBuildingActive() {
-		return abilitiesActive;
-	}
+
 	public void EnableTowerAbilities() {
 		if (isServer) {
-			abilitiesActive = true;
 			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
 	}
 
 	public void DisableTowerAbilities () {
 		if (isServer) {
-			abilitiesActive = false;
 			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
-
 	}
 
 	void CheckIfIsPowered() {
@@ -110,16 +104,16 @@ public class BuildingBase : NetworkBehaviour {
 			CmdDestroyBuilding (GameManager.players [owner].netId);
 			if (isOccupied || isFirstBuilding) {
 				print ("END GAME");
-				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerLose ();
+				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerLose ();
 				if (owner == 1) {
-					NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerController> ().CmdPlayerWin ();
+					NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerWin ();
 				} else {
-					NetworkServer.FindLocalObject (GameManager.players [1].netId).GetComponent<PlayerController> ().CmdPlayerWin ();
+					NetworkServer.FindLocalObject (GameManager.players [1].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerWin ();
 				}
 
 			}
 		} else if (isOccupied || isFirstBuilding) {
-			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerController> ().CmdPlayerHit();
+			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerHit();
 		}
 	}
 	void SetDamageState(float val) {

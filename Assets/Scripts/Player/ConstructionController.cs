@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public class ConstructionController : NetworkBehaviour {
 	enum ConstructionState {Inactive, PlacingBuilding, SpawnBuilding, Cooldown};
 	ConstructionState currConstructionState = ConstructionState.Inactive;
-	BuildingType currentBuildingToConstructType;
 
+	BuildingType currentBuildingToConstructType;
 	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
 	Camera playerCamera;
@@ -18,7 +18,6 @@ public class ConstructionController : NetworkBehaviour {
 	bool tooCloseToOtherBuilding;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
-	const float GRID_SPACING = 2f;
 	public const float CONSTRUCTION_RANGE = 200f;
 	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
 	public const float WARPIN_TIME = 3f;
@@ -30,6 +29,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	//State Machine Switches
 	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
+
 	public void SwitchToPlacingBuilding() {
 		switchToPlacingBuilding = true;
 	}
@@ -41,13 +41,12 @@ public class ConstructionController : NetworkBehaviour {
 	Dictionary<BuildingType, float> buildingCosts = new Dictionary<BuildingType, float>();
 
 	void OnEnable() {
-		PlayerController.OnSendPlayerInputInfo += PlaceBuildingTemplate;
+		PlayerController.OnSendPlayerInputInfo += ShowBuildingBluePrint;
 		InputController.OnRightTriggerFingerDown += HandleConstructionCall;
-
 	}
 
 	void OnDisable() {
-		PlayerController.OnSendPlayerInputInfo -= PlaceBuildingTemplate;
+		PlayerController.OnSendPlayerInputInfo -= ShowBuildingBluePrint;
 		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
 		Destroy (currentBuildingToConstruct);
 	}
@@ -61,7 +60,7 @@ public class ConstructionController : NetworkBehaviour {
 		layerMaskBuilding = 1 << layerIdBuilding;
 	}
 
-	public void BuildInitialBuilding() {
+	public void BuildInitialPowerCore() {
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
 		currConstructionState = ConstructionState.SpawnBuilding;
 
@@ -72,22 +71,12 @@ public class ConstructionController : NetworkBehaviour {
 		if (!isLocalPlayer) {
 			return;
 		}
-		//temp construction selection
-		if (Input.GetKeyDown(KeyCode.Q)) {
-			SelectConstructBuildingType(BuildingType.Constructor);
-		}
-		if (Input.GetKeyDown(KeyCode.W)) {
-			SelectConstructBuildingType(BuildingType.Cannon);
-		}
-		if (Input.GetKeyDown(KeyCode.E)) {
-			SelectConstructBuildingType(BuildingType.Energy);
-		}
 			
 		//UI
 		GetComponent<GUIManager>().currentHUD.constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		GetComponent<GUIManager>().currentHUD.constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
-
+		//STATE MACHINE
 		if (isInConstructor) {
 			switch (currConstructionState) {
 			case ConstructionState.Inactive:
@@ -119,7 +108,6 @@ public class ConstructionController : NetworkBehaviour {
 				break;
 			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
-				GetComponent<PlayerController> ().SetCoolDown ();
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				switchToPlacingBuilding = false;
 				currConstructionState = ConstructionState.Inactive;
@@ -128,45 +116,18 @@ public class ConstructionController : NetworkBehaviour {
 		} 
 	}
 
-	void PlaceBuildingTemplate (RaycastHit hit) {
+	void ShowBuildingBluePrint (RaycastHit hit) {
 		if (currentBuildingToConstruct != null) {
-			if (isTargetingEnergyField) {
-				buildingPlacementPosition = ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
+			//SNAP TO ENERGY FIELD
+			if (isTargetingEnergyField) { 
+				buildingPlacementPosition = GridLogic.ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
 			} else {
-				buildingPlacementPosition = ConvertVector3ToGridPoint (hit.point);
+				buildingPlacementPosition = GridLogic.ConvertVector3ToGridPoint (hit.point);
 			}
 			currentBuildingToConstruct.transform.position = buildingPlacementPosition;
 		}
 	}
-
-	Vector3 ConvertVector3ToGridPoint(Vector3 thisPoint) {
-		float xCoordinate = thisPoint.x;
-		float zCoordinate = thisPoint.z;
-		xCoordinate = RoundToGridSpacing (xCoordinate);
-		zCoordinate = RoundToGridSpacing (zCoordinate);
-		Vector3 output = new Vector3 (xCoordinate, 0, zCoordinate);
-		return output;
-	}
-
-	float RoundToGridSpacing (float val) {
-		float remainder = val % GRID_SPACING;
-		if (remainder >= GRID_SPACING / 2) {
-			//ie 57 -> r = 7 add GS-r or  (10-7) to round up
-			//ie -57 -> r = -7 subtract (GS+r) or (10-7) to round down
-			if (val >= 0) {
-				val += (GRID_SPACING - remainder);
-			} else {
-				val -= (GRID_SPACING + remainder);
-			}
-		} else {
-			//ie 53 -> r = 3, sub 3 to round down
-			//ie -53 -> r = -3 sub -3 to round up
-			val -= remainder;
-		}
-		return val;
-	}
-
-
+		
 	[Command]
 	public void CmdSpawnBuilding(Vector3 placementPos, int thisPlayerID, BuildingType thisType, NetworkIdentity thisEnergyPool, bool isEnergy) {
 		isBuildingTemplateInstantiated = false;
@@ -191,7 +152,6 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnWarpSplash (Vector3 thisPos) {
-		print ("CALLLED");
 		GameObject thisSplash = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [7], thisPos, Quaternion.identity);
 		NetworkServer.Spawn (thisSplash);
 	}
@@ -238,10 +198,8 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
-		if (currConstructionState == ConstructionState.PlacingBuilding) {
-			currentBuildingToConstructType = thisBuildingType;
-			SwitchBuildingTemplate ();
-		}
+		currentBuildingToConstructType = thisBuildingType;
+		SwitchToPlacingBuilding ();
 	}
 
 	void InstantiateBuildingTemplate () {
@@ -284,7 +242,7 @@ public class ConstructionController : NetworkBehaviour {
 		}
 	}
 
-	void SwitchBuildingTemplate() {
+	public void DestroyBuildingTemplate() {
 		if (currentBuildingToConstruct != null) {
 			Destroy (currentBuildingToConstruct);
 		}
