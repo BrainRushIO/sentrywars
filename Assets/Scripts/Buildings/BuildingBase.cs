@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum BuildingType {Constructor, Cannon, Energy};
+public enum BuildingType {PowerCore, Cannon, Energy, SnipeCannon, Airport};
 
 public class BuildingBase : NetworkBehaviour {
 
@@ -75,7 +75,7 @@ public class BuildingBase : NetworkBehaviour {
 		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
 		int totalConstructors = 0;
 		foreach (Collider x in nearbyBuildings) {
-			if (x.GetComponent<BuildingBase> ()!=null && x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Constructor) {
+			if (x.GetComponent<BuildingBase> ()!=null && x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.PowerCore) {
 				totalConstructors++;
 			}
 		}

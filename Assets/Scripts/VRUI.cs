@@ -7,15 +7,6 @@ public class VRUI : MonoBehaviour {
 	public GameObject currentlyHighlightedObject;
 	public GameObject VRUIPanel;
 	GameObject tempPanel;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 	void FixedUpdate () {
 
@@ -35,7 +26,6 @@ public class VRUI : MonoBehaviour {
 			VRUISelectionAction x = currentlyHighlightedObject.GetComponent<OnSelectAction> ().thisVRUISelectionAction;
 			VRUISelectionActionType y = currentlyHighlightedObject.GetComponent<OnSelectAction> ().thisVRUISelectionActionType;
 
-			VRUIPanel.SetActive (false);
 			InterpretAction (x, y);
 			//select building type
 			//enter buildmode
@@ -43,29 +33,34 @@ public class VRUI : MonoBehaviour {
 	}
 
 	void InterpretAction(VRUISelectionAction thisAction, VRUISelectionActionType thisActionType) {
-		switch (thisAction) {
-		case VRUISelectionAction.Airport:
-			GetComponent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
-			break;
-		case VRUISelectionAction.Cannon:
-			GetComponent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+		if (thisActionType == VRUISelectionActionType.Gameplay) {
 
-			break;
+			switch (thisAction) {
+			case VRUISelectionAction.Airport:
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+				break;
+			case VRUISelectionAction.Cannon:
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
 
-		case VRUISelectionAction.PowerCore:
-			GetComponent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Constructor);
+				break;
 
-			break;
-		case VRUISelectionAction.EnergyMine:
-			GetComponent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Energy);
+			case VRUISelectionAction.PowerCore:
+				Debug.Log ("TRIGGER POWERCORE");
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.PowerCore);
 
-			break;
+				break;
+			case VRUISelectionAction.EnergyMine:
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Energy);
 
-		case VRUISelectionAction.Sniper:
-			GetComponent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+				break;
 
-			break;
+			case VRUISelectionAction.Sniper:
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
 
+				break;
+
+			}
+			ToggleVRUI ();
 		}
 	}
 
@@ -75,7 +70,7 @@ public class VRUI : MonoBehaviour {
 		} else {
 			Destroy (tempPanel);
 		}
-		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
+//		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
 	}
 
 	void OnEnable() {

@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 	public void SetCoolDown () {
 		buildCooldownTimer = 0;
-		curPlayerMode = PlayerMode.Inactive;
+//		curPlayerMode = PlayerMode.Inactive;
 	}
 
 	void OnEnable() {
@@ -90,7 +90,7 @@ public class PlayerController : NetworkBehaviour {
 		currentRayCastHit = thisHit;
 		currentTarget = thisHit.collider.gameObject;
 		if (currentTarget == currentInhabitedBuilding.gameObject) {
-			GetComponent<ConstructionController> ().SwitchToInactive ();
+//			GetComponent<ConstructionController> ().SwitchToInactive ();
 			return;
 		}
 
@@ -117,7 +117,7 @@ public class PlayerController : NetworkBehaviour {
 			} 
 			break;
 		case "Wall":
-			GetComponent<ConstructionController> ().SwitchToInactive ();
+//			GetComponent<ConstructionController> ().SwitchToInactive ();
 			break;
 
 		default :
@@ -190,7 +190,7 @@ public class PlayerController : NetworkBehaviour {
 		MovePlayerToBuildingCockpit ();
 		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().warp);
 		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
-		if (currentInhabitedBuildingType != BuildingType.Constructor) {
+		if (currentInhabitedBuildingType != BuildingType.PowerCore) {
 			GetComponent<ConstructionController> ().isInConstructor = false;
 		} else {
 			GetComponent<ConstructionController> ().isInConstructor = true;
