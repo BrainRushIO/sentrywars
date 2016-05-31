@@ -75,9 +75,6 @@ public class BuildingBase : BaseObject {
 		}
 	}
 
-	[SyncVar]
-	int owner;
-	public int ReturnOwner(){return owner;} 
 
 	void Awake () {
 		allColliders = GetComponents<Collider> ();
@@ -92,7 +89,6 @@ public class BuildingBase : BaseObject {
 			hasBeenDestroyed = true;
 			CmdDestroyBuilding (GameManager.players [owner].netId);
 			if (isOccupied || isFirstBuilding) {
-				print ("END GAME");
 				NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerLose ();
 				if (owner == 1) {
 					NetworkServer.FindLocalObject (GameManager.players [0].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerWin ();

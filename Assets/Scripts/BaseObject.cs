@@ -10,13 +10,9 @@ public class BaseObject : NetworkBehaviour {
 	public float ReturnCurrentHealth() {return currentHealth;}
 	[SyncVar] protected float cooldown;
 	public float ReturnCurrentCooldown() {return cooldown;}
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+
+	[SyncVar]
+	protected int owner;
+	public int ReturnOwner(){return owner;} 
 }

@@ -14,7 +14,7 @@ public class ConstructionController : NetworkBehaviour {
 	Camera playerCamera;
 	Vector3 buildingPlacementPosition;
 	NetworkIdentity currentEnergyFieldTargeted;
-	public bool isInConstructor = true, isTargetingEnergyField;
+	public bool isInPowerCore = true, isTargetingEnergyField;
 	bool tooCloseToOtherBuilding;
 	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
 
@@ -28,10 +28,10 @@ public class ConstructionController : NetworkBehaviour {
 
 
 	//State Machine Switches
-	bool switchToInactive, switchToPlacingBuilding, switchToSpawnBuilding;
+	bool switchToInactive, targetingFloor, switchToSpawnBuilding;
 
-	public void SwitchToPlacingBuilding() {
-		switchToPlacingBuilding = true;
+	public void SwitchToTargetingFloor() {
+		targetingFloor = true;
 	}
 	public void SwitchToInactive() {
 		switchToInactive = true;
@@ -51,7 +51,7 @@ public class ConstructionController : NetworkBehaviour {
 	void OnDisable() {
 		PlayerController.OnSendPlayerInputInfo -= ShowBuildingBluePrint;
 		InputController.OnRightTriggerFingerDown -= HandleConstructionCall;
-//		Destroy (currentBuildingToConstruct);
+		Destroy (currentBuildingToConstruct);
 	}
 
 	// Use this for initialization
@@ -76,18 +76,16 @@ public class ConstructionController : NetworkBehaviour {
 		if (!isLocalPlayer) {
 			return;
 		}
-			
-
 		//UI
 		GetComponent<GUIManager>().currentHUD.constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		GetComponent<GUIManager>().currentHUD.constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 		//STATE MACHINE
-		if (isInConstructor) {
+		if (isInPowerCore) {
 			switch (currConstructionState) {
 			case ConstructionState.Inactive:
-				if (switchToPlacingBuilding) {
-					switchToPlacingBuilding = false;
+				if (targetingFloor) {
+					targetingFloor = false;
 					currConstructionState = ConstructionState.PlacingBuilding;
 				}
 				break;
@@ -114,7 +112,7 @@ public class ConstructionController : NetworkBehaviour {
 			case ConstructionState.SpawnBuilding:
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
-				switchToPlacingBuilding = false;
+				targetingFloor = false;
 				currConstructionState = ConstructionState.Inactive;
 				break;
 			}
@@ -204,7 +202,6 @@ public class ConstructionController : NetworkBehaviour {
 
 	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		currentBuildingToConstructType = thisBuildingType;
-		SwitchToPlacingBuilding ();
 	}
 
 	void InstantiateBuildingTemplate () {

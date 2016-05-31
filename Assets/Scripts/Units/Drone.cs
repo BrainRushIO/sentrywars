@@ -4,27 +4,14 @@ using UnityEngine.Networking;
 
 public class Drone : UnitBase {
 
-	[SyncVar]
-	int owner;
-
 	public enum DroneStates {LiftOff, Search, Attack};
 	DroneStates thisDroneState = DroneStates.LiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3f;
 	NetworkIdentity currentTarget;
 
-
-
-
 	bool switchToSearch, switchToAttack;
 
-	// Use this for initialization
-	void Start () {
 
-	}
-
-	public void InitializeDrone (int thisOwner) {
-		owner = thisOwner;
-	}
 
 	// STATE MACHINE
 	void Update () {
@@ -46,7 +33,6 @@ public class Drone : UnitBase {
 				switchToAttack = false;
 				thisDroneState = DroneStates.Attack;
 			}
-
 			break;
 
 		case DroneStates.Attack:
@@ -55,7 +41,6 @@ public class Drone : UnitBase {
 				thisDroneState = DroneStates.Search;
 
 			}
-
 			break;
 
 

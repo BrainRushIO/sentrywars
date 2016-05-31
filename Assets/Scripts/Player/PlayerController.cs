@@ -107,7 +107,7 @@ public class PlayerController : NetworkBehaviour {
 		case "Floor":
 			if (curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
-				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+				GetComponent<ConstructionController> ().SwitchToTargetingFloor ();
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			}
 			break;
@@ -115,7 +115,7 @@ public class PlayerController : NetworkBehaviour {
 			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()&&curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
-				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
+				GetComponent<ConstructionController> ().SwitchToTargetingFloor ();
 			} 
 			break;
 		case "Wall":
@@ -171,7 +171,7 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void CmdChangeTarget(NetworkInstanceId thisTargetIdentity) {
-		currentInhabitedBuilding.GetComponent<Cannon> ().CmdOnChangeTarget (thisTargetIdentity);
+		currentInhabitedBuilding.GetComponent<TargetingBase> ().CmdOnChangeTarget (thisTargetIdentity);
 	}
 		
 
@@ -192,9 +192,9 @@ public class PlayerController : NetworkBehaviour {
 		GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().warp);
 		currentInhabitedBuildingType = currentTarget.GetComponent<BuildingBase> ().thisBuildingType;
 		if (currentInhabitedBuildingType != BuildingType.PowerCore) {
-			GetComponent<ConstructionController> ().isInConstructor = false;
+			GetComponent<ConstructionController> ().isInPowerCore = false;
 		} else {
-			GetComponent<ConstructionController> ().isInConstructor = true;
+			GetComponent<ConstructionController> ().isInPowerCore = true;
 		}
 	}
 

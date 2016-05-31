@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-using System.Collections.Generic;
-using System.Linq;
 
-public class UnitBase : MonoBehaviour {
+public class UnitBase : BaseObject {
 
 
-	// Use this for initialization
-	void Start () {
-	
+	public virtual void TakeDamage (float amount) {
+		currentHealth -= amount;
+
+		if (currentHealth < 1) {
+			Destroy (gameObject);
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public virtual void InitializeUnit (int thisOwner) {
+		owner = thisOwner;
 	}
 }
