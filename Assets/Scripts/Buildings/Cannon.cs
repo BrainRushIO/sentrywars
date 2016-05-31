@@ -3,32 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
-public class Cannon : NetworkBehaviour {
+public class Cannon : TargetingBase  {
 	
-	[SyncVar] NetworkInstanceId currentTarget;
-	bool isTargetFound, abilitiesActive;
 	[SerializeField] GameObject bulletPrefab, rangeRing;
 	public const float towerAttackRange = 200;
-
+	float detectionRange = 200f;
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
-	int buildingLayerMask;
-	bool changeTarget;
 
 	void ShowRangeRing(bool show) {
 		rangeRing.SetActive (show);
 	}
 
-	public void EnableTowerAbilities() {
-		abilitiesActive = true;
-	}
-	public void DisableTowerAbilities () {
-		abilitiesActive = false;	
-	}
-
 	void Start () {
 		rangeRing.transform.localScale = new Vector3 (towerAttackRange/10, 1, towerAttackRange/10);
-		buildingLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
   	}
 
 	void Update () {
@@ -45,7 +33,7 @@ public class Cannon : NetworkBehaviour {
 
 			if (radarSweepTimer > radarSweepTime && NetworkServer.FindLocalObject(currentTarget)==null) {
 				radarSweepTimer = 0;
-				DetectEnemies ();
+				DetectEnemyBuildings();
 			}
 		}
 	}
@@ -60,21 +48,5 @@ public class Cannon : NetworkBehaviour {
 		tempBullet.GetComponent<Bullet> ().InitializeBullet (bulletOwner);
 		cooldownTimer = fireCooldown;
 		NetworkServer.Spawn (tempBullet);
-	}
-
-	[Command]
-	public void CmdOnChangeTarget(NetworkInstanceId thisId) {
-		Debug.Log ("CHANGE TARGET " + thisId);
-		currentTarget = thisId;
-	}
-				
-	void DetectEnemies () {
-		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, towerAttackRange, buildingLayerMask);
-		foreach (Collider x in collidersInRange) {
-			if (x.GetComponent<BuildingBase> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
-				currentTarget = x.GetComponent<NetworkIdentity>().netId;
-				break;
-			}
-		}
 	}
 }

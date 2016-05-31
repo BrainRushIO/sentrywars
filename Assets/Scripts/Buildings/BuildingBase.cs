@@ -4,18 +4,13 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum BuildingType {PowerCore, Cannon, Energy, SnipeCannon, Airport};
+public enum BuildingType {PowerCore, Cannon, Energy, Airport, SnipeCannon};
 
-public class BuildingBase : NetworkBehaviour {
+public class BuildingBase : BaseObject {
 
-	float maxHealth = 50;
-	[SyncVar] private float currentHealth;
-	public float ReturnCurrentHealth() {return currentHealth;}
-	[SyncVar] private float cooldown;
-	public float ReturnCurrentCooldown() {return cooldown;}
 	public float actionCooldown;
-	public float cost;
 	public float buildTime;
+	bool isWarpingIn;
 	public Transform playerCockpit;
 	Collider[] allColliders;
 	public BuildingType thisBuildingType;
@@ -49,15 +44,9 @@ public class BuildingBase : NetworkBehaviour {
 	/// The colored mesh that switches from player to player.
 	/// </summary>
 
-
-
-
 	void Start () {
 		CheckIfIsPowered ();
 	}
-
-
-
 
 	public void EnableTowerAbilities() {
 		if (isServer) {
@@ -116,6 +105,7 @@ public class BuildingBase : NetworkBehaviour {
 			NetworkServer.FindLocalObject (GameManager.players [owner].netId).GetComponent<PlayerGameStateHandler> ().CmdPlayerHit();
 		}
 	}
+
 	void SetDamageState(float val) {
 		if (val > .65f && val < 1f) {
 			GetComponent<BuildingStateController> ().RpcSetDamageState (0);
@@ -140,13 +130,17 @@ public class BuildingBase : NetworkBehaviour {
 	}
 
 	public void DisableMeshRenderers () {
-		GetComponent<MeshRenderer> ().enabled = false;
+		if (GetComponent<MeshRenderer> () != null) {
+			GetComponent<MeshRenderer> ().enabled = false;
+		}
 		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>()) {
 			x.enabled = false;
 		}
 	}
 	public void EnableMeshRenderers () {
-		GetComponent<MeshRenderer> ().enabled = true;
+		if (GetComponent<MeshRenderer> () != null) {
+			GetComponent<MeshRenderer> ().enabled = true;
+		}
 		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>()) {
 			x.enabled = true;
 		}
@@ -180,5 +174,8 @@ public class BuildingBase : NetworkBehaviour {
 		Destroy (temp, 5f);
 		NetworkServer.Spawn (temp);
 		Destroy (gameObject);
+	}
+
+	void OnWarpInComplete() {
 	}
 }

@@ -23,6 +23,7 @@ public class BuildingStateController : NetworkBehaviour {
 		yield return new WaitForSeconds (3);
 		GetBuildingColor ();
 		RpcSwitchColor (thisBuildingColor);
+		SendMessage ("OnWarpInComplete", SendMessageOptions.DontRequireReceiver);
 	}
 	void Start () {
 		damageStages = new List<GameObject[]> ();
@@ -33,9 +34,6 @@ public class BuildingStateController : NetworkBehaviour {
 		}
 	}
 
-
-
-
 	[ClientRpc]
 	void RpcSwitchColor (Color col) {
 		GetComponent<BuildingBase> ().enabled = true;
@@ -44,7 +42,6 @@ public class BuildingStateController : NetworkBehaviour {
 			x.material.SetColor ("_EmissionColor", col);
 		}
 	}
-
 //	[Command]
 //	public void CmdSetDamageState(int thisStage) {
 //		RpcSetDamageState (thisStage);

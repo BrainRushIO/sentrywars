@@ -37,7 +37,7 @@ public class VRUI : MonoBehaviour {
 
 			switch (thisAction) {
 			case VRUISelectionAction.Airport:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Airport);
 				break;
 			case VRUISelectionAction.Cannon:
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
@@ -67,6 +67,7 @@ public class VRUI : MonoBehaviour {
 	void ToggleVRUI() {
 		if (tempPanel == null) {
 			tempPanel = (GameObject)Instantiate (VRUIPanel, transform.position, transform.rotation);
+			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
 		} else {
 			Destroy (tempPanel);
 		}

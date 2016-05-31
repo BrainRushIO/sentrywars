@@ -35,6 +35,9 @@ public class ConstructionController : NetworkBehaviour {
 	}
 	public void SwitchToInactive() {
 		switchToInactive = true;
+		if (currentBuildingToConstruct != null) {
+			Destroy (currentBuildingToConstruct);
+		}
 	}
 
 	[SerializeField]
@@ -57,6 +60,8 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.PowerCore, 10);
 		buildingCosts.Add (BuildingType.Cannon, 40);
 		buildingCosts.Add (BuildingType.Energy, 20);
+		buildingCosts.Add (BuildingType.Airport, 10);
+
 		layerMaskBuilding = 1 << layerIdBuilding;
 	}
 
@@ -95,14 +100,13 @@ public class ConstructionController : NetworkBehaviour {
 					CheckIfCanBuild ();
 
 				if (switchToInactive) {
-//					Destroy (currentBuildingToConstruct);
 					switchToInactive = false;
 					currConstructionState = ConstructionState.Inactive;
 					isBuildingTemplateInstantiated = false;
 					isBuildingTemplateGreen = false;
 
 				} else if (switchToSpawnBuilding) {
-//					Destroy (currentBuildingToConstruct);
+					Destroy (currentBuildingToConstruct);
 					switchToSpawnBuilding = false;
 					currConstructionState = ConstructionState.SpawnBuilding;
 				}
@@ -204,10 +208,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void InstantiateBuildingTemplate () {
-		print ("INSTANIATE");
-
 		currentBuildingToConstruct = (GameObject)Instantiate (buildingPrefabs [(int)currentBuildingToConstructType], buildingPlacementPosition, Quaternion.identity);
-		print (currentBuildingToConstruct.name);
 		currentBuildingToConstruct.GetComponentInChildren<BuildingBase> ().DisableAllColliders ();
 		CheckIfCanBuild ();
 
@@ -244,13 +245,6 @@ public class ConstructionController : NetworkBehaviour {
 				currentBuildingToConstruct.GetComponent<MeshRenderer> ().material = GetComponent<PlayerColorManager> ().templateColorRed;
 			}
 		}
-	}
-
-	public void DestroyBuildingTemplate() {
-		if (currentBuildingToConstruct != null) {
-//			Destroy (currentBuildingToConstruct);
-		}
-		isBuildingTemplateInstantiated = false;
 	}
 
 	bool IsBuildingTemplateInConstructionRange() {

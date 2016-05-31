@@ -90,7 +90,7 @@ public class PlayerController : NetworkBehaviour {
 		currentRayCastHit = thisHit;
 		currentTarget = thisHit.collider.gameObject;
 		if (currentTarget == currentInhabitedBuilding.gameObject) {
-//			GetComponent<ConstructionController> ().SwitchToInactive ();
+			GetComponent<ConstructionController> ().SwitchToInactive ();
 			return;
 		}
 
@@ -107,6 +107,7 @@ public class PlayerController : NetworkBehaviour {
 		case "Floor":
 			if (curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
+				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 				GetComponent<ConstructionController> ().isTargetingEnergyField = false;
 			}
 			break;
@@ -114,10 +115,11 @@ public class PlayerController : NetworkBehaviour {
 			if (!currentTarget.GetComponent<EnergyField> ().ReturnIsOccupied ()&&curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
 				GetComponent<ConstructionController> ().isTargetingEnergyField = true;
+				GetComponent<ConstructionController> ().SwitchToPlacingBuilding ();
 			} 
 			break;
 		case "Wall":
-//			GetComponent<ConstructionController> ().SwitchToInactive ();
+			GetComponent<ConstructionController> ().SwitchToInactive ();
 			break;
 
 		default :
@@ -125,7 +127,6 @@ public class PlayerController : NetworkBehaviour {
 			break;
 		}
 
-		if (currentTargetType!=TargetTypes.Floor) GetComponent<ConstructionController> ().SwitchToInactive ();
 	}
 
 	void HandleSelectBuildingVFX () {
