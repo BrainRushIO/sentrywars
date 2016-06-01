@@ -11,21 +11,18 @@ public class ConstructionController : NetworkBehaviour {
 	BuildingType currentBuildingToConstructType;
 	public GameObject[] buildingPrefabs;
 	public GameObject currentBuildingToConstruct;
-	Camera playerCamera;
 	Vector3 buildingPlacementPosition;
 	NetworkIdentity currentEnergyFieldTargeted;
 	public bool isInPowerCore = true, isTargetingEnergyField;
 	bool tooCloseToOtherBuilding;
-	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuild;
+	bool isBuildingTemplateInstantiated, isBuildingTemplateGreen, canBuildThisTower, isInBuildMode;
 
 	public const float CONSTRUCTION_RANGE = 200f;
 	const float MIN_PROXIMITY_BTWN_BUILDING = 50f;
 	public const float WARPIN_TIME = 3f;
 
-
 	int layerIdBuilding = 10;
 	int layerMaskBuilding;
-
 
 	//State Machine Switches
 	bool switchToInactive, targetingFloor, switchToSpawnBuilding;
@@ -56,7 +53,6 @@ public class ConstructionController : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		playerCamera = GetComponentInChildren<Camera> ();
 		buildingCosts.Add (BuildingType.PowerCore, 10);
 		buildingCosts.Add (BuildingType.Cannon, 40);
 		buildingCosts.Add (BuildingType.Energy, 20);
@@ -69,6 +65,10 @@ public class ConstructionController : NetworkBehaviour {
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
 		currConstructionState = ConstructionState.SpawnBuilding;
 
+	}
+
+	public void ToggleBuildMode(bool val) {
+		isInBuildMode = val;
 	}
 
 	// Update is called once per frame
@@ -84,7 +84,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (isInPowerCore) {
 			switch (currConstructionState) {
 			case ConstructionState.Inactive:
-				if (targetingFloor) {
+				if (targetingFloor && isInBuildMode) {
 					targetingFloor = false;
 					currConstructionState = ConstructionState.PlacingBuilding;
 				}
@@ -180,7 +180,7 @@ public class ConstructionController : NetworkBehaviour {
 	void SwitchToSpawnBuilding() {
 		if (currConstructionState == ConstructionState.PlacingBuilding &&
 		    GetComponent<PlayerStats> ().IsThereEnoughEnergy (buildingCosts [currentBuildingToConstructType]) &&
-		    canBuild) { 
+		    canBuildThisTower) { 
 			HandleSpendEnergyOnBuilding ();
 		} 
 	}
@@ -202,6 +202,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		currentBuildingToConstructType = thisBuildingType;
+		ToggleBuildMode (true);
 	}
 
 	void InstantiateBuildingTemplate () {
@@ -250,25 +251,25 @@ public class ConstructionController : NetworkBehaviour {
 
 	void CheckIfCanBuild () {
 		if (IsBuildingTemplateInConstructionRange() && currentBuildingToConstruct!=null) {
-			canBuild = true;
+			canBuildThisTower = true;
 			if (currentBuildingToConstructType == BuildingType.Energy && !isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
-				canBuild = false;
+				canBuildThisTower = false;
 			} else if (currentBuildingToConstructType == BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (true);
 			} else if (CheckIfOtherBuildingsInRadius ()){
 				RenderCurrentBuildingAsTemplate (false);
-				canBuild = false;
+				canBuildThisTower = false;
 			}
 			else if (currentBuildingToConstructType != BuildingType.Energy && isTargetingEnergyField) {
 				RenderCurrentBuildingAsTemplate (false);
-				canBuild = false;
+				canBuildThisTower = false;
 			} else {
 				RenderCurrentBuildingAsTemplate (true);
 			}
 		} else if (currentBuildingToConstruct!=null){
 			RenderCurrentBuildingAsTemplate (false);
-			canBuild = false;
+			canBuildThisTower = false;
 		}
 	}
 

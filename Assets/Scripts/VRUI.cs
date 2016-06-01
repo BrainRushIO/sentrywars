@@ -60,7 +60,9 @@ public class VRUI : MonoBehaviour {
 				break;
 
 			}
+			GetComponentInParent<ConstructionController> ().ToggleBuildMode (true);
 			ToggleVRUI ();
+
 		}
 	}
 
@@ -68,8 +70,13 @@ public class VRUI : MonoBehaviour {
 		if (tempPanel == null) {
 			tempPanel = (GameObject)Instantiate (VRUIPanel, transform.position, transform.rotation);
 			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
+
 		} else {
 			Destroy (tempPanel);
+			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
+			GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
+
+
 		}
 //		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
 	}

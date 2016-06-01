@@ -40,7 +40,6 @@ public class PlayerController : NetworkBehaviour {
 	}
 	public void SetCoolDown () {
 		buildCooldownTimer = 0;
-//		curPlayerMode = PlayerMode.Inactive;
 	}
 
 	void OnEnable() {
