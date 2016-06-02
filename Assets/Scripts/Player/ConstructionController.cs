@@ -62,6 +62,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	public void BuildInitialPowerCore() {
+		ToggleBuildMode (true);
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
 		currConstructionState = ConstructionState.SpawnBuilding;
 
@@ -76,20 +77,22 @@ public class ConstructionController : NetworkBehaviour {
 		if (!isLocalPlayer) {
 			return;
 		}
+
+		Debug.Log ("BuildMode: " + isInBuildMode + " Targeting Floor: " + targetingFloor);
 		//UI
 		GetComponent<GUIManager>().currentHUD.constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		GetComponent<GUIManager>().currentHUD.constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
 
 		//STATE MACHINE
-		if (isInPowerCore) {
+		if (isInPowerCore && isInBuildMode) {
 			switch (currConstructionState) {
 			case ConstructionState.Inactive:
-				if (targetingFloor && isInBuildMode) {
-					targetingFloor = false;
+				if (targetingFloor) {
 					currConstructionState = ConstructionState.PlacingBuilding;
 				}
 				break;
 			case ConstructionState.PlacingBuilding:
+				print ("in place building");
 				//have only one building template at a time
 				if (!isBuildingTemplateInstantiated) {
 					InstantiateBuildingTemplate ();
@@ -98,6 +101,7 @@ public class ConstructionController : NetworkBehaviour {
 					CheckIfCanBuild ();
 
 				if (switchToInactive) {
+					Destroy (currentBuildingToConstruct);
 					switchToInactive = false;
 					currConstructionState = ConstructionState.Inactive;
 					isBuildingTemplateInstantiated = false;
@@ -114,6 +118,7 @@ public class ConstructionController : NetworkBehaviour {
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				targetingFloor = false;
 				currConstructionState = ConstructionState.Inactive;
+				ToggleBuildMode (false);
 				break;
 			}
 		} 
@@ -160,7 +165,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void HandleConstructionCall() {
-		if (currentBuildingToConstruct != null) {
+		if (currentBuildingToConstruct != null && isInBuildMode) {
 			if (!IsBuildingTemplateInConstructionRange ()) {
 				GetComponent<GUIManager> ().SetAlert ("Out of Build Range");
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
@@ -174,7 +179,7 @@ public class ConstructionController : NetworkBehaviour {
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
 			}
 		}
-		SwitchToSpawnBuilding ();
+		if (isInBuildMode) SwitchToSpawnBuilding ();
 	}
 
 	void SwitchToSpawnBuilding() {
@@ -202,7 +207,6 @@ public class ConstructionController : NetworkBehaviour {
 
 	public void SelectConstructBuildingType(BuildingType thisBuildingType) {
 		currentBuildingToConstructType = thisBuildingType;
-		ToggleBuildMode (true);
 	}
 
 	void InstantiateBuildingTemplate () {

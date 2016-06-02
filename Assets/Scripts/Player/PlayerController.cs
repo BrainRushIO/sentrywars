@@ -99,10 +99,6 @@ public class PlayerController : NetworkBehaviour {
 			currentTargetType = TargetTypes.Building;
 			currentBuildingID = currentTarget.GetComponent<NetworkIdentity> ().netId;
 			break;
-		case "VRUIObject":
-			currentTargetType = TargetTypes.VRUIObject;
-			PressVRUIButton ();
-			break;
 		case "Floor":
 			if (curPlayerMode == PlayerMode.Active) {
 				currentTargetType = TargetTypes.Floor;
@@ -145,9 +141,6 @@ public class PlayerController : NetworkBehaviour {
 				PerformActionOnTargetedBuilding ();
 			}
 			break;
-		case TargetTypes.VRUIObject:
-			PressVRUIButton ();
-			break;
 		}
 	}
 	void PerformActionOnTargetedBuilding() {
@@ -171,11 +164,6 @@ public class PlayerController : NetworkBehaviour {
 
 	void CmdChangeTarget(NetworkInstanceId thisTargetIdentity) {
 		currentInhabitedBuilding.GetComponent<TargetingBase> ().CmdOnChangeTarget (thisTargetIdentity);
-	}
-		
-
-	void PressVRUIButton() {
-		
 	}
 
 	void TeleportToBuilding () {

@@ -45,7 +45,6 @@ public class VRUI : MonoBehaviour {
 				break;
 
 			case VRUISelectionAction.PowerCore:
-				Debug.Log ("TRIGGER POWERCORE");
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.PowerCore);
 
 				break;
@@ -60,23 +59,27 @@ public class VRUI : MonoBehaviour {
 				break;
 
 			}
-			GetComponentInParent<ConstructionController> ().ToggleBuildMode (true);
-			ToggleVRUI ();
-
+			Destroy (tempPanel);
+			StartCoroutine ("SetBuildMode");
 		}
 	}
 
+	IEnumerator SetBuildMode () {
+		//script execution order fix
+		yield return new WaitForSeconds (.1f);
+		GetComponentInParent<ConstructionController> ().ToggleBuildMode (true);
+
+	}
+
 	void ToggleVRUI() {
+		GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
+
 		if (tempPanel == null) {
 			tempPanel = (GameObject)Instantiate (VRUIPanel, transform.position, transform.rotation);
 			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
-
 		} else {
 			Destroy (tempPanel);
 			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
-			GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
-
-
 		}
 //		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
 	}
