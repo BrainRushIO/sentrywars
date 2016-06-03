@@ -6,6 +6,7 @@ public class PlayerGameStateHandler : NetworkBehaviour {
 
 	[SerializeField] GameObject loseSphere;
 
+
 	[Command]
 	public void CmdPlayerLose() {
 		if (isServer) {

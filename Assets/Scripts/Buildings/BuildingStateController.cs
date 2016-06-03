@@ -9,6 +9,7 @@ public class BuildingStateController : NetworkBehaviour {
 	[SyncVar] Color thisBuildingColor = new Color();
 	[SyncVar] NetworkInstanceId towerNetID;
 	[SyncVar] public int damageState;
+	[SyncVar] bool isWarpingIn = true;
 	public GameObject[] stage1damage, stage2damage, stage3damage;
 	List<GameObject[]> damageStages;
 
@@ -21,6 +22,7 @@ public class BuildingStateController : NetworkBehaviour {
 
 	IEnumerator WarpInComplete() {
 		yield return new WaitForSeconds (3);
+		isWarpingIn = false;
 		GetBuildingColor ();
 		RpcSwitchColor (thisBuildingColor);
 		SendMessage ("OnWarpInComplete", SendMessageOptions.DontRequireReceiver);
@@ -32,6 +34,10 @@ public class BuildingStateController : NetworkBehaviour {
 			damageStages.Add (stage2damage);
 			damageStages.Add (stage3damage);
 		}
+	}
+
+	public bool ReturnIsWarpingIn() {
+		return isWarpingIn;
 	}
 
 	[ClientRpc]

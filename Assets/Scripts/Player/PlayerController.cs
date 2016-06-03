@@ -50,7 +50,6 @@ public class PlayerController : NetworkBehaviour {
 	void OnDisable() {
 		InputController.OnSendPointerInfo -= HandleRightHandTargeting;
 		InputController.OnRightTriggerFingerDown -= HandleRightTriggerDown;
-
 	}
 
 	void Update() {
@@ -168,9 +167,13 @@ public class PlayerController : NetworkBehaviour {
 
 	void TeleportToBuilding () {
 		if (currentTarget.GetComponent<BuildingStateController> ().damageState == 2) {
-			GetComponent<GUIManager> ().SetAlert ("Cannot Teleport into Damaged Tower");
+			GetComponent<GUIManager> ().SetAlert ("Cannot Teleport into Severely Damaged Tower");
+			return;
+		} else if (currentTarget.GetComponent<BuildingStateController> ().ReturnIsWarpingIn ()) {
+			GetComponent<GUIManager> ().SetAlert ("Cannot Teleport into Incomplete Tower");
 			return;
 		}
+			
 		CmdSetIsOccupiedOnCurBuilding (currentInhabitedBuilding, currentTarget.GetComponent<NetworkIdentity> ());
 		currentInhabitedBuilding = currentTarget.GetComponent<NetworkIdentity>();
 		GameObject tempTeleportVFX = (GameObject)Instantiate (teleportPrefab, currentInhabitedBuilding.GetComponent<BuildingBase> ().playerCockpit.position, Quaternion.identity);
@@ -218,6 +221,7 @@ public class PlayerController : NetworkBehaviour {
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt,null, true);
+				currentInhabitedBuilding.GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
 				isInitialized = true;
 			}
 		}

@@ -62,6 +62,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	public void BuildInitialPowerCore() {
+		print ("build innitial");
 		ToggleBuildMode (true);
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
 		currConstructionState = ConstructionState.SpawnBuilding;
@@ -78,7 +79,6 @@ public class ConstructionController : NetworkBehaviour {
 			return;
 		}
 
-		Debug.Log ("BuildMode: " + isInBuildMode + " Targeting Floor: " + targetingFloor);
 		//UI
 		GetComponent<GUIManager>().currentHUD.constructBuildingCost.text = "Construction Cost: " + buildingCosts[currentBuildingToConstructType].ToString();
 		GetComponent<GUIManager>().currentHUD.constructBuildingType.text = "Construction Type: " + currentBuildingToConstructType.ToString ();
@@ -92,7 +92,6 @@ public class ConstructionController : NetworkBehaviour {
 				}
 				break;
 			case ConstructionState.PlacingBuilding:
-				print ("in place building");
 				//have only one building template at a time
 				if (!isBuildingTemplateInstantiated) {
 					InstantiateBuildingTemplate ();
@@ -125,7 +124,7 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	void ShowBuildingBluePrint (RaycastHit hit) {
-		if (isTargetingEnergyField) { 
+		if (isTargetingEnergyField && GetComponent<PlayerController> ().ReturnCurrentTarget ()!=null) { 
 			//SNAP TO ENERGY FIELD
 			buildingPlacementPosition = GridLogic.ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
 		} else {
@@ -160,7 +159,7 @@ public class ConstructionController : NetworkBehaviour {
 
 	[Command]
 	void CmdSpawnWarpSplash (Vector3 thisPos) {
-		GameObject thisSplash = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [7], thisPos, Quaternion.identity);
+		GameObject thisSplash = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [7], thisPos + Vector3.up*15f, Quaternion.identity);
 		NetworkServer.Spawn (thisSplash);
 	}
 
