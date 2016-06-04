@@ -27,6 +27,10 @@ public class ConstructionController : NetworkBehaviour {
 	//State Machine Switches
 	bool switchToInactive, targetingFloor, switchToSpawnBuilding;
 
+	public bool ReturnIsInBuildMode () {
+		return isInBuildMode;
+	}
+
 	public void SwitchToTargetingFloor() {
 		targetingFloor = true;
 	}
@@ -122,7 +126,9 @@ public class ConstructionController : NetworkBehaviour {
 				ToggleBuildMode (false);
 				break;
 			}
-		} 
+		} else if (!isInPowerCore && currentBuildingToConstruct != null) {
+			Destroy (currentBuildingToConstruct);
+		}
 	}
 
 	void ShowBuildingBluePrint (RaycastHit hit) {

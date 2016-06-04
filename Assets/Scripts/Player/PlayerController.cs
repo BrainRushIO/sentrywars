@@ -143,20 +143,22 @@ public class PlayerController : NetworkBehaviour {
 		}
 	}
 	void PerformActionOnTargetedBuilding() {
-		if (currentTarget.GetComponent<BuildingBase> ()!=null&&currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
-			TeleportToBuilding ();
-		} else {
-			switch (currentInhabitedBuildingType) {
-			case BuildingType.Cannon:
-				if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
-					NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
-					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().changeTarget);
-					CmdChangeTarget (tempTargeted);
-				} else {
-					GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
-					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
+		if (!GetComponent<ConstructionController>().ReturnIsInBuildMode()){
+			if (currentTarget.GetComponent<BuildingBase> ()!=null&&currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
+				TeleportToBuilding ();
+			} else {
+				switch (currentInhabitedBuildingType) {
+				case BuildingType.Cannon:
+					if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
+						NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+						GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().changeTarget);
+						CmdChangeTarget (tempTargeted);
+					} else {
+						GetComponent<GUIManager> ().SetAlert ("Target Out of Range");
+						GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
