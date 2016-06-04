@@ -62,9 +62,10 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	public void BuildInitialPowerCore() {
-		print ("build innitial");
+		print ("build innitial " + GetComponent<PlayerController>().playerInt);
 		ToggleBuildMode (true);
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
+		print ("BPP " + buildingPlacementPosition);
 		currConstructionState = ConstructionState.SpawnBuilding;
 
 	}
@@ -113,6 +114,7 @@ public class ConstructionController : NetworkBehaviour {
 				}
 				break;
 			case ConstructionState.SpawnBuilding:
+
 				CmdSpawnBuilding (buildingPlacementPosition, GetComponent<PlayerController> ().playerInt, currentBuildingToConstructType, currentEnergyFieldTargeted, isTargetingEnergyField);
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				targetingFloor = false;
@@ -127,7 +129,7 @@ public class ConstructionController : NetworkBehaviour {
 		if (isTargetingEnergyField && GetComponent<PlayerController> ().ReturnCurrentTarget ()!=null) { 
 			//SNAP TO ENERGY FIELD
 			buildingPlacementPosition = GridLogic.ConvertVector3ToGridPoint (GetComponent<PlayerController> ().ReturnCurrentTarget ().transform.position);
-		} else {
+		} else if (GetComponent<PlayerController> ().ReturnCurrentTarget ()!=null){
 			buildingPlacementPosition = GridLogic.ConvertVector3ToGridPoint (hit.point);
 		}
 		if (currentBuildingToConstruct != null) {
@@ -233,6 +235,7 @@ public class ConstructionController : NetworkBehaviour {
 		MeshRenderer[] allMaterialsOnBuilding = currentBuildingToConstruct.GetComponentsInChildren<MeshRenderer> ();
 		if (green) {
 			foreach (MeshRenderer x in allMaterialsOnBuilding) {
+				x.enabled = true;
 				x.material = GetComponent<PlayerColorManager> ().templateColorGreen;
 			}
 			if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {
@@ -240,6 +243,8 @@ public class ConstructionController : NetworkBehaviour {
 			}
 		} else {
 			foreach (MeshRenderer x in allMaterialsOnBuilding) {
+				x.enabled = true;
+
 				x.material = GetComponent<PlayerColorManager> ().templateColorRed;
 			}
 			if (currentBuildingToConstruct.GetComponent<MeshRenderer> () != null) {

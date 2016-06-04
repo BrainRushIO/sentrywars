@@ -6,7 +6,7 @@ public class Drone : UnitBase {
 
 	public enum DroneStates {LiftOff, Search, Attack};
 	DroneStates thisDroneState = DroneStates.LiftOff;
-	float liftOffSpeed = .4f, liftOffTimer, liftOffTime = 3.5f;
+	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
 	NetworkIdentity currentTarget;
 
 	bool switchToSearch, switchToAttack;

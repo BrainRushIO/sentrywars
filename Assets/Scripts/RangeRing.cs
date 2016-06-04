@@ -12,6 +12,6 @@ public class RangeRing : MonoBehaviour {
 	void Update () {
 		val += Time.deltaTime * speedScalar;
 		float sin = Mathf.Abs (Mathf.Sin (val));
-		GetComponent<MeshRenderer> ().material.color = new Color (1, 1, 1, sin);
+		GetComponent<MeshRenderer> ().material.color = new Color (1, 1, 1, sin-.5f);
 	}
 }

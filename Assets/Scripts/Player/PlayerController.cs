@@ -191,8 +191,12 @@ public class PlayerController : NetworkBehaviour {
 	[Command] 
 	void CmdSetIsOccupiedOnCurBuilding(NetworkIdentity curr, NetworkIdentity target){
 		if (isServer) {
-			NetworkServer.FindLocalObject(curr.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (false);
-			NetworkServer.FindLocalObject(target.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
+			if (curr != null) {
+				NetworkServer.FindLocalObject (curr.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (false);
+			}
+			if (target != null) {
+				NetworkServer.FindLocalObject (target.netId).GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
+			}
 		}
 	}
 
@@ -221,7 +225,7 @@ public class PlayerController : NetworkBehaviour {
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
 				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt,null, true);
-				currentInhabitedBuilding.GetComponent<BuildingBase> ().RpcSetIsOccupied (true);
+				CmdSetIsOccupiedOnCurBuilding (null, currentInhabitedBuilding);
 				isInitialized = true;
 			}
 		}

@@ -22,7 +22,7 @@ public class BuildingBase : BaseObject {
 	[ClientRpc]
 	public void RpcSetIsOccupied (bool val) {
 		isOccupied = val;
-		if (rangeRing != null) {
+		if (rangeRing != null ) {
 			rangeRing.SetActive (val);
 		}
 	}
@@ -48,13 +48,13 @@ public class BuildingBase : BaseObject {
 		CheckIfIsPowered ();
 	}
 
-	public void EnableTowerAbilities() {
+	public void EnableAbilities() {
 		if (isServer) {
 			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
 	}
 
-	public void DisableTowerAbilities () {
+	public void DisableAbilities () {
 		if (isServer) {
 			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 		}
@@ -69,9 +69,9 @@ public class BuildingBase : BaseObject {
 			}
 		}
 		if (totalConstructors > 0) {
-			SendMessage ("EnableTowerAbilities");
+			SendMessage ("EnableAbilities");
 		} else {
-			SendMessage ("DisableTowerAbilities");
+			SendMessage ("DisableAbilities");
 		}
 	}
 
