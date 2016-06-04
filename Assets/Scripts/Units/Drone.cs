@@ -7,8 +7,9 @@ public class Drone : UnitBase {
 	public enum DroneStates {LiftOff, Search, Attack};
 	DroneStates thisDroneState = DroneStates.LiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
-	NetworkIdentity currentTarget;
-
+	[SyncVar] NetworkInstanceId currentTarget;
+	GameObject currentTargetGO;
+	float attackRange = 200f;
 	bool switchToSearch, switchToAttack;
 
 
@@ -26,6 +27,10 @@ public class Drone : UnitBase {
 				switchToSearch = false;
 				thisDroneState = DroneStates.Search;
 			}
+			if (switchToAttack) {
+				switchToAttack = false;
+				thisDroneState = DroneStates.Attack;
+			}
 			break;
 
 		case DroneStates.Search:
@@ -36,6 +41,8 @@ public class Drone : UnitBase {
 			break;
 
 		case DroneStates.Attack:
+			FaceTarget ();
+			transform.Translate (Vector3.forward * 4f);
 			if (switchToSearch) {
 				switchToSearch = false;
 				thisDroneState = DroneStates.Search;
@@ -45,5 +52,17 @@ public class Drone : UnitBase {
 
 
 		}
+	}
+	[Command]
+	public void CmdSetCurrentTarget(NetworkInstanceId thisTarget) {
+		currentTarget = thisTarget;
+		switchToAttack = true;
+	}
+
+	void FaceTarget() {
+		if (currentTargetGO == null) {
+			currentTargetGO= NetworkServer.FindLocalObject (currentTarget);
+		}
+		transform.LookAt (new Vector3 (currentTargetGO.transform.position.x, transform.position.y, currentTargetGO.transform.position.z));
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class Airport : TargetingBase {
 
 	public GameObject dronePrefab;
-	GameObject droneInstance;
+	[SyncVar] NetworkIdentity droneInstance;
 	public Transform spawnPos;
 
 	// Use this for initialization
@@ -20,15 +20,22 @@ public class Airport : TargetingBase {
 	}
 
 	void OnWarpInComplete () {
-		CmdSpawnDrone ();
+		CmdSpawnDrone (GetComponent<BuildingBase>().ReturnOwner());
 	}
 
 	[Command]
-	void CmdSpawnDrone () {
+	void CmdSpawnDrone (int thisOwner) {
 		GameObject tempDrone = (GameObject)Instantiate (dronePrefab, 
 			spawnPos.position, Quaternion.identity);
-		NetworkServer.Spawn (tempDrone);
+		NetworkServer.SpawnWithClientAuthority (tempDrone, NetworkServer.FindLocalObject (GameManager.players [thisOwner].netId));
+		droneInstance = tempDrone.GetComponent<NetworkIdentity> ();
 		tempDrone.GetComponent<Drone> ().InitializeUnit (GetComponent<BuildingBase> ().ReturnOwner ());
+	}
+
+	[Command]
+	public override void CmdOnChangeTarget(NetworkInstanceId thisId) {
+		print ("SETTING TARGET FROM AIRPORT");
+		droneInstance.GetComponent<Drone> ().CmdSetCurrentTarget (thisId);
 	}
 
 	void OnDestroy() {

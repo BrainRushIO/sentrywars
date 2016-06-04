@@ -147,10 +147,11 @@ public class PlayerController : NetworkBehaviour {
 			if (currentTarget.GetComponent<BuildingBase> ()!=null&&currentTarget.GetComponent<BuildingBase> ().ReturnOwner () == playerInt && currentTargetType!=TargetTypes.EnergyPool) {
 				TeleportToBuilding ();
 			} else {
+				NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
+
 				switch (currentInhabitedBuildingType) {
 				case BuildingType.Cannon:
 					if (Vector3.Distance (currentTarget.transform.position, currentInhabitedBuilding.transform.position) < Cannon.towerAttackRange) {
-						NetworkInstanceId tempTargeted = currentTarget.GetComponent<NetworkIdentity> ().netId;
 						GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().changeTarget);
 						CmdChangeTarget (tempTargeted);
 					} else {
@@ -158,7 +159,12 @@ public class PlayerController : NetworkBehaviour {
 						GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().error);
 					}
 					break;
-				}
+				case BuildingType.Airport:
+
+					GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().changeTarget);
+					CmdChangeTarget (tempTargeted);
+				break;
+				} 
 			}
 		}
 	}

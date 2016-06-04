@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
-public class TargetingBase : NetworkBehaviour {
+public abstract class TargetingBase : NetworkBehaviour {
 
 	[SyncVar] protected NetworkInstanceId currentTarget;
 	protected bool isTargetFound, abilitiesActive;
@@ -25,9 +25,7 @@ public class TargetingBase : NetworkBehaviour {
 
 
 	[Command]
-	public void CmdOnChangeTarget(NetworkInstanceId thisId) {
-		currentTarget = thisId;
-	}
+	public abstract void CmdOnChangeTarget (NetworkInstanceId thisId);
 
 	public void DetectEnemyBuildings () {
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, buildingDetectionRange, buildingLayerMask);

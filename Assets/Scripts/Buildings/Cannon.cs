@@ -49,4 +49,9 @@ public class Cannon : TargetingBase  {
 		cooldownTimer = fireCooldown;
 		NetworkServer.Spawn (tempBullet);
 	}
+
+	[Command]
+	public override void CmdOnChangeTarget(NetworkInstanceId thisId) {
+		currentTarget = thisId;
+	}
 }
