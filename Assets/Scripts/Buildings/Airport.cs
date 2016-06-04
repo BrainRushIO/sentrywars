@@ -27,7 +27,7 @@ public class Airport : TargetingBase {
 	void CmdSpawnDrone (int thisOwner) {
 		GameObject tempDrone = (GameObject)Instantiate (dronePrefab, 
 			spawnPos.position, Quaternion.identity);
-		NetworkServer.SpawnWithClientAuthority (tempDrone, NetworkServer.FindLocalObject (GameManager.players [thisOwner].netId));
+		NetworkServer.Spawn (tempDrone);
 		droneInstance = tempDrone.GetComponent<NetworkIdentity> ();
 		tempDrone.GetComponent<Drone> ().InitializeUnit (GetComponent<BuildingBase> ().ReturnOwner ());
 	}
