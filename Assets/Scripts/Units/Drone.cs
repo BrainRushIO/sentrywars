@@ -7,6 +7,7 @@ public class Drone : UnitBase {
 	public enum DroneStates {LiftOff, Search, Attack};
 	DroneStates thisDroneState = DroneStates.LiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
+	float droneFlySpeed = 1f;
 	[SyncVar] NetworkInstanceId currentTarget;
 	GameObject currentTargetGO;
 	float attackRange = 200f;
@@ -16,41 +17,43 @@ public class Drone : UnitBase {
 
 	// STATE MACHINE
 	void Update () {
-		switch (thisDroneState) {
-		case DroneStates.LiftOff:
-			transform.Translate (Vector3.up * liftOffSpeed);
-			liftOffTimer += Time.deltaTime;
-			if (liftOffTimer > liftOffTime) {
-				switchToSearch = true;
-			}
-			if (switchToSearch) {
-				switchToSearch = false;
-				thisDroneState = DroneStates.Search;
-			}
-			if (switchToAttack) {
-				switchToAttack = false;
-				thisDroneState = DroneStates.Attack;
-			}
-			break;
+		if (isServer) {
+			switch (thisDroneState) {
+			case DroneStates.LiftOff:
+				transform.Translate (Vector3.up * liftOffSpeed);
+				liftOffTimer += Time.deltaTime;
+				if (liftOffTimer > liftOffTime) {
+					switchToSearch = true;
+				}
+				if (switchToSearch) {
+					switchToSearch = false;
+					thisDroneState = DroneStates.Search;
+				}
+				if (switchToAttack) {
+					switchToAttack = false;
+					thisDroneState = DroneStates.Attack;
+				}
+				break;
 
-		case DroneStates.Search:
-			if (switchToAttack) {
-				switchToAttack = false;
-				thisDroneState = DroneStates.Attack;
+			case DroneStates.Search:
+				if (switchToAttack) {
+					switchToAttack = false;
+					thisDroneState = DroneStates.Attack;
+				}
+				break;
+
+			case DroneStates.Attack:
+				FaceTarget ();
+				transform.Translate (Vector3.forward * droneFlySpeed);
+				if (switchToSearch) {
+					switchToSearch = false;
+					thisDroneState = DroneStates.Search;
+
+				}
+				break;
+
+
 			}
-			break;
-
-		case DroneStates.Attack:
-			FaceTarget ();
-			transform.Translate (Vector3.forward * 4f);
-			if (switchToSearch) {
-				switchToSearch = false;
-				thisDroneState = DroneStates.Search;
-
-			}
-			break;
-
-
 		}
 	}
 	[Command]
