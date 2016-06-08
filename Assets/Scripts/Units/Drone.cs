@@ -4,8 +4,8 @@ using UnityEngine.Networking;
 
 public class Drone : UnitBase {
 
-	public enum DroneStates {LiftOff, Search, Attack, Fire, RotateTowardBase, ReturnToBase, RotateTowardTarget};
-	DroneStates thisDroneState = DroneStates.LiftOff;
+	public enum DroneStates {InitLiftOff, Idle, FlyToTarget, Fire, RotateTowardBase, ReturnToBase, RotateTowardTarget};
+	DroneStates thisDroneState = DroneStates.InitLiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
 	float droneFlySpeed = 1f;
 	[SyncVar] NetworkInstanceId currentTarget;
@@ -25,7 +25,8 @@ public class Drone : UnitBase {
 	void Update () {
 		if (isServer) {
 			switch (thisDroneState) {
-			case DroneStates.LiftOff:
+			case DroneStates.InitLiftOff:
+				homeBasePosition = NetworkServer.FindLocalObject (homeBuilding).transform.position;
 				transform.Translate (Vector3.up * liftOffSpeed);
 				liftOffTimer += Time.deltaTime;
 				if (liftOffTimer > liftOffTime) {
@@ -33,28 +34,32 @@ public class Drone : UnitBase {
 				}
 				if (switchToSearch) {
 					switchToSearch = false;
-					thisDroneState = DroneStates.Search;
+					thisDroneState = DroneStates.Idle;
 				}
 				if (switchToAttack) {
 					switchToAttack = false;
-					thisDroneState = DroneStates.Attack;
+					thisDroneState = DroneStates.FlyToTarget;
 				}
 				break;
 
-			case DroneStates.Search:
+			case DroneStates.Idle:
 				if (switchToAttack) {
 					switchToAttack = false;
-					thisDroneState = DroneStates.Attack;
+					thisDroneState = DroneStates.FlyToTarget;
+
 				}
 				break;
 
-			case DroneStates.Attack:
+			case DroneStates.FlyToTarget:
 				FaceTarget ();
 				transform.Translate (Vector3.forward * droneFlySpeed);
 				if (switchToSearch) {
 					switchToSearch = false;
-					thisDroneState = DroneStates.Search;
+					thisDroneState = DroneStates.Idle;
 
+				}
+				if (currentTargetGO == null) {
+					thisDroneState = DroneStates.RotateTowardBase;
 				}
 				if (Vector3.Distance (transform.position, currentTargetGO.transform.position) < attackRange) {
 					thisDroneState = DroneStates.Fire;
@@ -65,7 +70,6 @@ public class Drone : UnitBase {
 				transform.Translate (Vector3.forward * droneFlySpeed);
 
 				CmdFireAtTarget (currentTarget, bulletSpawnPoint.position, owner);
-				homeBasePosition = NetworkServer.FindLocalObject (homeBuilding).transform.position;
 				thisDroneState = DroneStates.RotateTowardBase;
 				break;
 
@@ -81,14 +85,33 @@ public class Drone : UnitBase {
 
 			case DroneStates.ReturnToBase:
 				transform.Translate (Vector3.forward * droneFlySpeed);
+				if (Vector3.Distance (new Vector3 (transform.position.x, 0, transform.position.z), new Vector3 (homeBasePosition.x, 0, homeBasePosition.z)) < 2f) {
+					if (currentTargetGO == null) {
+						thisDroneState = DroneStates.Idle;
+					} else {
+						thisDroneState = DroneStates.RotateTowardTarget;
+					}
+
+				}
+				break;
+
+			case DroneStates.RotateTowardTarget:
+				transform.Translate (Vector3.forward * droneFlySpeed);
+				transform.Rotate (Vector3.up, 1f);
+				if (Vector3.Angle (transform.forward, new Vector3(currentTargetGO.transform.position.x, 0, currentTargetGO.transform.position.z) - new Vector3(transform.position.x, 0, transform.position.z)) < 2) {
+					thisDroneState = DroneStates.FlyToTarget;
+				}
 				break;
 			}
+
+
 		}
 	}
 	[Command]
 	public void CmdSetCurrentTarget(NetworkInstanceId thisTarget) {
 		currentTarget = thisTarget;
 		switchToAttack = true;
+		currentTargetGO= NetworkServer.FindLocalObject (currentTarget);
 	}
 
 	void FaceTarget() {
