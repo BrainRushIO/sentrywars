@@ -36,10 +36,6 @@ public class Drone : UnitBase {
 					switchToSearch = false;
 					thisDroneState = DroneStates.Idle;
 				}
-				if (switchToAttack) {
-					switchToAttack = false;
-					thisDroneState = DroneStates.FlyToTarget;
-				}
 				break;
 
 			case DroneStates.Idle:
@@ -125,9 +121,8 @@ public class Drone : UnitBase {
 	void CmdFireAtTarget(NetworkInstanceId thisTarget, Vector3 spawnPosition, int bulletOwner) {
 		GameObject temp = (GameObject) Instantiate (bulletPrefab, spawnPosition, Quaternion.identity);
 		GameObject target = NetworkServer.FindLocalObject (thisTarget);
-		temp.transform.LookAt (target.transform.position);
+		temp.transform.LookAt (target.transform.position + Vector3.up*40f);
 		temp.GetComponent<Bullet> ().InitializeBullet (bulletOwner);
 		NetworkServer.Spawn (temp);
-
 	}
 }

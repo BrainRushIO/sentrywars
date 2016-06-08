@@ -8,7 +8,7 @@ public class SyncTransform : NetworkBehaviour {
 	[SerializeField] Transform myTransform;
 	[SerializeField] float lerpRate = 15;
 
-	void FixedUpdate () {
+	void Update () {
 		if (isServer) {
 			RpcProvidePositionToClient (myTransform.position, myTransform.rotation);
 		}
