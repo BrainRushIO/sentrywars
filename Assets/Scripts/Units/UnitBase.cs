@@ -6,6 +6,7 @@ public class UnitBase : BaseObject {
 	
 	[SyncVar] Color thisUnitColor = new Color();
 	public MeshRenderer[] coloredMesh;
+	[SyncVar] protected NetworkInstanceId homeBuilding;
 
 	public virtual void TakeDamage (float amount) {
 		currentHealth -= amount;
@@ -15,8 +16,9 @@ public class UnitBase : BaseObject {
 		}
 	}
 
-	public virtual void InitializeUnit (int thisOwner) {
+	public virtual void InitializeUnit (int thisOwner, NetworkInstanceId thisHomeBuilding) {
 		owner = thisOwner;
+		homeBuilding = thisHomeBuilding;
 		GetUnitColor ();
 		RpcSwitchColor (thisUnitColor);
 	}

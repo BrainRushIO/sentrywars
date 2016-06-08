@@ -20,16 +20,17 @@ public class Airport : TargetingBase {
 	}
 
 	void OnWarpInComplete () {
-		CmdSpawnDrone (GetComponent<BuildingBase>().ReturnOwner());
+		CmdSpawnDrone (GetComponent<BuildingBase>().ReturnOwner(), GetComponent<NetworkIdentity>().netId);
 	}
 
 	[Command]
-	void CmdSpawnDrone (int thisOwner) {
+	void CmdSpawnDrone (int thisOwner, NetworkInstanceId thisBuildingId) {
 		GameObject tempDrone = (GameObject)Instantiate (dronePrefab, 
 			spawnPos.position, Quaternion.identity);
 		NetworkServer.Spawn (tempDrone);
 		droneInstance = tempDrone.GetComponent<NetworkIdentity> ();
-		tempDrone.GetComponent<Drone> ().InitializeUnit (GetComponent<BuildingBase> ().ReturnOwner ());
+		tempDrone.GetComponent<Drone> ().InitializeUnit (GetComponent<BuildingBase> ().ReturnOwner (), thisBuildingId);
+
 	}
 
 	[Command]
