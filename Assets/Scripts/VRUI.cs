@@ -92,7 +92,7 @@ public class VRUI : MonoBehaviour {
 	}
 
 	void ToggleVRUI() {
-		if (GetComponentInParent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().hasVRUI) {
+//		if (GetComponentInParent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().hasVRUI) {
 			GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
 
 			if (tempPanel == null) {
@@ -107,7 +107,7 @@ public class VRUI : MonoBehaviour {
 				GetComponentInParent<ConstructionController> ().SwitchToInactive ();
 			}
 	//		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
-		}
+//		}
 	}
 
 	void OnEnable() {
