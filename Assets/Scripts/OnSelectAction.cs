@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
-public enum VRUISelectionAction {GotoMultiplayer, GotoTutorial, GotoSinglePlayer, PowerCore, Cannon, EnergyMine, Airport, Sniper, None};
+public enum VRUISelectionAction {GotoMultiplayer,
+	GotoTutorial,
+	GotoSinglePlayer,
+	PowerCore,
+	Cannon,
+	EnergyMine,
+	Airport,
+	AntiAir,
+	RebuildDrone,
+	ReturnDrone,
+	None};
 public enum VRUISelectionActionType {Menu, Gameplay};
 public class OnSelectAction : MonoBehaviour {
 	public VRUISelectionAction thisVRUISelectionAction;

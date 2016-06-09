@@ -19,8 +19,28 @@ public class Airport : TargetingBase {
 		//if so, build a new one
 	}
 
+
+
 	void OnWarpInComplete () {
 		CmdSpawnDrone (GetComponent<BuildingBase>().ReturnOwner(), GetComponent<NetworkIdentity>().netId);
+	}
+
+	public bool RebuildDrone() {
+		if (droneInstance.gameObject == null) {
+			CmdSpawnDrone (GetComponent<BuildingBase> ().ReturnOwner (), GetComponent<NetworkIdentity> ().netId);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void ReturnDrone() {
+		CmdReturnDrone ();
+	}
+
+	[Command]
+	public void CmdReturnDrone() {
+		droneInstance.GetComponent<Drone> ().CmdSetReturnHome ();
 	}
 
 	[Command]
@@ -35,7 +55,6 @@ public class Airport : TargetingBase {
 
 	[Command]
 	public override void CmdOnChangeTarget(NetworkInstanceId thisId) {
-		print ("SETTING TARGET FROM AIRPORT");
 		droneInstance.GetComponent<Drone> ().CmdSetCurrentTarget (thisId);
 	}
 

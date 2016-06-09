@@ -7,12 +7,12 @@ public class Drone : UnitBase {
 	public enum DroneStates {InitLiftOff, Idle, FlyToTarget, Fire, RotateTowardBase, ReturnToBase, RotateTowardTarget};
 	DroneStates thisDroneState = DroneStates.InitLiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
-	float droneFlySpeed = 1f;
+	float droneFlySpeed = 2f;
 	[SyncVar] NetworkInstanceId currentTarget;
 	GameObject currentTargetGO;
 	float attackRange = 200f;
 	float reloadRange = 100f;
-	bool switchToSearch, switchToAttack;
+	bool switchToIdle, switchToAttack;
 	[SerializeField] GameObject bulletPrefab;
 	[SerializeField] Transform bulletSpawnPoint;
 	Vector3 homeBasePosition;
@@ -30,10 +30,10 @@ public class Drone : UnitBase {
 				transform.Translate (Vector3.up * liftOffSpeed);
 				liftOffTimer += Time.deltaTime;
 				if (liftOffTimer > liftOffTime) {
-					switchToSearch = true;
+					switchToIdle = true;
 				}
-				if (switchToSearch) {
-					switchToSearch = false;
+				if (switchToIdle) {
+					switchToIdle = false;
 					thisDroneState = DroneStates.Idle;
 				}
 				break;
@@ -49,8 +49,8 @@ public class Drone : UnitBase {
 			case DroneStates.FlyToTarget:
 				FaceTarget ();
 				transform.Translate (Vector3.forward * droneFlySpeed);
-				if (switchToSearch) {
-					switchToSearch = false;
+				if (switchToIdle) {
+					switchToIdle = false;
 					thisDroneState = DroneStates.Idle;
 
 				}
@@ -108,6 +108,13 @@ public class Drone : UnitBase {
 		currentTarget = thisTarget;
 		switchToAttack = true;
 		currentTargetGO= NetworkServer.FindLocalObject (currentTarget);
+	}
+
+	[Command]
+	public void CmdSetReturnHome() {
+		if (thisDroneState == DroneStates.FlyToTarget) {
+			thisDroneState = DroneStates.RotateTowardBase;
+		}
 	}
 
 	void FaceTarget() {

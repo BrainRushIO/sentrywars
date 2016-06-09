@@ -16,9 +16,7 @@ public class Bullet : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (isServer) {
-			transform.Translate (Vector3.forward * bulletSpeed);
-		}
+		transform.Translate (Vector3.forward * bulletSpeed);
 	}
 
 	public void InitializeBullet (int thisOwner) {

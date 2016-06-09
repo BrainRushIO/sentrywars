@@ -5,7 +5,7 @@ using System.Collections;
 public class VRUI : MonoBehaviour {
 
 	public GameObject currentlyHighlightedObject;
-	public GameObject VRUIPanel;
+	public GameObject VRUIPowerCore, VRUIAirport;
 	GameObject tempPanel;
 
 	void FixedUpdate () {
@@ -38,29 +38,49 @@ public class VRUI : MonoBehaviour {
 			switch (thisAction) {
 			case VRUISelectionAction.Airport:
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Airport);
+				StartCoroutine ("SetBuildMode");
+
 				break;
 			case VRUISelectionAction.Cannon:
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+				StartCoroutine ("SetBuildMode");
 
 				break;
 
 			case VRUISelectionAction.PowerCore:
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.PowerCore);
+				StartCoroutine ("SetBuildMode");
 
 				break;
 			case VRUISelectionAction.EnergyMine:
 				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Energy);
+				StartCoroutine ("SetBuildMode");
 
 				break;
 
-			case VRUISelectionAction.Sniper:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+			case VRUISelectionAction.AntiAir:
+				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.AntiAir);
+				StartCoroutine ("SetBuildMode");
+
+				break;
+
+			case VRUISelectionAction.ReturnDrone:
+				GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<Airport> ().ReturnDrone ();
+				break;
+
+			case VRUISelectionAction.RebuildDrone:
+				if (GetComponentInParent<PlayerStats> ().GetCurrentEnergy () < 40) {
+					GetComponentInParent<GUIManager> ().SetAlert ("Not Enough Energy");
+				} else if (!GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<Airport> ().RebuildDrone ()) {
+					GetComponentInParent<GUIManager> ().SetAlert ("Drone Already Built");
+				} else {
+					GetComponentInParent<PlayerStats> ().SpendEnergy (40f);
+				}
 
 				break;
 
 			}
 			Destroy (tempPanel);
-			StartCoroutine ("SetBuildMode");
 		}
 	}
 
@@ -72,16 +92,22 @@ public class VRUI : MonoBehaviour {
 	}
 
 	void ToggleVRUI() {
-		GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
+		if (GetComponentInParent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().hasVRUI) {
+			GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
 
-		if (tempPanel == null) {
-			tempPanel = (GameObject)Instantiate (VRUIPanel, transform.position, transform.rotation);
-			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
-		} else {
-			Destroy (tempPanel);
-			GetComponentInParent<ConstructionController> ().SwitchToInactive ();
+			if (tempPanel == null) {
+				if (GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Airport) {
+					tempPanel = (GameObject)Instantiate (VRUIAirport, transform.position, transform.rotation);
+				} else if ((GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.PowerCore)) {
+					tempPanel = (GameObject)Instantiate (VRUIPowerCore, transform.position, transform.rotation);
+				}
+				GetComponentInParent<ConstructionController> ().SwitchToInactive ();
+			} else {
+				Destroy (tempPanel);
+				GetComponentInParent<ConstructionController> ().SwitchToInactive ();
+			}
+	//		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
 		}
-//		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
 	}
 
 	void OnEnable() {

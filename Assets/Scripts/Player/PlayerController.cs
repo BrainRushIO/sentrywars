@@ -28,7 +28,7 @@ public class PlayerController : NetworkBehaviour {
 	Camera playerCamera;
 	BuildingType currentInhabitedBuildingType;
 	bool isInitialized;
-	[SerializeField] GameObject loseSphere, gameplayGui;
+	[SerializeField] GameObject loseSphere;
 
 	public delegate void SendPlayerInputInfo(RaycastHit thisHit);
 	public static event SendPlayerInputInfo OnSendPlayerInputInfo;

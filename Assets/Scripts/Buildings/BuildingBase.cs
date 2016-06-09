@@ -4,10 +4,10 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
 
-public enum BuildingType {PowerCore, Cannon, Energy, Airport, SnipeCannon};
+public enum BuildingType {PowerCore, Cannon, Energy, Airport, AntiAir};
 
 public class BuildingBase : BaseObject {
-
+	public bool hasVRUI;
 	public float actionCooldown;
 	public float buildTime;
 	bool isWarpingIn;
