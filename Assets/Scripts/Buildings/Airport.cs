@@ -8,17 +8,17 @@ public class Airport : TargetingBase {
 	[SyncVar] NetworkIdentity droneInstance;
 	public Transform spawnPos;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		//has drone been destroyed
 		//if so, build a new one
 	}
 
+	public override void Start ()
+	{
+		//dont do shit again
+	}
 
 
 	void OnWarpInComplete () {

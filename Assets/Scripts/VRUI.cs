@@ -92,22 +92,23 @@ public class VRUI : MonoBehaviour {
 	}
 
 	void ToggleVRUI() {
-//		if (GetComponentInParent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().hasVRUI) {
+		if (GetComponentInParent<PlayerController>().currentInhabitedBuilding!=null &&
+			GetComponentInParent<PlayerController>().currentInhabitedBuilding.GetComponent<BuildingBase>().hasVRUI) {
 			GetComponentInParent<ConstructionController> ().ToggleBuildMode (false);
 
 			if (tempPanel == null) {
-				if (GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Airport) {
-					tempPanel = (GameObject)Instantiate (VRUIAirport, transform.position, transform.rotation);
-				} else if ((GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.PowerCore)) {
+//				if (GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.Airport) {
+//					tempPanel = (GameObject)Instantiate (VRUIAirport, transform.position, transform.rotation);
+//				 if ((GetComponentInParent<PlayerController> ().currentInhabitedBuilding.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.PowerCore)) {
 					tempPanel = (GameObject)Instantiate (VRUIPowerCore, transform.position, transform.rotation);
-				}
+//				}
 				GetComponentInParent<ConstructionController> ().SwitchToInactive ();
 			} else {
 				Destroy (tempPanel);
 				GetComponentInParent<ConstructionController> ().SwitchToInactive ();
 			}
 	//		GetComponentInParent<ConstructionController> ().DestroyBuildingTemplate ();
-//		}
+		}
 	}
 
 	void OnEnable() {

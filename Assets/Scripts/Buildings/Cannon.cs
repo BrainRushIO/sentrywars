@@ -15,7 +15,9 @@ public class Cannon : TargetingBase  {
 		rangeRing.SetActive (show);
 	}
 
-	void Start () {
+	public override void Start () {
+		targetLayerMask = 1 << LayerMask.NameToLayer ("Buildings");
+
 		rangeRing.transform.localScale = new Vector3 (towerAttackRange/10, 1, towerAttackRange/10);
   	}
 

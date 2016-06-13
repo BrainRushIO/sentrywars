@@ -58,9 +58,11 @@ public class ConstructionController : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
 		buildingCosts.Add (BuildingType.PowerCore, 10);
-		buildingCosts.Add (BuildingType.Cannon, 40);
-		buildingCosts.Add (BuildingType.Energy, 20);
+		buildingCosts.Add (BuildingType.Cannon, 10);
+		buildingCosts.Add (BuildingType.Energy, 10);
 		buildingCosts.Add (BuildingType.Airport, 10);
+		buildingCosts.Add (BuildingType.AntiAir, 10);
+
 
 		layerMaskBuilding = 1 << layerIdBuilding;
 	}
