@@ -4,11 +4,12 @@ using UnityEngine.Networking;
 
 public class AntiAir : TargetingBase {
 	float detectionRange = 200f;
-	float fireCooldown = .3f, cooldownTimer;
+	float fireCooldown = .1f, cooldownTimer;
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
 	[SerializeField] Transform turret;
-	float flakDamage = 4f;
+	float flakDamage = 1f;
 	GameObject currentTargetGO;
+	public Transform muzzleFlash1, muzzleFlash2;
 
 	bool isTargetingEnemy;
 
@@ -44,15 +45,22 @@ public class AntiAir : TargetingBase {
 
 	[Command]
 	void CmdFireAtTarget(NetworkInstanceId thisTarget) {
-		print ("Attacking drone");
-		float rx = Random.Range (-40, 40);
-		float ry = Random.Range (-40, 40);
-		float rz = Random.Range (-40, 40);
+		float rx = Random.Range (-10, 10);
+		float ry = Random.Range (-10, 10);
+		float rz = Random.Range (-10, 10);
 		Vector3 displace = new Vector3 (rx, ry, rz);
 		GameObject temp = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs[11],
 			NetworkServer.FindLocalObject(thisTarget).transform.position + displace,
 			Quaternion.identity);
 		NetworkServer.FindLocalObject (thisTarget).GetComponent<UnitBase> ().TakeDamage (flakDamage);
+		GameObject mzFlash1 = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [12],
+			                      muzzleFlash1.position, Quaternion.identity);
+		GameObject mzFlash2 = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs [12],
+			muzzleFlash2.position, Quaternion.identity);
+		NetworkServer.Spawn (mzFlash1);
+		NetworkServer.Spawn (mzFlash2);
+		NetworkServer.Spawn (temp);
+
 	}
 
 	[Command]
@@ -64,9 +72,11 @@ public class AntiAir : TargetingBase {
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, detectionRange, targetLayerMask);
 		if (collidersInRange.Length > 0) {
 			foreach (Collider x in collidersInRange) {
-				currentTarget = x.GetComponent<NetworkIdentity> ().netId;
-				currentTargetGO = NetworkServer.FindLocalObject (currentTarget);
-				return;
+				if (x.gameObject.GetComponent<Drone> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
+					currentTarget = x.GetComponent<NetworkIdentity> ().netId;
+					currentTargetGO = NetworkServer.FindLocalObject (currentTarget);
+					return;
+				}
 			}
 		} else {
 			isTargetingEnemy = false;

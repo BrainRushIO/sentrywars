@@ -6,7 +6,12 @@ public class VRUI : MonoBehaviour {
 
 	public GameObject currentlyHighlightedObject;
 	public GameObject VRUIPowerCore, VRUIAirport;
+	[SerializeField] ConstructionController thisConstructionController;
 	GameObject tempPanel;
+
+	void Start() {
+		thisConstructionController = GetComponentInParent<ConstructionController> ();
+	}
 
 	void FixedUpdate () {
 
@@ -37,29 +42,29 @@ public class VRUI : MonoBehaviour {
 
 			switch (thisAction) {
 			case VRUISelectionAction.Airport:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Airport);
+				thisConstructionController.SelectConstructBuildingType (BuildingType.Airport);
 				StartCoroutine ("SetBuildMode");
 
 				break;
 			case VRUISelectionAction.Cannon:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Cannon);
+				thisConstructionController.SelectConstructBuildingType (BuildingType.Cannon);
 				StartCoroutine ("SetBuildMode");
 
 				break;
 
 			case VRUISelectionAction.PowerCore:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.PowerCore);
+				thisConstructionController.SelectConstructBuildingType (BuildingType.PowerCore);
 				StartCoroutine ("SetBuildMode");
 
 				break;
 			case VRUISelectionAction.EnergyMine:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.Energy);
+				thisConstructionController.SelectConstructBuildingType (BuildingType.Energy);
 				StartCoroutine ("SetBuildMode");
 
 				break;
 
 			case VRUISelectionAction.AntiAir:
-				GetComponentInParent<ConstructionController> ().SelectConstructBuildingType (BuildingType.AntiAir);
+				thisConstructionController.SelectConstructBuildingType (BuildingType.AntiAir);
 				StartCoroutine ("SetBuildMode");
 
 				break;

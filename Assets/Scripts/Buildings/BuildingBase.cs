@@ -160,6 +160,7 @@ public class BuildingBase : BaseObject {
 
 	[Command]
 	void CmdDestroyBuilding (NetworkInstanceId thisOwnerId) {
+		SendMessage ("OnBuildingDeath");
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			linkedEnergyField.GetComponent<EnergyField> ().CmdSetIsOccupied(false);

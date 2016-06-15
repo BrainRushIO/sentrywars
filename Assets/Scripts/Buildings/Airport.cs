@@ -7,17 +7,20 @@ public class Airport : TargetingBase {
 	public GameObject dronePrefab;
 	[SyncVar] NetworkIdentity droneInstance;
 	public Transform spawnPos;
-
+	bool isDroneBuilt;
 
 	// Update is called once per frame
 	void Update () {
 		//has drone been destroyed
 		//if so, build a new one
+		if (isServer && isDroneBuilt) {
+			RebuildDrone ();
+		}
+
 	}
 
 	public override void Start ()
 	{
-		//dont do shit again
 	}
 
 
@@ -26,7 +29,7 @@ public class Airport : TargetingBase {
 	}
 
 	public bool RebuildDrone() {
-		if (droneInstance.gameObject == null) {
+		if (droneInstance == null) {
 			CmdSpawnDrone (GetComponent<BuildingBase> ().ReturnOwner (), GetComponent<NetworkIdentity> ().netId);
 			return true;
 		} else {
@@ -48,9 +51,12 @@ public class Airport : TargetingBase {
 		GameObject tempDrone = (GameObject)Instantiate (dronePrefab, 
 			spawnPos.position, Quaternion.identity);
 		NetworkServer.Spawn (tempDrone);
+		GameObject tempSplash = (GameObject)Instantiate (NetworkManager.singleton.spawnPrefabs[7],
+			spawnPos.position, Quaternion.identity);
+		NetworkServer.Spawn (tempSplash);
 		droneInstance = tempDrone.GetComponent<NetworkIdentity> ();
 		tempDrone.GetComponent<Drone> ().InitializeUnit (GetComponent<BuildingBase> ().ReturnOwner (), thisBuildingId);
-
+		isDroneBuilt = true;
 	}
 
 	[Command]
@@ -58,7 +64,7 @@ public class Airport : TargetingBase {
 		droneInstance.GetComponent<Drone> ().CmdSetCurrentTarget (thisId);
 	}
 
-	void OnDestroy() {
-		Destroy (droneInstance);
+	void OnBuildingDeath() {
+		droneInstance.gameObject.GetComponent<Drone> ().TakeDamage (10000000f);
 	}
 }

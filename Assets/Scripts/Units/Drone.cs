@@ -8,7 +8,7 @@ public class Drone : UnitBase {
 	DroneStates thisDroneState = DroneStates.InitLiftOff;
 	float liftOffSpeed = .2f, liftOffTimer, liftOffTime = 3.5f;
 	float droneFlySpeed = 2f;
-	[SyncVar] NetworkInstanceId currentTarget;
+	NetworkInstanceId currentTarget;
 	GameObject currentTargetGO;
 	float attackRange = 200f;
 	float reloadRange = 100f;
@@ -52,7 +52,6 @@ public class Drone : UnitBase {
 				if (switchToIdle) {
 					switchToIdle = false;
 					thisDroneState = DroneStates.Idle;
-
 				}
 				if (currentTargetGO == null) {
 					thisDroneState = DroneStates.RotateTowardBase;
