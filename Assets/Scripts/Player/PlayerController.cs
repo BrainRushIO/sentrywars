@@ -231,7 +231,6 @@ public class PlayerController : NetworkBehaviour {
 			if (Vector3.Distance (x.transform.position, transform.position) < 100) {
 				currentInhabitedBuilding = x.GetComponent<NetworkIdentity>();
 				GetComponent<SoundtrackManager> ().PlayAudioSource (GetComponent<SoundtrackManager> ().constructBuilding);
-				Debug.Log ("Init building from player " + playerID);
 				currentInhabitedBuilding.GetComponent<BuildingBase> ().InitializeBuilding (playerInt,null, true);
 				CmdSetIsOccupiedOnCurBuilding (null, currentInhabitedBuilding);
 				isInitialized = true;

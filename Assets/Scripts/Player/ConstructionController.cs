@@ -68,10 +68,8 @@ public class ConstructionController : NetworkBehaviour {
 	}
 
 	public void BuildInitialPowerCore() {
-		print ("build innitial " + GetComponent<PlayerController>().playerInt);
 		ToggleBuildMode (true);
 		buildingPlacementPosition = new Vector3 (transform.position.x, 0, transform.position.z);
-		print ("BPP " + buildingPlacementPosition);
 		currConstructionState = ConstructionState.SpawnBuilding;
 
 	}

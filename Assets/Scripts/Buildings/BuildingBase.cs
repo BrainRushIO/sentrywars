@@ -27,8 +27,8 @@ public class BuildingBase : BaseObject {
 		}
 	}
 	[SyncVar] bool isFirstBuilding = false;
-	[ClientRpc]
-	public void RpcSetIsInitBuilding (bool val) {
+	[Command]
+	public void CmdSetIsInitBuilding (bool val) {
 		isFirstBuilding = val;
 	}
 
@@ -122,6 +122,7 @@ public class BuildingBase : BaseObject {
 		currentHealth = maxHealth;
 		if (isFirst) {
 			isFirstBuilding = true;
+			CmdSetIsInitBuilding (true);
 		}
 	}
 
@@ -160,7 +161,7 @@ public class BuildingBase : BaseObject {
 
 	[Command]
 	void CmdDestroyBuilding (NetworkInstanceId thisOwnerId) {
-		SendMessage ("OnBuildingDeath");
+		SendMessage ("OnBuildingDeath", SendMessageOptions.DontRequireReceiver);
 		switch (thisBuildingType) {
 		case BuildingType.Energy:
 			linkedEnergyField.GetComponent<EnergyField> ().CmdSetIsOccupied(false);
