@@ -3,8 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class AntiAir : TargetingBase {
-	float detectionRange = 200f;
-	float fireCooldown = .1f, cooldownTimer;
+	float detectionRange = 300f;
+	float fireCooldown = .25f, cooldownTimer;
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
 	[SerializeField] Transform turret;
 	float flakDamage = 1f;
@@ -15,7 +15,7 @@ public class AntiAir : TargetingBase {
 	// Update is called once per frame
 	void Update () {
 		if (abilitiesActive) {
-			if (NetworkServer.FindLocalObject (currentTargetID) == null) {
+			if (currentTargetGO == null) {
 				isTargetingEnemy = false;
 			}
 			if (cooldownTimer > 0) {
@@ -24,10 +24,14 @@ public class AntiAir : TargetingBase {
 				CmdFireAtTarget (currentTargetID);
 				isTargetingEnemy = true;
 				cooldownTimer = fireCooldown;
+				if (Vector3.Distance (currentTargetGO.transform.position, transform.position) > detectionRange) {
+					currentTargetGO = null;
+					isTargetingEnemy = false;
+				}
 			}
 			if (isTargetingEnemy == true ) {
 				turret.transform.LookAt (currentTargetGO.transform);
-			} 
+			}
 			radarSweepTimer += Time.deltaTime;
 
 			if (radarSweepTimer > radarSweepTime && currentTargetGO==null) {
