@@ -24,7 +24,10 @@ public class BuildingStateController : NetworkBehaviour {
 		yield return new WaitForSeconds (3);
 		isWarpingIn = false;
 		GetBuildingColor ();
-		RpcSwitchColor (thisBuildingColor);
+		if (isServer) {
+			RpcSwitchColor (thisBuildingColor);
+
+		}
 		SendMessage ("OnWarpInComplete", SendMessageOptions.DontRequireReceiver);
 	}
 	void Start () {

@@ -5,14 +5,15 @@ using UnityEngine.Networking;
 
 public abstract class TargetingBase : NetworkBehaviour {
 
-	[SyncVar] protected NetworkInstanceId currentTarget;
+	[SyncVar] protected NetworkInstanceId currentTargetID;
 	protected bool isTargetFound, abilitiesActive;
-	protected float buildingDetectionRange;
+	protected float buildingDetectionRange = 200f;
 	protected int targetLayerMask;
 	protected bool changeTarget;
+	protected GameObject currentTargetGO;
 
-
-	public void EnableAbilities() {
+	public void OnWarpInComplete () {
+		print ("abilities active");
 		abilitiesActive = true;
 	}
 	public void DisableAbilities () {
@@ -27,9 +28,15 @@ public abstract class TargetingBase : NetworkBehaviour {
 
 	public void DetectEnemyBuildings () {
 		Collider[] collidersInRange = Physics.OverlapSphere (transform.position, buildingDetectionRange, targetLayerMask);
+		print (collidersInRange.Length + " big length");
 		foreach (Collider x in collidersInRange) {
 			if (x.GetComponent<BuildingBase> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
-				currentTarget = x.GetComponent<NetworkIdentity>().netId;
+				print ("found enemy");
+
+				currentTargetID = x.GetComponent<NetworkIdentity>().netId;
+				currentTargetGO = NetworkServer.FindLocalObject (currentTargetID);
+				print ("found bldgs");
+
 				break;
 			}
 		}

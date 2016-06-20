@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class PlayerStats : NetworkBehaviour {
 	
 	[SyncVar]
-	float currentEnergy = 40f;
+	float currentEnergy = 20f;
 	[SyncVar]
 	float energyUptake = 1f;
 	[SyncVar]
@@ -70,7 +70,7 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	void HandleTimer() {
-		if (energyTimer >= 1f) {
+		if (energyTimer >= 1.7f) {
 			GatherEnergy ();
 			energyTimer = 0;
 		} 

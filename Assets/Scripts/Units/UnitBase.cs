@@ -29,7 +29,6 @@ public class UnitBase : BaseObject {
 
 	[ClientRpc]
 	void RpcSwitchColor (Color col) {
-		print ("SET COLOR " + col);
 		foreach (MeshRenderer x in coloredMesh) {
 			x.material.SetColor ("_Color", col);
 		}

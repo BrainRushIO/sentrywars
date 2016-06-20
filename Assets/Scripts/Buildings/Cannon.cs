@@ -7,9 +7,9 @@ public class Cannon : TargetingBase  {
 	
 	[SerializeField] GameObject bulletPrefab, rangeRing;
 	public const float towerAttackRange = 200;
-	float detectionRange = 200f;
 	float fireCooldown = 3f, cooldownTimer;
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
+
 
 	void ShowRangeRing(bool show) {
 		rangeRing.SetActive (show);
@@ -25,15 +25,15 @@ public class Cannon : TargetingBase  {
 		if (abilitiesActive) {
 			if (cooldownTimer > 0) {
 				cooldownTimer -= Time.deltaTime;
-			} else if (cooldownTimer <= 0 && NetworkServer.FindLocalObject(currentTarget)!=null) {
+			} else if (cooldownTimer <= 0 && currentTargetGO!=null) {
+				print ("FIRE");
 				CmdFireAtTarget (gameObject.GetComponent<BuildingBase> ().playerCockpit.position + new Vector3 (0, -10f, 0),
-					currentTarget,
+					currentTargetID,
 					GetComponent<BuildingBase>().ReturnOwner());
 			}
-		
 			radarSweepTimer += Time.deltaTime;
 
-			if (radarSweepTimer > radarSweepTime && NetworkServer.FindLocalObject(currentTarget)==null) {
+			if (radarSweepTimer > radarSweepTime && currentTargetGO==null) {
 				radarSweepTimer = 0;
 				DetectEnemyBuildings();
 			}
@@ -54,6 +54,13 @@ public class Cannon : TargetingBase  {
 
 	[Command]
 	public override void CmdOnChangeTarget(NetworkInstanceId thisId) {
-		currentTarget = thisId;
+		currentTargetID = thisId;
+		currentTargetGO = NetworkServer.FindLocalObject (thisId);
+	}
+
+	[ClientRpc]
+	void RpcOnChangeTarget(NetworkInstanceId thisId) {
+		currentTargetGO = NetworkServer.FindLocalObject (thisId);
+
 	}
 }

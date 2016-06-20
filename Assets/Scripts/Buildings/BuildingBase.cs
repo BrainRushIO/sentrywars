@@ -45,34 +45,14 @@ public class BuildingBase : BaseObject {
 	/// </summary>
 
 	void Start () {
-		CheckIfIsPowered ();
 	}
 
-	public void EnableAbilities() {
-		if (isServer) {
-			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
-		}
+	public void WarpInBuilding() {
+		GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 	}
 
 	public void DisableAbilities () {
-		if (isServer) {
-			GetComponent<BuildingStateController> ().SetMeshRendererColor ();
-		}
-	}
-
-	void CheckIfIsPowered() {
-		Collider[] nearbyBuildings = Physics.OverlapSphere (transform.position, ConstructionController.CONSTRUCTION_RANGE);
-		int totalConstructors = 0;
-		foreach (Collider x in nearbyBuildings) {
-			if (x.GetComponent<BuildingBase> ()!=null && x.GetComponent<BuildingBase> ().thisBuildingType == BuildingType.PowerCore) {
-				totalConstructors++;
-			}
-		}
-		if (totalConstructors > 0) {
-			SendMessage ("EnableAbilities");
-		} else {
-			SendMessage ("DisableAbilities");
-		}
+		GetComponent<BuildingStateController> ().SetMeshRendererColor ();
 	}
 
 
@@ -117,6 +97,7 @@ public class BuildingBase : BaseObject {
 		if (thisLinkedEnergyField != null) {
 			linkedEnergyField = thisLinkedEnergyField;
 		}
+		WarpInBuilding ();
 		EnableAllColliders ();
 		DisableMeshRenderers ();
 		currentHealth = maxHealth;
@@ -172,8 +153,5 @@ public class BuildingBase : BaseObject {
 		Destroy (temp, 5f);
 		NetworkServer.Spawn (temp);
 		Destroy (gameObject);
-	}
-
-	void OnWarpInComplete() {
 	}
 }

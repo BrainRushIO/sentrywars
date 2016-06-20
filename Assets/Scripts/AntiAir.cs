@@ -8,7 +8,6 @@ public class AntiAir : TargetingBase {
 	float radarSweepTimer = .8f, radarSweepTime = 1f;
 	[SerializeField] Transform turret;
 	float flakDamage = 1f;
-	GameObject currentTargetGO;
 	public Transform muzzleFlash1, muzzleFlash2;
 
 	bool isTargetingEnemy;
@@ -16,13 +15,13 @@ public class AntiAir : TargetingBase {
 	// Update is called once per frame
 	void Update () {
 		if (abilitiesActive) {
-			if (NetworkServer.FindLocalObject (currentTarget) == null) {
+			if (NetworkServer.FindLocalObject (currentTargetID) == null) {
 				isTargetingEnemy = false;
 			}
 			if (cooldownTimer > 0) {
 				cooldownTimer -= Time.deltaTime;
 			} else if (cooldownTimer <= 0 && currentTargetGO!=null) {
-				CmdFireAtTarget (currentTarget);
+				CmdFireAtTarget (currentTargetID);
 				isTargetingEnemy = true;
 				cooldownTimer = fireCooldown;
 			}
@@ -73,8 +72,8 @@ public class AntiAir : TargetingBase {
 		if (collidersInRange.Length > 0) {
 			foreach (Collider x in collidersInRange) {
 				if (x.gameObject.GetComponent<Drone> ().ReturnOwner () != GetComponent<BuildingBase> ().ReturnOwner ()) {
-					currentTarget = x.GetComponent<NetworkIdentity> ().netId;
-					currentTargetGO = NetworkServer.FindLocalObject (currentTarget);
+					currentTargetID = x.GetComponent<NetworkIdentity> ().netId;
+					currentTargetGO = NetworkServer.FindLocalObject (currentTargetID);
 					return;
 				}
 			}
