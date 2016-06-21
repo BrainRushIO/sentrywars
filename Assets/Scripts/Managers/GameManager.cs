@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
 				for (int i = 0; i < playersInMatch; i++) {
 					players [i].GetComponent<PlayerController>().InitializePlayer (i);
 					gameHasStarted = true;
+				GameObject.FindGameObjectWithTag ("Ships").SetActive (true);
 				}
 			}
 	}

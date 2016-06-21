@@ -70,6 +70,8 @@ public class PlayerController : NetworkBehaviour {
 		if (Input.GetKeyDown (KeyCode.P)) {
 			InitializePlayer (0);
 			GameManager.gameHasStarted = true;
+			GameObject.FindGameObjectWithTag ("Ships").transform.GetChild(0).gameObject.SetActive (true);
+
 		}
 
 		//For Beginning of Game
@@ -218,6 +220,8 @@ public class PlayerController : NetworkBehaviour {
 		playerID = "Player" + thisPlayerInt.ToString ();
 		transform.name = playerID;
 		GetComponent<ConstructionController> ().BuildInitialPowerCore ();
+		GameObject.FindGameObjectWithTag ("Ships").transform.GetChild(0).gameObject.SetActive (true);
+
 	}
 
 	public void EndGame() {
