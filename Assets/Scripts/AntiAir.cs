@@ -29,8 +29,10 @@ public class AntiAir : TargetingBase {
 					isTargetingEnemy = false;
 				}
 			}
-			if (isTargetingEnemy == true ) {
+			if (isTargetingEnemy == true) {
 				turret.transform.LookAt (currentTargetGO.transform);
+			} else {
+				turret.RotateAround (Vector3.up, .01f);
 			}
 			radarSweepTimer += Time.deltaTime;
 
