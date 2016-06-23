@@ -70,7 +70,7 @@ public class PlayerStats : NetworkBehaviour {
 	}
 
 	void HandleTimer() {
-		if (energyTimer >= 1.7f) {
+		if (energyTimer >= 1f) {
 			GatherEnergy ();
 			energyTimer = 0;
 		} 

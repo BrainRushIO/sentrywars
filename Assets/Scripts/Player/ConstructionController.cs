@@ -60,7 +60,7 @@ public class ConstructionController : NetworkBehaviour {
 		buildingCosts.Add (BuildingType.PowerCore, 10);
 		buildingCosts.Add (BuildingType.Cannon, 20);
 		buildingCosts.Add (BuildingType.Energy, 10);
-		buildingCosts.Add (BuildingType.Airport, 80);
+		buildingCosts.Add (BuildingType.Airport, 10);
 		buildingCosts.Add (BuildingType.AntiAir, 20);
 
 
