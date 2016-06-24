@@ -6,8 +6,8 @@ public class Drone : UnitBase {
 
 	public enum DroneStates {InitLiftOff, Idle, FlyToTarget, Fire, RotateTowardBase, ReturnToBase, RotateTowardTarget};
 	DroneStates thisDroneState = DroneStates.InitLiftOff;
-	float liftOffSpeed = .5f, liftOffTimer, liftOffTime = 3.5f;
-	float droneFlySpeed = 2f;
+	float liftOffSpeed = .5f, liftOffTimer, liftOffTime = 2.5f;
+	float droneFlySpeed = 1f;
 	NetworkInstanceId currentTarget;
 	GameObject currentTargetGO;
 	float attackRange = 200f;

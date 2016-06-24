@@ -10,7 +10,7 @@ public class SyncTransform : NetworkBehaviour {
 
 	void Update () {
 		if (isServer) {
-			
+			RpcProvidePositionToClient (transform.position, transform.rotation);
 		}
 //		LerpPosition();
 	}
